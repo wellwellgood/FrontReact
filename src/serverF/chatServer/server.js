@@ -1,120 +1,61 @@
-// ✅ server.js
+// server.js – 통합 버전
+// ───────────────────────────────────────────────────────────
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const pool = require("./express+mariadb.js");
+const bodyParser = require("body-parser");
 const http = require("http");
-const socket = require("./socket.js");
-const userRoutes = require("./routes/userRoutes.js");
+const path = require("path");
+
+// DB (PostgreSQL / Neon)
+const db = require("./db.js");
+
+// 메시지 전용 라우터 + 컨트롤러
 const messageRoutes = require("./routes/message.js");
-require('dotenv').config();
+// Socket.IO 설정 (채팅 실시간 전송용)
+const socket = require("./socket.js");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// ──────────────── 미들웨어 ────────────────
 app.use(cors({
   origin: ["https://myappboard.netlify.app", "http://localhost:3000"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true,
 }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// 정적 파일 (첨부파일)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ 라우터 등록
+// ──────────────── API 라우트 ────────────────
+// 1) 사용자 목록 (본인 제외)
+app.get("/users", async (req, res) => {
+  const exclude = req.query.exclude || "";
+  try {
+    const result = await db.query(
+      "SELECT username, name FROM users WHERE username != $1 ORDER BY name",
+      [exclude]
+    );
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("❌ 유저 목록 조회 실패:", err.message);
+    res.status(500).json({ message: "서버 오류", error: err.message });
+  }
+});
+
+// 2) 메시지 라우터 (파일 첨부 포함)
 app.use("/api/messages", messageRoutes);
-app.use("/users", userRoutes);
 
-app.get("/", (req, res) => res.send("Server is running"));
+// 헬스체크
+app.get("/", (req, res) => res.send("🚀 Server is running"));
 
+// ──────────────── 서버 + 소켓 ────────────────
 const server = http.createServer(app);
-socket(server);
+socket(server); // Socket.IO 초기화 (socket.js 내부 구현)
 
 server.listen(PORT, () => {
-  console.log(`✅ Server + Socket.IO running on http://localhost:${PORT}`);
+  console.log(`✅ Server listening on http://localhost:${PORT}`);
 });
-
-
-// ✅ routes/message.js
-const express = require('express');
-const router = express.Router();
-const messageController = require('../controllers/messageController.js');
-
-router.post('/', messageController.uploadMiddleware, messageController.saveMessage);
-router.get('/', messageController.getMessages);
-
-module.exports = router;
-
-
-// ✅ controllers/messageController.js
-const db = require("../serverF/db.js");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const cleaned = file.originalname.trim().replace(/\s+/g, "_");
-    const uniqueName = Date.now() + "-" + cleaned;
-    cb(null, uniqueName);
-  },
-});
-
-const upload = multer({ storage });
-exports.uploadMiddleware = upload.single("file");
-
-exports.saveMessage = async (req, res) => {
-  console.log("📦 req.body:", req.body);
-  console.log("📁 req.file:", req.file);
-
-  const { sender_username, receiver_username, receiver_name, content = "[파일]" } = req.body;
-  const file = req.file;
-
-  if (!sender_username || !receiver_username || !receiver_name) {
-    return res.status(400).json({ message: "필수 정보 누락" });
-  }
-
-  try {
-    const fileUrl = file ? `/uploads/${file.filename}` : null;
-    const fileName = file?.originalname?.trim().replace(/\s+/g, "_") || null;
-
-    await db.query(
-      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, file_url, file_name) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [sender_username, receiver_username, receiver_name, content.trim(), fileUrl, fileName]
-    );
-
-    res.status(200).json({
-      sender_username,
-      receiver_username,
-      receiver_name,
-      content: content.trim(),
-      file: file?.filename || null,
-      file_name: fileName,
-      fileUrl: file ? `${req.protocol}://${req.get("host")}/uploads/${file.filename}` : null,
-      time: new Date().toISOString(),
-      read: false,
-    });
-  } catch (err) {
-    console.error("❌ 메시지 저장 실패:", err);
-    res.status(500).json({ message: "서버 오류", error: err.message });
-  }
-};
-
-exports.getMessages = async (req, res) => {
-  try {
-    const [rows] = await db.query("SELECT * FROM messages ORDER BY time");
-    res.status(200).json(rows);
-  } catch (err) {
-    console.error("❌ 메시지 조회 실패:", err);
-    res.status(500).json({ message: "서버 오류", error: err.message });
-  }
-};

@@ -2,10 +2,6 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../DB"); // PostgreSQL 연결 풀
-const userController = require("../chatServer/controllers/userController");
-
-
-router.get("/", userController.getUsers);
 
 // 🔹 전체 유저 목록 조회 (내 아이디 제외)
 router.get("/", async (req, res) => {

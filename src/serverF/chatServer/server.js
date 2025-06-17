@@ -8,6 +8,7 @@ const http = require("http");
 const socket = require("./socket.js");
 const userRoutes = require("./routes/userRoutes.js");
 const messageRoutes = require("./routes/message.js");
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;

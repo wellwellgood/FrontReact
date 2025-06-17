@@ -1,5 +1,5 @@
 const { Server } = require('socket.io');
-const pool = require('./DB'); // DB 연결 모듈
+const pool = require('./controllers/db'); // DB 연결 모듈
 
 module.exports = (server) => {
   const io = new Server(server, {

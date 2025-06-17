@@ -1,0 +1,145 @@
+.topbar {
+  position: absolute;
+    right: 0;
+    width: calc(100% - 200px);
+    background: var(--header-bg);
+    height: 52.5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 20px;
+}
+.topbarContainer{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40%;
+  gap: 20px;
+}
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: transparent;
+}
+
+.searchForm {
+  display: flex;
+  align-items: center;
+  background: var(--text-color);
+  border: 2px solid var(--accent-text);
+  border-radius: 50px;
+  width: 280px;
+  height: 40px;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.searchbox {
+  background: transparent;
+  border: none;
+  color: var(--accent-text);
+  font-size: 18px;
+  outline: none;
+  width: 200px;
+  padding: 0 10px;
+}
+
+.searchButton {
+  background: transparent;
+  border: none;
+  color: var(--accent-text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.searchResults{
+  position: absolute;
+  top: 53;
+  display: block;
+}
+.searchResults li{
+  display: flex;
+  font-size: 12px;
+}
+.result{
+  position: absolute;
+  background: var(--text-color);
+  top: 5px;
+  /* right: -35px; */
+  width: 187px;
+  z-index: 99;
+  padding: 10px;
+
+}
+.result::after,
+.result::before{
+  display: none;
+}
+.result li::after,
+.result li::before{
+  display: none;
+}
+
+.resultTitle {
+  font-weight: bold;
+}
+
+.resultCategory {
+  display: block;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.noResults {
+  padding: 10px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.logout {
+  cursor: pointer;
+}
+
+.profileImage {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.infoform {
+  position: absolute;
+  right: 0;
+  margin-top: 10px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  color: var(--text-color);
+}
+.infoform div{
+  padding: 10px;
+  cursor: pointer;
+}
+.infoform div .link{ 
+  text-decoration: none;
+  color: var(--text-color);
+}
+.infoform div:hover{
+  background-color: var(--hover-bg);
+}
+.userInfo h2{
+  font-size: 16px;
+  padding: 10px;
+}
+.themeMenu div:hover{
+  color: #fff;
+}
+
+.Account, .theme, .light, .dark {
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}

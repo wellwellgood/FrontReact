@@ -1,0 +1,27 @@
+{
+  "name": "backend-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bcrypt": "^5.1.1",
+    "coolsms-node-sdk": "^2.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "firebase": "^11.6.1",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mariadb": "^3.4.1",
+    "multer": "^1.4.5-lts.2",
+    "mysql2": "^3.14.0",
+    "path": "^0.12.7",
+    "pg": "8.11.3",
+    "socket": "^0.14.57",
+    "socket.io": "^4.8.1"
+  }
+}

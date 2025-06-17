@@ -1,0 +1,8 @@
+{
+    "restartable": "rs",
+    "ignore": ["node_modules/**", "uploads/**"],
+    "watch": ["server.js", "routes/"],
+    "execMap": {
+      "js": "node --experimental-modules"
+    }
+  }

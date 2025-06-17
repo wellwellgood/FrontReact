@@ -1,0 +1,186 @@
+.findID {
+  width: 100%;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background-image: url(./image/ground.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.findID::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(225, 247, 236, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 0;
+}
+
+.img {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  background-image: url(./image/back.png);
+  background-size: cover;
+  background-position: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.IDform {
+  position: relative;
+  z-index: 1;
+  width: 500px;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.IDarea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  margin-bottom: 30px;
+  font-size: 26px;
+  color: var(--text-color);
+}
+
+.name,
+.verifyCode {
+  width: 100%;
+  height: 45px;
+  margin-bottom: 15px;
+  padding: 0 15px;
+  border: 2px solid var(--accent-color);
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.name:focus,
+.verifyCode:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  background-color: var(--card-bg);
+  box-shadow: 0 0 0 2px rgba(44, 148, 126, 0.3);
+}
+
+.phoneGroup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.phoneGroup select,
+.phoneGroup input {
+  height: 45px;
+  border-radius: 8px;
+  border: 2px solid var(--accent-color);
+  font-size: 14px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  flex: 1;
+  text-align: center;
+  width: 33%;
+}
+
+.phoneGroup span {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.findBtn {
+  width: 100%;
+  height: 45px;
+  margin-top: 15px;
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 148, 126, 0.3);
+}
+
+.findBtn:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+.error {
+  color: var(--error-text);
+  font-size: 13px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+.IDform {
+  position: relative;
+  z-index: 1;
+  width: 500px;
+  padding: 40px 30px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  /* ✅ overflow 방지 */
+  overflow: hidden;
+}
+
+.IDarea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* ✅ 내부 요소가 넘치지 않도록 최대폭 제한 */
+  width: 100%;
+}
+h9{
+  color: red;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.verifyInput {
+  margin-top: 10px;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.verifysend,.verifycheck{
+  margin-top: 20px;
+  padding: 10px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

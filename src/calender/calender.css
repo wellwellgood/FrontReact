@@ -1,0 +1,11 @@
+.react-calendar{
+    width: 100% !important;
+    height: 370px !important;
+    background: linear-gradient(to right, rgba(124, 128, 138, 0.74), rgba(66,134,244,0.1)) !important;
+    color: #fff !important; 
+    /* border-radius: 0 0 15px 15px; */
+    background: linear-gradient(to right, rgba(124,128,138,0.74), rgba(40, 110, 86,0.4)) !important;
+}
+react-calendar__tile react-calendar__month-view__days__day{
+    color: #fff !important;
+}

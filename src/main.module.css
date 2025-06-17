@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+*{
+  border: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+button{
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  color: var(--text-color);
+  font-size: 16px;
+  z-index: 99;
+  background: none;
+  z-index: 1;
+}
+nav{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--text-color);
+  z-index: 99;
+}
+.nav{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end));
+}
+.logo1{
+  width: 100%;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.logo1 h2{
+  color: var(--text-color);
+  font-size: 36px;
+  margin: 10px 0px;
+  font-weight: 900;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.logo1 span{
+  width: 150px;
+  height: 3px;
+  background: var(--header-text);
+  border-radius: 100%;
+}
+ul{
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  flex-direction: column;
+  padding: 0;
+  width: 100%;
+  padding: 10px;
+  gap: 40px;
+  margin-top: 20px;
+}
+li{
+  text-decoration: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+}
+li a{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  text-decoration-line: none;
+  font-size: 16px;
+  margin: 0;
+  z-index: 9;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+li::after{
+  content: '';
+  background: rgba(255,255,255, 1);
+  position: absolute;
+  /* left: 5px; */
+  width: 0px;
+  height: 50px;
+  border-radius: 15px;
+  border: 1px solid rgba(26, 31, 55,0.3);
+  padding: 0 16px;
+  transition: all 0.2s linear;
+  will-change: transform;
+}
+
+li:hover::after{
+  background: rgba(85, 224, 163, 0.4);
+  /* left: -10px; */
+  width: 150px;
+}
+li:nth-of-type(1)::before{
+  content: '';
+  background-image: url(image/home_30dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* border-radius: 12px; */
+  width: 30px;
+  height: 30px;
+  /* margin:0 10px; */
+  z-index: 9;
+}
+li:nth-of-type(2)::before{
+  content: '';
+  background-image: url(image/comment_30dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* border-radius: 12px; */
+  width: 30px;
+  height: 30px;
+  /* margin:0 10px; */
+  z-index: 9;
+}
+li:nth-of-type(3)::before{
+  content: '';
+  background-image: url(image/cloud_upload_30dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* border-radius: 12px; */
+  width: 30px;
+  height: 30px;
+  /* margin:0 10px; */
+  z-index: 9;
+}
+li:nth-of-type(4)::before{
+  content: '';
+  background-image: url(image/outgoing_mail_30dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* border-radius: 12px; */
+  width: 30px;
+  height: 30px;
+  /* margin:0 10px; */
+  z-index: 9;
+}
+li link{
+  color: var(--accent-text);
+}
+.button{
+  background: none;
+  z-index: 111;
+}
+.setting{
+  position: absolute;
+  bottom: 50px;
+  left: 7px;
+  color: var(--accent-text);
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.setting:hover::before{
+  animation: rotate 3s infinite linear;
+}
+@keyframes rotate{
+  100%{transform: rotate(360deg);}
+}
+.setting a{
+  color: var(--text-color);
+  font-size: 20px;
+  z-index: 9;
+  text-decoration-line: none;
+}
+.setting::before{
+  content: '';
+  background-image: url(image/setting.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 100%;
+  width: 30px;
+  height: 30px;
+  margin:0 10px;
+  z-index: 9;
+}
+.setting::after{
+  content: '';
+  position: absolute;
+  width: 150px;
+  height: 50px;
+  border-radius: 15px;
+  border: 1px solid rgba(62, 76, 141, 0.5);
+  padding: 0 16px;
+}
+.mainboard{
+  position: absolute;
+  top: 80px;
+  right: 50px;
+  display: grid;
+  width: calc(95% - 250px);
+  height: 88vh;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+}
+.mainboard .main{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* border-radius: 15px; */
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--accent-color);
+  background: linear-gradient(135deg, rgba(255,255,255, 0.74), rgba(40, 110, 86,0.4));
+}
+.mainboard div .title{
+  position: absolute;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 30px;
+  top: 0;
+  left: 0;
+  border-bottom: 1px solid var(--accent-text);
+  background: var(--accent-color);
+  /* border-radius: 10px 10px 0px 0; */
+}
+.mainboard .title span{
+  color: var(--text-color);
+  width: 50px;
+  margin: 0px 0 0 10px;
+  height: 15px;
+}
+.mainboard .title .morebtn{
+  background-image: url(image/plus.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.mainboard .title .morebtn:hover{
+  animation: morebtn 0.3s ease;
+}
+@keyframes morebtn {
+  100%{
+    transform: rotate(90deg);
+  }
+}
+.mainboard .info{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* border-radius: 15px; */
+  border: 1px solid var(--accent-color);
+  background: linear-gradient(135deg, rgba(255,255,255, 0.74),rgba(40, 110, 86,0.4));
+}
+.mainboard .empty{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* border-radius: 15px; */
+  border: 1px solid var(--accent-color);
+  background: linear-gradient(135deg, rgba(255,255,255, 0.74),rgba(40, 110, 86,0.4));
+}
+.CustomCalendar {
+  margin-top: 20px;
+  display: block;
+}
+.mainboard .file{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* border-radius: 15px; */
+  border: 1px solid rgb(128, 255, 219);
+  background: linear-gradient(135deg, rgba(255,255,255, 0.74),rgba(40, 110, 86,0.4));
+}

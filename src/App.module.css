@@ -1,0 +1,219 @@
+
+:root[data-theme='light'] {
+  --bg-color: #eafcf4;
+  --card-bg: #ffffff;
+  --text-color: #1a1a1a;
+  --accent-color: #2fd39e;
+  --accent-text: #ffffff;
+  --header-bg: #1b4b3d;
+  --header-text: #ffffff;
+  --sidebar-bg: #c7f3e7;
+  --sidebar-icon: #1a1a1a;
+  --hover-bg: #c9ede1;
+  --calendar-bg: #f8f8f8;
+  --calendar-text: #000000;
+  --calendar-highlight: #ffc107;
+  --error-text: #d32f2f;
+  --bg-overlay: rgba(225, 247, 236, 0.8);
+  --focus-shadow: rgba(44, 148, 126, 0.3);
+  --gradient-start: rgba(255, 255, 255, 1);
+  --gradient-end: rgba(128, 255, 219, 1);
+  --box-swadow: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='dark'] {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-color: #f5f5f5;
+  --accent-color: #00bfa5;
+  --accent-text: #000000;
+  --header-bg: #0b2e23;
+  --header-text: #ffffff;
+  --sidebar-bg: #1a1a1a;
+  --sidebar-icon: #e0e0e0;
+  --hover-bg: #263238;
+  --calendar-bg: #2a2a2a;
+  --calendar-text: #ffffff;
+  --calendar-highlight: #ffca28;
+  --error-text: #ef5350;
+  --bg-overlay: rgba(20, 20, 20, 0.6);
+  --focus-shadow: rgba(0, 191, 165, 0.4);
+  --gradient-start: #1e1e1e;
+  --gradient-end: #005f46;
+  --box-swadow: rgba(255, 255, 255, 0.9);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.App {
+  width: 100%;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background-image: url(../src/image/ground.jpg);
+  background-size: 1200px 1200px;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.App::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--bg-overlay);
+  backdrop-filter: blur(4px);
+  z-index: 0;
+}
+
+.App-header {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login {
+  background-color: var(--card-bg);
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.loginform {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  background-image: url(../src/image/logo.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+}
+
+.text {
+  font-size: 26px;
+  color: var(--text-color);
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--text-color);
+  padding-bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+.loginbox {
+  width: 100%;
+}
+
+.id,
+.pw {
+  width: 100%;
+  height: 45px;
+  margin-bottom: 12px;
+  padding: 0 15px;
+  border: 2px solid var(--accent-color);
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-color);
+  transition: 0.3s ease;
+}
+
+.id:focus,
+.pw:focus {
+  border-color: var(--accent-color);
+  background-color: var(--card-bg);
+  box-shadow: 0 0 0 2px var(--focus-shadow);
+  outline: none;
+}
+
+.saveID{
+  width: 100%;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+}
+.saveIDlabel{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.saveIDtext{
+  margin-left: 5px;
+  color: var(--text-color);
+}
+
+.error-message {
+  font-size: 14px;
+  color: var(--error-text);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.linkpage {
+  width: 100%;
+  height: 45px;
+  background-color: var(--accent-color);
+  color: var(--accent-text);
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 148, 126, 0.3);
+}
+
+.linkpage:hover {
+  background-color: #1a6e60;
+  transform: translateY(-2px);
+}
+
+.findbox {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.findbtn {
+  width: 32%;
+  padding: 10px;
+  font-size: 13px;
+  background-color: var(--hover-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.findbtn:hover {
+  background-color: var(--accent-color);
+  color: var(--accent-text);
+}

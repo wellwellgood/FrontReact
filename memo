@@ -1,0 +1,10 @@
+├── controllers/
+│   ├── authController.js    # 로그인, 회원가입 로직 처리
+│   └── userController.js    # 사용자 조회 등 비즈니스 로직
+├── middleware/
+│   └── authMiddleware.js    # JWT 토큰 검증용 미들웨어
+├── utils/
+│   └── validator.js         # 유효성 검사 등 유틸
+
+├── package.json             # 의존성 정보
+└── node_modules/

@@ -1,0 +1,253 @@
+/* section3.module.css - 통합 스타일 (main에서도 재사용 가능) */
+
+/* =============== Reset =============== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  flex-direction: column;
+}
+
+nav {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--text-color);
+  z-index: 99;
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, var(--gradient-start) ,var(--gradient-end));
+}
+
+.logo1 {
+  width: 100%;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.logo1 h2 {
+  color: var(--accent-color);
+  font-size: 36px;
+  font-weight: 900;
+  margin: 10px 0;
+}
+
+.logo1 span {
+  width: 150px;
+  height: 3px;
+  background: var(--accent-color);
+  border-radius: 100%;
+}
+
+.navmenu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 10px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.navmenu li {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  width: 100%;
+}
+
+.navmenu li::after {
+  content: '';
+  position: absolute;
+  background: var(--gradient-start);
+  width: 0;
+  height: 50px;
+  border-radius: 15px;
+  border: 1px solid rgba(26, 31, 55, 0.3);
+  padding: 0 16px;
+  transition: all 0.2s linear;
+}
+
+.navmenu li:hover::after {
+  width: 150px;
+  background: var(--hover-bg);
+}
+
+.navmenu li a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 400;
+  z-index: 9;
+}
+  
+  /* =============== Topbar =============== */
+  .topbar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: calc(100% - 200px);
+    height: 52px;
+    background-color: #2c947e;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 20px;
+    color: white;
+  }
+  
+  .searchbox {
+    width: 200px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background-color: #ffffff;
+    font-size: 14px;
+  }
+  
+  .logout {
+    background-color: #1f2937;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .logout:hover {
+    background-color: #111827;
+  }
+  
+  /* =============== File Upload Section =============== */
+  .fileUpload {
+    padding: 30px;
+    position: absolute;
+    top: 52px;
+    left: 200px;
+    width: calc(100% - 200px);
+    height: calc(100% - 52px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--calendar-bg);
+    color: var(--text-color);
+  }
+  
+  .upload {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .upload input[type="file"] {
+    width: 350px;
+    height: 45px;
+    padding: 8px;
+    background-color: #f0fdf4;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+  }
+  
+  .upload button {
+    height: 32px;
+    padding: 0 15px;
+    background-color: #2c947e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .upload button:hover {
+    background-color: #1a6e60;
+  }
+  
+  .fileList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+  }
+  
+  .fileItem {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    max-width: 100%;
+    margin: 0 20px;
+  }
+  
+  .fileItem button {
+    background-color: #2c947e;
+    color: white;
+    font-size: 16px;
+    border: none;
+    /* padding: 5px 10px; */
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100px;
+    height: 24px;
+  }
+  
+  .fileItem button:hover {
+    background-color: #1a6e60;
+  }
+  .setting{
+    position: absolute;
+    bottom: 50px;
+    left: 7px;
+    color: #fff;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .setting:hover::before{
+    animation: rotate 3s infinite linear;
+  }
+  @keyframes rotate{
+    100%{transform: rotate(360deg);}
+  }
+  .setting a{
+    color: #000;
+    font-size: 20px;
+    z-index: 9;
+    text-decoration-line: none;
+  }
+  .setting::after{
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 50px;
+    border-radius: 15px;
+    border: 1px solid rgba(62, 76, 141, 0.5);
+    padding: 0 16px;
+  }

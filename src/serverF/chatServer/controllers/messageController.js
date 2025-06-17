@@ -1,5 +1,5 @@
 // controllers/messageController.js
-const db = require("../db.js"); // 경로 수정 (controllers 폴더에 있다면)
+const db = require("./db.js"); // 경로 수정 (controllers 폴더에 있다면)
 // 또는 const db = require("./db.js"); // db.js가 같은 폴더에 있다면
 const multer = require("multer");
 const path = require("path");

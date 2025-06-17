@@ -68,6 +68,20 @@ app.get("/api/status/db", async (req, res) => {
   });
 });
 
+app.get("/users", async (req, res) => {
+  const exclude = req.query.exclude || "";
+  try {
+    const result = await db.query(
+      "SELECT username, name FROM users WHERE username != $1 ORDER BY name",
+      [exclude]
+    );
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("❌ 유저 목록 조회 실패:", err.message);
+    res.status(500).json({ message: "서버 오류", error: err.message });
+  }
+});
+
 // 소켓 서버 연결
 socket(server);
 

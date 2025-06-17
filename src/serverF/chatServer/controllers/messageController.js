@@ -71,16 +71,26 @@ exports.saveMessage = async (req, res) => {
 
 // ✅ 메시지 조회
 exports.getMessages = async (req, res) => {
+  const { username, target } = req.query;
+
+  if (!username || !target) {
+    return res.status(400).json({ message: "필수 파라미터 누락" });
+  }
+
   try {
-    const result = await db.query("SELECT * FROM messages ORDER BY time");
-    const rows = result.rows;
-    
-    // 파일 URL을 완전한 URL로 변환
-    const messagesWithFullUrls = rows.map(message => ({
+    const result = await db.query(
+      `SELECT * FROM messages 
+       WHERE (sender_username = $1 AND receiver_username = $2)
+          OR (sender_username = $2 AND receiver_username = $1)
+       ORDER BY time`,
+      [username, target]
+    );
+
+    const messagesWithFullUrls = result.rows.map(message => ({
       ...message,
       fileUrl: message.file_url ? `${req.protocol}://${req.get("host")}${message.file_url}` : null
     }));
-    
+
     res.status(200).json(messagesWithFullUrls);
   } catch (err) {
     console.error("❌ 메시지 조회 실패:", err);

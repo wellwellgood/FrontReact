@@ -9,10 +9,10 @@ const http = require("http");
 const path = require("path");
 
 // DB (PostgreSQL / Neon)
-const db = require("./db.js");
+const db = require("./controllers/db.js");
 
 // 메시지 전용 라우터 + 컨트롤러
-const messageRoutes = require("./routes/message.js");
+const messageRoutes = require("./root/message.js");
 // Socket.IO 설정 (채팅 실시간 전송용)
 const socket = require("./socket.js");
 

@@ -6,6 +6,7 @@ const path = require("path");
 const corsMiddleware = require("./middlewares/cors.js");
 const initDB = require("./initDB.js");
 const { testConnection } = require("./DB"); // DB 테스트 함수 가져오기
+const db = require("./chatServer/controllers/db.js")
 
 const authRoutes = require("./routes/auth.js");
 const messageRoutes = require("./routes/message.js");

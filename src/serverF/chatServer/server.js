@@ -12,7 +12,7 @@ const path = require("path");
 const db = require("./controllers/db.js");
 
 // 메시지 전용 라우터 + 컨트롤러
-const messageRoutes = require("./root/message.js");
+const messageRoutes = require("./controllers/messageController.js");
 // Socket.IO 설정 (채팅 실시간 전송용)
 const socket = require("./socket.js");
 

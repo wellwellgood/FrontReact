@@ -1,15 +1,16 @@
 // db.js
 const { Pool } = require('pg');
+require("dotenv").config();
 
 // 환경변수에서 DATABASE_URL 가져오기
 const connectionString = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_S16FMnctoDIp@ep-proud-star-a1nvdvwj-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
 
 // PostgreSQL 연결 풀 생성
 const pool = new Pool({
-  connectionString: connectionString,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false // Neon DB의 경우 필요
-  }
+  },
 });
 
 // 연결 테스트
@@ -39,7 +40,6 @@ const end = async () => {
 };
 
 module.exports = {
-  query,
-  end,
-  pool
+  query: (text, params) => pool.query(text, params),  // ✅ query 직접 export
+  pool,
 };

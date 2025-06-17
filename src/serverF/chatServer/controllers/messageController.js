@@ -44,9 +44,9 @@ exports.saveMessage = async (req, res) => {
     const fileName = file?.originalname?.trim().replace(/\s+/g, "_") || null;
 
     const result = await db.query(
-      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, fileUrl, file_name, time) 
-       VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *`,
-      [sender_username, receiver_username, receiver_name, content.trim(), fileUrl, fileName]
+      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, fileUrl, file_name, time, file) 
+       VALUES ($1, $2, $3, $4, $5, $6, %7, NOW()) RETURNING *`,
+      [sender_username, receiver_username, receiver_name, content.trim(), fileUrl, fileName, file]
     );
 
     const savedMessage = result.rows[0];
@@ -58,6 +58,7 @@ exports.saveMessage = async (req, res) => {
       receiver_name: savedMessage.receiver_name,
       content: savedMessage.content,
       file: file?.filename || null,
+      file,
       file_name: savedMessage.file_name,
       fileUrl: file ? `${req.protocol}://${req.get("host")}/uploads/${file.filename}` : null,
       time: savedMessage.time,

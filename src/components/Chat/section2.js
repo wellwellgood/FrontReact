@@ -145,116 +145,83 @@ const Section2 = () => {
 
   // 사용자 목록 및 메시지 로드
   useEffect(() => {
-    if (!username) {
-      return;
-    }
-
-    setIsLoading(true);
-    setUserListError("");
-
-    // 유저 목록 가져오기
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`${API}/api/users`, {
-          timeout: 10000, // 10초 타임아웃
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-        
-        if (response.status === 200) {
-          let userList = [];
-          
-          // 응답 데이터 형식 확인 및 처리
-          if (Array.isArray(response.data)) {
-            userList = response.data;
-          } else if (response.data && Array.isArray(response.data.users)) {
-            userList = response.data.users;
-          } else if (response.data && Array.isArray(response.data.data)) {
-            userList = response.data.data;
-          } else {
-            console.warn("⚠️ 예상치 못한 응답 형식:", response.data);
-            userList = [];
-          }
-          
-          const filteredUsers = userList.filter((u) => u && u.username && u.username !== username);
-          
-          setUsers(filteredUsers);
-          
-          if (filteredUsers.length === 0) {
-            setUserListError("다른 사용자가 없습니다.");
-          }
-        } else {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-      } catch (err) {
-        console.error("❌ 유저 목록 가져오기 상세 오류:", {
-          message: err.message,
-          response: err.response,
-          status: err.response?.status,
-          data: err.response?.data,
-          config: err.config
-        });
-        
-        let errorMessage = "유저 목록을 불러올 수 없습니다.";
-        
-        if (err.code === 'ECONNABORTED') {
-          errorMessage = "서버 응답 시간 초과 (네트워크 확인 필요)";
-        } else if (err.response?.status === 404) {
-          errorMessage = "API 엔드포인트를 찾을 수 없습니다.";
-        } else if (err.response?.status === 500) {
-          errorMessage = "서버 내부 오류가 발생했습니다.";
-        } else if (err.message.includes('Network Error')) {
-          errorMessage = "네트워크 연결을 확인해주세요.";
-        }
-        
-        setUserListError(errorMessage);
-        setUsers([]);
+    if (!username) return;
+  
+    const newSocket = io(API, {
+      transports: ["websocket"],
+    });
+    setSocket(newSocket);
+  
+    newSocket.on("connect", () => {
+      console.log("소켓 연결됨");
+    });
+  
+    // ✅ null 체크를 통한 메시지 처리 개선
+    newSocket.on("message", (msg) => {
+      if (!msg) {
+        console.warn("⚠️ 수신된 메시지가 null입니다.");
+        return;
       }
-    };
-
-    // 메시지 목록 가져오기
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get(`${API}/api/messages`, {
-          timeout: 10000,
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
+      
+      // ✅ 메시지에 필수 정보가 있는지 확인
+      if (!msg.sender_username || !msg.receiver_username) {
+        console.warn("⚠️ 메시지에 필수 정보가 없습니다:", msg);
+        return;
+      }
+      
+      // 내가 보낸 메시지는 이미 handleSend에서 처리했으므로 무시
+      if (msg.sender_username === username) {
+        return;
+      }
+      
+      const safeMsg = {
+        ...msg,
+        content: msg.content || '',
+        time: msg.time || new Date().toISOString(),
+        read: msg.read || false,
+        id: msg.id || `socket_${Date.now()}`,
+      };
+  
+      console.log("✅ 다른 사용자 메시지 추가:", safeMsg);
+      
+      setMessages((prev) => {
+        // 중복 확인
+        const isDuplicate = prev.some((m) =>
+          (m.id && safeMsg.id && m.id === safeMsg.id) ||
+          (m.sender_username === safeMsg.sender_username &&
+          m.receiver_username === safeMsg.receiver_username &&
+          m.content === safeMsg.content &&
+          Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
+        );
         
-        let messageList = [];
-        if (Array.isArray(response.data)) {
-          messageList = response.data;
-        } else if (response.data && Array.isArray(response.data.messages)) {
-          messageList = response.data.messages;
-        } else if (response.data && Array.isArray(response.data.data)) {
-          messageList = response.data.data;
+        if (isDuplicate) {
+          console.log("🔄 중복 메시지 무시");
+          return prev;
         }
         
-        const processedMessages = messageList.map((msg) => ({
-          ...msg,
-          content: msg.content || '',
-          time: msg.time || new Date().toISOString(),
-          read: msg.read || false,
-        }));
-        
-        setMessages(processedMessages);
-      } catch (err) {
-        // 메시지 로드 실패는 심각하지 않으므로 빈 배열로 설정
-        console.error("메시지 로드 실패:", err);
-        setMessages([]);
-      }
-    };
-
-    // 순차적으로 실행
-    const loadData = async () => {
-      await fetchUsers();
-      await fetchMessages();
-      setIsLoading(false);
-    };
-
-    loadData();
+        return [...prev, safeMsg];
+      });
+    });
+  
+    // 읽음 확인 수신
+    newSocket.on("messageRead", ({ messageId, readBy }) => {
+      console.log("📖 메시지 읽음 확인:", messageId, readBy);
+      setReadMessages(prev => new Set([...prev, messageId]));
+      
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, read: true, isTemporary: false }
+            : msg
+        )
+      );
+    });
+  
+    newSocket.on("disconnect", () => {
+      console.log("소켓 연결 해제됨");
+    });
+  
+    return () => newSocket.disconnect();
   }, [username]);
 
   // 메시지 읽음 상태 확인 함수
@@ -285,73 +252,77 @@ const Section2 = () => {
   };
 
   // 메시지 전송 처리
-  const handleSend = async () => {
-    if ((!input.trim() && !selectedFile) || !selectedUser || !username || !name) {
-      console.warn("❌ 메시지 전송 조건 불충족");
-      return;
+// Fixed handleSend function
+const handleSend = async () => {
+  if ((!input.trim() && !selectedFile) || !selectedUser || !username || !name) {
+    console.warn("❌ 메시지 전송 조건 불충족");
+    return;
+  }
+
+  const tempId = `temp_${Date.now()}`;
+  const now = new Date().toISOString();
+
+  const tempMessage = {
+    id: tempId,
+    sender_username: username,
+    receiver_username: selectedUser.username,
+    receiver_name: selectedUser.name,
+    content: input.trim(),
+    read: false,
+    time: now,
+    isTemporary: true,
+  };
+
+  // ✅ 즉시 채팅창에 표시
+  flushSync(() => {
+    setMessages((prev) => [...prev, tempMessage]);
+  });
+  setInput("");
+  
+  // ✅ 스크롤 보장
+  setTimeout(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, 0);
+
+  try {
+    let response; // ✅ response 변수를 항상 정의
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("sender_username", username);
+      formData.append("receiver_username", selectedUser.username);
+      formData.append("receiver_name", selectedUser.name);
+      formData.append("content", input.trim());
+      formData.append("read", false);
+      formData.append("file", selectedFile);
+
+      console.log("전송되는 formData 값들", {
+        sender_username: username,
+        receiver_username: selectedUser.username,
+        receiver_name: selectedUser.name,
+        content: input.trim()
+      });
+      console.log("formData.has(file):", formData.has("file")); 
+      console.log("file:", selectedFile);
+
+      // ✅ response에 결과 저장
+      response = await axios.post(`${API}/api/messages`, formData);
+
+      setSelectedFile(null);
+    } else {
+      response = await axios.post(`${API}/api/messages`, {
+        sender_username: username,
+        receiver_username: selectedUser.username,
+        receiver_name: selectedUser.name,
+        content: input.trim(),
+        read: false,
+      });
     }
 
-    const tempId = `temp_${Date.now()}`;
-    const now = new Date().toISOString();
-
-    const tempMessage = {
-      id: tempId,
-      sender_username: username,
-      receiver_username: selectedUser.username,
-      receiver_name: selectedUser.name,
-      content: input.trim(),
-      read: false,
-      time: now,
-      isTemporary: true,
-    };
-
-    // ✅ 즉시 채팅창에 표시
-    flushSync(() => {
-      setMessages((prev) => [...prev, tempMessage]);
-    });
-    setInput("");
-    
-    // ✅ 스크롤 보장
-    setTimeout(() => {
-      if (chatBoxRef.current) {
-        chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-      }
-    }, 0);
-
-    try {
-      let response;
-
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("sender_username", username);
-        formData.append("receiver_username", selectedUser.username);
-        formData.append("receiver_name", selectedUser.name);
-        formData.append("content", input.trim());
-        formData.append("read", false);
-        formData.append("file", selectedFile);
-
-        console.log("전송되는 formData 값들", {
-          sender_username: username,
-          receiver_username: selectedUser.username,
-          receiver_name: selectedUser.name,
-          content: input.trim()
-        });
-        console.log("formData.has(file):", formData.has("file")); 
-        console.log("file:", selectedFile);
-
-        await axios.post(`${API}/api/messages`, formData);
-
-        setSelectedFile(null);
-      } else {
-        response = await axios.post(`${API}/api/messages`, {
-          sender_username: username,
-          receiver_username: selectedUser.username,
-          receiver_name: selectedUser.name,
-          content: input.trim(),
-          read: false,
-        });
-      }
-
+    // ✅ response가 존재하고 data가 있는지 확인
+    if (response && response.data) {
       const savedMessage = response.data;
       console.log("✅ 저장된 메시지 응답:", savedMessage);
       console.log("📎 메시지 내용 확인:", savedMessage);
@@ -360,24 +331,24 @@ const Section2 = () => {
       setMessages((prev) =>
         prev.map((msg) => (msg.id === tempId ? savedMessage : msg))
       );
-
-    } catch (err) {
-      console.error("❌ 메시지 전송 실패:", err.response?.data || err.message);
-      alert("메시지 전송 실패");
-
-      // ❗ 실패한 임시 메시지 제거 또는 회색 처리 유지
-      setMessages((prev) => prev.map((msg) =>
-        msg.id === tempId ? { ...msg, content: "(전송 실패)", failed: true } : msg
-      ));
+    } else {
+      console.warn("⚠️ 응답이 없거나 데이터가 없습니다:", response);
+      // 응답이 없어도 임시 메시지는 유지 (서버에서 저장되었을 가능성)
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === tempId ? { ...msg, isTemporary: false } : msg))
+      );
     }
-    console.log("🧾 FormData 전송 전 체크:", {
-      sender_username: username,
-      receiver_username: selectedUser?.username,
-      receiver_name: selectedUser?.name,
-      file: selectedFile,
-      content: input.trim(),
-    });
-  };
+
+  } catch (err) {
+    console.error("❌ 메시지 전송 실패:", err.response?.data || err.message);
+    alert("메시지 전송 실패");
+
+    // ❗ 실패한 임시 메시지 제거 또는 회색 처리 유지
+    setMessages((prev) => prev.map((msg) =>
+      msg.id === tempId ? { ...msg, content: "(전송 실패)", failed: true } : msg
+    ));
+  }
+};
 
   // 키보드 이벤트 처리
   const handleKeyPress = (e) => {

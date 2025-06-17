@@ -146,6 +146,21 @@ const Section2 = () => {
   // 사용자 목록 및 메시지 로드
   useEffect(() => {
     if (!username) return;
+
+    axios.get(`${API}/users`, {
+      params: { exclude: username } // 현재 로그인한 유저 제외 가능
+    })
+    .then(res => {
+      setUsers(res.data);
+      setUserListError("");
+    })
+    .catch(err => {
+      console.error("❌ 유저 목록 불러오기 실패:", err);
+      setUserListError("유저 목록을 불러오지 못했습니다.");
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
   
     const newSocket = io(API, {
       transports: ["websocket"],

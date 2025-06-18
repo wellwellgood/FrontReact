@@ -1,24 +1,13 @@
 // routes/message.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const messageController = require('../chatServer/controllers/messageController');
+const {
+  saveMessage,
+  getMessages,
+} = require("../chatServer/controllers/messageController.js");
 
-/**
- * @route POST /api/messages
- * @desc Save a new chat message (supports text & file)
- * @access Public
- */
-router.post(
-  '/',
-  messageController.uploadMiddleware, // ✅ multer parses multipart/form‑data first
-  messageController.saveMessage       // ✅ then run business logic
-);
-
-/**
- * @route GET /api/messages
- * @desc Retrieve all chat messages ordered by time
- * @access Public
- */
-router.get('/', messageController.getMessages);
+// ✅ uploadMiddleware 제거
+router.post("/", saveMessage);
+router.get("/", getMessages);
 
 module.exports = router;

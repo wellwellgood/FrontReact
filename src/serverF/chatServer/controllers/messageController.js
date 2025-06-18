@@ -9,45 +9,22 @@ exports.saveMessage = async (req, res) => {
     sender_username,
     receiver_username,
     receiver_name,
-    content = "[파일]",
-    file_url,
+    content,
+    fileurl,
     file_name
   } = req.body;
 
-  if (!sender_username || !receiver_username || !receiver_name) {
-    return res.status(400).json({ message: "필수 정보 누락" });
-  }
-
   try {
     const result = await db.query(
-      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, file_url, file_name, time) 
+      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, fileurl, file_name, time)
        VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *`,
-      [
-        sender_username,
-        receiver_username,
-        receiver_name,
-        content.trim(),
-        file_url || null,
-        file_name || null
-      ]
+      [sender_username, receiver_username, receiver_name, content, fileurl, file_name]
     );
 
-    const savedMessage = result.rows[0];
-
-    res.status(200).json({
-      id: savedMessage.id,
-      sender_username: savedMessage.sender_username,
-      receiver_username: savedMessage.receiver_username,
-      receiver_name: savedMessage.receiver_name,
-      content: savedMessage.content,
-      file_name: savedMessage.file_name,
-      file_url: savedMessage.file_url,
-      time: savedMessage.time,
-      read: savedMessage.read || false,
-    });
+    res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error("❌ 메시지 저장 실패:", err);
-    res.status(500).json({ message: "서버 오류", error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 

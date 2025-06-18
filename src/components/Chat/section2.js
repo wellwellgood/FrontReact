@@ -5,7 +5,9 @@ import styles from "./section2.module.css";
 import Search from "../../search";
 import { useNavigate } from "react-router-dom";
 import { FaPaperclip } from "react-icons/fa";
-import { flushSync } from "react-dom";
+// import { flushSync } from "react-dom";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase/firebase";
 
 import { ReactComponent as Icon } from '../../image/download-svgrepo-com.svg';
 
@@ -43,6 +45,13 @@ const Section2 = () => {
   const fileInputRef = useRef(null);
 
   const API = "https://react-server-wmqa.onrender.com";
+
+  const uploadToFirebase = async (file) => {
+    const filename = `${Date.now()}-${file.name}`;
+    const fileRef = ref(storage, `chat/${filename}`);
+    await uploadBytes(fileRef, file);
+    return await getDownloadURL(fileRef);
+  };
 
   // 초기 사용자 인증 확인
   useEffect(() => {
@@ -268,102 +277,54 @@ const Section2 = () => {
     });
   };
 
+  {getFilteredMessages().map((msg, index) => {
+    console.log("🎯 렌더 msg:", msg);
+  })}
+
   // 메시지 전송 처리
 // Fixed handleSend function
 const handleSend = async () => {
-  if ((!input.trim() && !selectedFile) || !selectedUser || !username || !name) {
-    console.warn("❌ 메시지 전송 조건 불충족");
-    return;
-  }
-
-  const tempId = `temp_${Date.now()}`;
-  const now = new Date().toISOString();
-
-  const tempMessage = {
-    id: tempId,
-    sender_username: username,
-    receiver_username: selectedUser.username,
-    receiver_name: selectedUser.name,
-    content: input.trim(),
-    read: false,
-    time: now,
-    isTemporary: true,
-  };
-
-  // ✅ 즉시 채팅창에 표시
-  flushSync(() => {
-    setMessages((prev) => [...prev, tempMessage]);
-  });
-  setInput("");
-  
-  // ✅ 스크롤 보장
-  setTimeout(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-    }
-  }, 0);
+  if (!input.trim() && !selectedFile) return;
 
   try {
-    let response; // ✅ response 변수를 항상 정의
+    let fileUrl = null;
+    let fileName = null;
 
     if (selectedFile) {
-      const formData = new FormData();
-      formData.append("sender_username", username);
-      formData.append("receiver_username", selectedUser.username);
-      formData.append("receiver_name", selectedUser.name);
-      formData.append("content", input.trim());
-      formData.append("read", false);
-      formData.append("file", selectedFile);
-
-      console.log("전송되는 formData 값들", {
-        sender_username: username,
-        receiver_username: selectedUser.username,
-        receiver_name: selectedUser.name,
-        content: input.trim()
+      const uniqueName = `${Date.now()}-${selectedFile.name}`;
+      const fileRef = storageRef(storage, `chat/${uniqueName}`);
+      await uploadBytes(fileRef, selectedFile);
+      fileUrl = await getDownloadURL(fileRef);
+      fileName = selectedFile.name;
+      console.log("✅ Firebase 업로드 완료:", fileUrl);
+      console.log("📦 서버로 보낼 데이터:", {
+        file_url: fileUrl,
+        file_name: fileName,
       });
-      console.log("formData.has(file):", formData.has("file")); 
-      console.log("file:", selectedFile);
 
-      // ✅ response에 결과 저장
-      response = await axios.post(`${API}/api/messages`, formData);
-
-      setSelectedFile(null);
-    } else {
-      response = await axios.post(`${API}/api/messages`, {
-        sender_username: username,
-        receiver_username: selectedUser.username,
-        receiver_name: selectedUser.name,
-        content: input.trim(),
-        read: false,
-      });
+      console.log("✅ Firebase 업로드 완료:", fileUrl);
     }
 
-    // ✅ response가 존재하고 data가 있는지 확인
-    if (response && response.data) {
-      const savedMessage = response.data;
-      console.log("✅ 저장된 메시지 응답:", savedMessage);
-      console.log("📎 메시지 내용 확인:", savedMessage);
+    // 서버에 메시지 + 파일 정보 전송
+    const response = await axios.post(`${API}/api/messages`, {
+      sender_username: username,
+      receiver_username: selectedUser.username,
+      receiver_name: selectedUser.name,
+      content: input.trim() || "[파일]",
+      file_url: fileUrl,
+      file_name: fileName,
+      read: false,
+    });
 
-      // ✅ 임시 메시지를 실제 메시지로 교체
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === tempId ? savedMessage : msg))
-      );
-    } else {
-      console.warn("⚠️ 응답이 없거나 데이터가 없습니다:", response);
-      // 응답이 없어도 임시 메시지는 유지 (서버에서 저장되었을 가능성)
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === tempId ? { ...msg, isTemporary: false } : msg))
-      );
-    }
+    const savedMessage = response.data;
 
+    // 메시지 추가
+    setMessages((prev) => [...prev, savedMessage]);
+    setInput("");
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   } catch (err) {
-    console.error("❌ 메시지 전송 실패:", err.response?.data || err.message);
-    alert("메시지 전송 실패");
-
-    // ❗ 실패한 임시 메시지 제거 또는 회색 처리 유지
-    setMessages((prev) => prev.map((msg) =>
-      msg.id === tempId ? { ...msg, content: "(전송 실패)", failed: true } : msg
-    ));
+    console.error("❌ 메시지 전송 실패:", err);
   }
 };
 
@@ -444,7 +405,6 @@ const handleSend = async () => {
       },
     })
       .then((res) => {
-        console.log("📥 받은 메시지:", res.data);
         setMessages(res.data);
       })
       .catch((err) => {
@@ -587,16 +547,16 @@ const handleSend = async () => {
                       <div className={styles.bubbleWrapper}>
                         <div className={styles.messageBubble}>
                           <div className={styles.messageText}>
-                          {msg.file_name && msg.file && (
+                          {msg.file_url && (
                             <div className={styles.filePreview}>
                               <a
-                                href={`${API}/uploads/${msg.file}`}
+                                href={msg.file_url}
                                 download={msg.file_name}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{ display: "flex", alignItems: "center", gap: "4px" }}
                               >
-                                {(msg.file_name || "파일").toString()}
+                                {msg.file_name || "첨부파일"}
                                 <DownIcon />
                               </a>
                             </div>

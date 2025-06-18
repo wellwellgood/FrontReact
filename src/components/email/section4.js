@@ -13,13 +13,13 @@ import axios from "axios";
 
 // 🔧 Firebase 설정
 const firebaseConfig = {
-  apiKey: "AIzaSyC55y7j682bM947ncn6HQYsYhvVrctT9_Y",
-  authDomain: "emailjs-f5667.firebaseapp.com",
-  projectId: "emailjs-f5667",
-  storageBucket: "emailjs-f5667.firebasestorage.app",
-  messagingSenderId: "491183703779",
-  appId: "1:491183703779:web:6be4a904a7094be11fa7d6",
-  measurementId: "G-XEEDJBZ464"
+  apiKey: "AIzaSyCoRBViUbD7MSGC_2jxged-fBjGkOQC1So",
+  authDomain: "filefolder-54946.firebaseapp.com",
+  projectId: "filefolder-54946",
+  storageBucket: "filefolder-54946.firebasestorage.app",
+  messagingSenderId: "1016654651914",
+  appId: "1:1016654651914:web:552cc88f977c5470d9b5f3",
+  measurementId: "G-HNXRF6QV2R"
 };
 
 // 🔧 초기화

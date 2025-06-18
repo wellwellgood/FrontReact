@@ -37,15 +37,15 @@ const MultiUpload = () => {
     alert("모든 파일 업로드 완료");
   };
 
-//   return (
-//     <div>
-//       <h3>📤 다중 파일 업로드</h3>
-//       <input type="file" multiple onChange={(e) => setFiles([...e.target.files])} />
-//       <button onClick={handleUpload} disabled={uploading}>
-//         {uploading ? "업로드 중..." : "업로드"}
-//       </button>
-//     </div>
-//   );
+  return (
+    <div>
+      <h3>📤 다중 파일 업로드</h3>
+      <input type="file" multiple onChange={(e) => setFiles([...e.target.files])} />
+      <button onClick={handleUpload} disabled={uploading}>
+        {uploading ? "업로드 중..." : "업로드"}
+      </button>
+    </div>
+  );
 };
 
 export default MultiUpload;

@@ -323,14 +323,24 @@ nav {
 }
 
 .filePreview{
-  margin-top: 10px;
   height: 100%;
+}
+.filePreview a{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
 }
 .filePreview a{
   padding: 5px;
   margin-top: 10px;
 }
 
+svg {
+  color: #000;
+  width: 24px;
+  height: 24px;
+}
 .messageMeta {
   font-size: 0.75rem;
   color: gray;

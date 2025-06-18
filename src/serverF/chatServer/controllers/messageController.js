@@ -40,8 +40,8 @@ exports.saveMessage = async (req, res) => {
   }
 
   try {
-    const fileUrl = file ? `/uploads/${file.filename}` : null;
-    const fileName = file?.originalname?.trim().replace(/\s+/g, "_") || null;
+    const fileUrl = `/uploads/${file.filename}`;
+    const fileName = file.originalname;
 
     const result = await db.query(
       `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, fileUrl, file_name, time) 

@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { FaPaperclip } from "react-icons/fa";
 import { flushSync } from "react-dom";
 
+import { ReactComponent as Icon } from '../../image/download-svgrepo-com.svg';
+
 const Section2 = () => {
   // Navigate 훅을 먼저 선언
   const navigate = useNavigate();
@@ -432,6 +434,27 @@ const handleSend = async () => {
       window.location.href = path;
     }
   };
+  useEffect(() => {
+    if (!username || !selectedUser || !selectedUser.username) return;
+  
+    axios.get(`${API}/api/messages`, {
+      params: {
+        username: username,
+        target: selectedUser.username,
+      },
+    })
+      .then((res) => {
+        console.log("📥 받은 메시지:", res.data);
+        setMessages(res.data);
+      })
+      .catch((err) => {
+        console.error("❌ 메시지 불러오기 실패:", err);
+      });
+  }, [selectedUser]);
+
+  const DownIcon = () => (
+    <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
+  );
 
   return (
     <div className={styles.container}>
@@ -564,14 +587,21 @@ const handleSend = async () => {
                       <div className={styles.bubbleWrapper}>
                         <div className={styles.messageBubble}>
                           <div className={styles.messageText}>
-                            {msg.content || '내용 없음'}
-                            {(msg.fileUrl || msg.file) && (
+                          {msg.file_name && msg.file && (
                             <div className={styles.filePreview}>
-                              <a href={msg.fileUrl} download target="_blank" rel="noopener noreferrer">
-                              📎{(msg.fileName || msg.file?.name || msg.fileUrl?.split("/").pop() || "파일").toString()}
-                            </a>
+                              <a
+                                href={`${API}/uploads/${msg.file}`}
+                                download={msg.file_name}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                              >
+                                {(msg.file_name || "파일").toString()}
+                                <DownIcon />
+                              </a>
                             </div>
                           )}
+                            {msg.content || '내용 없음'}
                           </div>
                           <div className={styles.messageMeta}>
                             <span className={styles.time}>

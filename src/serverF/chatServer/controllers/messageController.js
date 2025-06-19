@@ -10,15 +10,16 @@ exports.saveMessage = async (req, res) => {
     receiver_username,
     receiver_name,
     content,
-    fileurl,
-    file_name
+    file_url,           // ✅ 프론트에서 보내는 이름
+    file_name,           // ✅ 그대로
+    file_size
   } = req.body;
 
   try {
     const result = await db.query(
-      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, fileurl, file_name, time)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *`,
-      [sender_username, receiver_username, receiver_name, content, fileurl, file_name]
+      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, fileurl, file_name, time, file_size)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *`,
+      [sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size] // ✅ 여기도 file_url로 전달
     );
 
     res.status(200).json(result.rows[0]);

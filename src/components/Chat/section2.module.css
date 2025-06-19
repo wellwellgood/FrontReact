@@ -142,7 +142,6 @@ nav {
 
 .userList {
   background-color: var(--card-bg);
-  padding: 20px 10px;
   box-shadow: inset -1px 0 2px var(--box-swadow);
   font-size: 15px;
   z-index: 10;
@@ -259,7 +258,7 @@ nav {
 
 .theirMessage {
   justify-content: flex-start;
-  text-align: left;
+  width: 100%;
 }
 
 .profileIcon {
@@ -318,12 +317,31 @@ nav {
   border-bottom: 8px solid transparent;
 }
 .messageText{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: start;
   color: #000;
+  font-size: 13px;
+}
+.messageText a{
   font-size: 12px;
+  font-weight: 900;
+
 }
 
 .filePreview{
   height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.filePreview .downBtn{
+  cursor: pointer;
+  font-size: 12px;
+}
+.filePreview .downBtn:hover{
+  color: blue;
 }
 .filePreview a{
   display: flex;
@@ -331,9 +349,16 @@ nav {
   justify-content: space-between;
   padding: 10px 0;
 }
-.filePreview a{
+.filePreview button{
+  background-color: #4CAF50;
+  border-radius: 8px;
   padding: 5px;
-  margin-top: 10px;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 5px;
+}
+.filePreview a:hover{
+  color: blue;
 }
 
 svg {

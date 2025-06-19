@@ -20,7 +20,8 @@ const handleMultiUpload = async (files, messageText, receiver) => {
         receiver_username: receiver.username,
         message: messageText,
         file_name: file.name,
-        file_url: fileUrl,
+        fileurl: fileUrl,
+        filesize: file.size,
       });
 
       console.log(`✅ ${file.name} 업로드 완료`);

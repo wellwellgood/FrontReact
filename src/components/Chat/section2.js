@@ -38,7 +38,7 @@ const Section2 = () => {
   const [userListError, setUserListError] = useState("");
   
   // 파일 관련 상태
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);// ✅ 정상
   
   // Refs
   const chatBoxRef = useRef(null);
@@ -88,9 +88,6 @@ const Section2 = () => {
     });
     setSocket(newSocket);
 
-    newSocket.on("connect", () => {
-      console.log("소켓 연결됨");
-    });
 
     // 새 메시지 수신 (다른 사용자로부터)
     newSocket.on("message", (msg) => {
@@ -147,10 +144,6 @@ const Section2 = () => {
       );
     });
 
-    newSocket.on("disconnect", () => {
-      console.log("소켓 연결 해제됨");
-    });
-
     return () => newSocket.disconnect();
   }, [username]);
 
@@ -177,10 +170,6 @@ const Section2 = () => {
       transports: ["websocket"],
     });
     setSocket(newSocket);
-  
-    newSocket.on("connect", () => {
-      console.log("소켓 연결됨");
-    });
   
     // ✅ null 체크를 통한 메시지 처리 개선
     newSocket.on("message", (msg) => {
@@ -242,10 +231,7 @@ const Section2 = () => {
         )
       );
     });
-  
-    newSocket.on("disconnect", () => {
-      console.log("소켓 연결 해제됨");
-    });
+
   
     return () => newSocket.disconnect();
   }, [username]);
@@ -277,10 +263,6 @@ const Section2 = () => {
     });
   };
 
-  {getFilteredMessages().map((msg, index) => {
-    console.log("🎯 렌더 msg:", msg);
-  })}
-
   // 메시지 전송 처리
 // Fixed handleSend function
 const handleSend = async () => {
@@ -289,44 +271,48 @@ const handleSend = async () => {
   try {
     let fileUrl = null;
     let fileName = null;
+    let fileSize = null;
 
+    // ✅ 파일 업로드 처리
     if (selectedFile) {
-      const uniqueName = `${Date.now()}-${selectedFile.name}`;
+      const file = selectedFile; // 👉 상태 복사 (변하지 않게 고정)
+      const uniqueName = `${Date.now()}-${file.name}`;
       const fileRef = storageRef(storage, `chat/${uniqueName}`);
-      await uploadBytes(fileRef, selectedFile);
+      
+      await uploadBytes(fileRef, file);
       fileUrl = await getDownloadURL(fileRef);
-      fileName = selectedFile.name;
-      console.log("✅ Firebase 업로드 완료:", fileUrl);
-      console.log("📦 서버로 보낼 데이터:", {
-        file_url: fileUrl,
-        file_name: fileName,
-      });
+      fileName = file.name;
+      fileSize = file.size;
 
       console.log("✅ Firebase 업로드 완료:", fileUrl);
     }
 
-    // 서버에 메시지 + 파일 정보 전송
+    // ✅ 서버로 메시지 전송
     const response = await axios.post(`${API}/api/messages`, {
       sender_username: username,
       receiver_username: selectedUser.username,
       receiver_name: selectedUser.name,
       content: input.trim() || "[파일]",
-      file_url: fileUrl,
+      fileurl: fileUrl,
       file_name: fileName,
+      file_size: fileSize,
       read: false,
     });
+    console.log("보내는 파일 크기:", formatBytes(filesize));
 
     const savedMessage = response.data;
 
-    // 메시지 추가
+    // ✅ 메시지 목록 갱신
     setMessages((prev) => [...prev, savedMessage]);
     setInput("");
     setSelectedFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   } catch (err) {
     console.error("❌ 메시지 전송 실패:", err);
+    alert("메시지 전송 중 오류가 발생했습니다.");
   }
 };
+
 
   // 키보드 이벤트 처리
   const handleKeyPress = (e) => {
@@ -381,6 +367,24 @@ const handleSend = async () => {
       console.log("📎 파일 선택됨:", file.name);
     }
   };
+  const forceDownload = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+  
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("다운로드 실패:", err);
+    }
+  };
 
   // 네비게이션 핸들러들
   const handleNavigation = (path) => {
@@ -415,6 +419,37 @@ const handleSend = async () => {
   const DownIcon = () => (
     <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
   );
+
+  const convertTextToLink = (text) => {
+    const Urlregex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi
+    // const result = str.replace(/\/$/, "");
+
+    return text.split(Urlregex).map((part,index) => {
+      if (Urlregex.test(part)) {
+        const href = part.startsWith("http")? part : 'https://${part}';
+        return (
+          <a
+            key={index}
+            href={href}
+            target="_blank"
+            rel='noopener noreferrer'
+            style={{color:"#4caf50" , textdecoration:"underline"}}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    })
+  }
+
+  const formatBytes = (bytes) => {
+    if (!bytes) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
 
   return (
     <div className={styles.container}>
@@ -547,21 +582,15 @@ const handleSend = async () => {
                       <div className={styles.bubbleWrapper}>
                         <div className={styles.messageBubble}>
                           <div className={styles.messageText}>
-                          {msg.file_url && (
+                          {msg.fileurl && msg.file_name &&(
                             <div className={styles.filePreview}>
-                              <a
-                                href={msg.file_url}
-                                download={msg.file_name}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ display: "flex", alignItems: "center", gap: "4px" }}
-                              >
-                                {msg.file_name || "첨부파일"}
-                                <DownIcon />
-                              </a>
+                              <button className={styles.downBtn} onClick={() => forceDownload(msg.fileurl, msg.file_name)}>
+                              {msg.file_name} ({formatBytes(msg.filesize || 0)})
+                              <DownIcon />
+                              </ button>
                             </div>
                           )}
-                            {msg.content || '내용 없음'}
+                            {convertTextToLink(msg.content || '내용 없음')}
                           </div>
                           <div className={styles.messageMeta}>
                             <span className={styles.time}>

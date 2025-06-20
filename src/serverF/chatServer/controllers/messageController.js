@@ -26,9 +26,9 @@ exports.saveMessage = async (req, res) => {
         receiver_username,
         receiver_name,
         content,
-        file_url,
+        file_url,  // ✅ 변수명 일치
         file_name,
-        Number(file_size) || 0 // 반드시 숫자로 보정
+        Number(file_size) || 0
       ]
     );
 
@@ -79,3 +79,22 @@ exports.markAsRead = async (req, res) => {
     res.status(500).json({ message: "서버 오류", error: err.message });
   }
 };
+
+
+router.post("/messages/read", async (req, res) => {
+  const { sender_username, receiver_username } = req.body;
+
+  try {
+    await db.query(
+      `UPDATE messages
+       SET read = true
+       WHERE sender_username = $1 AND receiver_username = $2`,
+      [sender_username, receiver_username]
+    );
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("❌ 읽음 상태 업데이트 실패:", err);
+    res.status(500).json({ error: "read update failed" });
+  }
+});

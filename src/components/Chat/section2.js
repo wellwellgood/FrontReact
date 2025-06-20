@@ -236,6 +236,33 @@ const Section2 = () => {
     return () => newSocket.disconnect();
   }, [username]);
 
+  // ✅ 채팅방 선택될 때 메시지 읽음 처리
+useEffect(() => {
+  const markMessagesAsRead = async () => {
+    if (!selectedUser) return;
+
+    try {
+      await axios.post(`${API}/api/messages/read`, {
+        sender_username: selectedUser.username,
+        receiver_username: username,
+      });
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.sender_username === selectedUser.username
+            ? { ...m, read: true }
+            : m
+        )
+      );
+    } catch (err) {
+      console.error("❌ 읽음 처리 실패:", err);
+    }
+  };
+
+  markMessagesAsRead(); // ✅ 호출은 useEffect 내부에서
+}, [selectedUser, username]); // username도 의존성에 추가
+
+
   // 메시지 읽음 상태 확인 함수
   const getMessageReadStatus = (msg) => {
     if (!msg || msg.sender_username !== username) {
@@ -248,6 +275,7 @@ const Section2 = () => {
     }
     
     return '안읽음';
+    
   };
 
   // 필터링된 메시지 가져오기
@@ -280,20 +308,21 @@ const handleSend = async () => {
       const fileRef = storageRef(storage, `chat/${uniqueName}`);
       
       await uploadBytes(fileRef, file);
-      fileUrl = await getDownloadURL(fileRef);
+      const fileUrl = await getDownloadURL(fileRef);
       fileName = file.name;
-      fileSize = file.size;
+      const fileSize = selectedFile?.size || 0;
 
       console.log("✅ Firebase 업로드 완료:", fileUrl);
     }
 
     // ✅ 서버로 메시지 전송
-    const response = await axios.post(`${API}/api/messages`, {
+    const response = 
+    await axios.post(`${API}/api/messages`, {
       sender_username: username,
       receiver_username: selectedUser.username,
       receiver_name: selectedUser.name,
       content: input.trim() || "[파일]",
-      fileUrl: file_Url,
+      file_url: fileUrl,              // ✅ 정확하게 맞춰야 함
       file_name: fileName,
       file_size: fileSize,
       read: false,

@@ -1,5 +1,6 @@
 // controllers/messageController.js
 const db = require("./db.js");
+const router = express.Router();
 
 // ✅ multer 관련 코드 제거됨
 

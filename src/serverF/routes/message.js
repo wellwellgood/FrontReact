@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const messageController = require("../controllers/messageController");
+const messageController = require("../chatServer/controllers/messageController.js");
 
 // 저장
 router.post("/messages", messageController.saveMessage);

@@ -237,31 +237,25 @@ const Section2 = () => {
   }, [username]);
 
   // ✅ 채팅방 선택될 때 메시지 읽음 처리
-useEffect(() => {
-  const markMessagesAsRead = async () => {
-    if (!selectedUser) return;
-
-    try {
-      await axios.post(`${API}/api/messages/read`, {
-        sender_username: selectedUser.username,
-        receiver_username: username,
-      });
-
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.sender_username === selectedUser.username
-            ? { ...m, read: true }
-            : m
-        )
-      );
-    } catch (err) {
-      console.error("❌ 읽음 처리 실패:", err);
-    }
-  };
-
-  markMessagesAsRead(); // ✅ 호출은 useEffect 내부에서
-}, [selectedUser, username]); // username도 의존성에 추가
-
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      if (!selectedUser) return;
+  
+      try {
+        await axios.post(`${API}/api/messages/read`, {
+          sender_username: selectedUser.username,
+          receiver_username: username,
+        });
+  
+        // ✅ 서버에서 읽음 처리 후 최신 메시지 다시 불러오기
+        fetchMessages();
+      } catch (err) {
+        console.error("❌ 읽음 처리 실패:", err);
+      }
+    };
+  
+    markMessagesAsRead();
+  }, [selectedUser, username]);
 
   // 메시지 읽음 상태 확인 함수
   const getMessageReadStatus = (msg) => {
@@ -303,35 +297,35 @@ const handleSend = async () => {
 
     // ✅ 파일 업로드 처리
     if (selectedFile) {
-      const file = selectedFile; // 👉 상태 복사 (변하지 않게 고정)
+      const file = selectedFile;
       const uniqueName = `${Date.now()}-${file.name}`;
       const fileRef = storageRef(storage, `chat/${uniqueName}`);
-      
+
       await uploadBytes(fileRef, file);
-      const fileUrl = await getDownloadURL(fileRef);
+      fileUrl = await getDownloadURL(fileRef);    // ✅ const 제거
       fileName = file.name;
-      const fileSize = selectedFile?.size || 0;
+      fileSize = file.size;                       // ✅ const 제거
 
       console.log("✅ Firebase 업로드 완료:", fileUrl);
+      console.log("✅ 파일 용량:", fileSize);
     }
 
     // ✅ 서버로 메시지 전송
-    const response = 
-    await axios.post(`${API}/api/messages`, {
+    const response = await axios.post(`${API}/api/messages`, {
       sender_username: username,
       receiver_username: selectedUser.username,
       receiver_name: selectedUser.name,
       content: input.trim() || "[파일]",
-      file_url: fileUrl,              // ✅ 정확하게 맞춰야 함
+      file_url: fileUrl,
       file_name: fileName,
       file_size: fileSize,
       read: false,
     });
-    console.log("보내는 파일 크기:", formatBytes(file_size));
+
+    console.log("보내는 파일 크기:", formatBytes(fileSize)); // ✅ 변수명 수정
 
     const savedMessage = response.data;
 
-    // ✅ 메시지 목록 갱신
     setMessages((prev) => [...prev, savedMessage]);
     setInput("");
     setSelectedFile(null);

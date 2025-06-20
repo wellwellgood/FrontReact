@@ -24,6 +24,8 @@ const handleMultiUpload = async (files, messageText, receiver) => {
         filesize: file.size,
       });
 
+      fetchMessages();
+      
       console.log(`✅ ${file.name} 업로드 완료`);
     } catch (err) {
       console.error(`❌ ${file.name} 업로드 실패`, err);

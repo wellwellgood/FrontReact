@@ -298,7 +298,7 @@ const handleSend = async () => {
       file_size: fileSize,
       read: false,
     });
-    console.log("보내는 파일 크기:", formatBytes(filesize));
+    console.log("보내는 파일 크기:", formatBytes(file_size));
 
     const savedMessage = response.data;
 
@@ -420,6 +420,8 @@ const handleSend = async () => {
     <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
   );
 
+
+  //하이러링크 처리
   const convertTextToLink = (text) => {
     const Urlregex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi
     // const result = str.replace(/\/$/, "");
@@ -443,6 +445,7 @@ const handleSend = async () => {
     })
   }
 
+  //파일 용량 
   const formatBytes = (bytes) => {
     if (!bytes) return "0 B";
     const k = 1024;
@@ -585,7 +588,7 @@ const handleSend = async () => {
                           {msg.fileurl && msg.file_name &&(
                             <div className={styles.filePreview}>
                               <button className={styles.downBtn} onClick={() => forceDownload(msg.fileurl, msg.file_name)}>
-                              {msg.file_name} ({formatBytes(msg.filesize || 0)})
+                              {msg.file_name} ({formatBytes(msg.file_size || 0)})
                               <DownIcon />
                               </ button>
                             </div>

@@ -17,9 +17,26 @@ exports.saveMessage = async (req, res) => {
 
   try {
     const result = await db.query(
-      `INSERT INTO messages (sender_username, receiver_username, receiver_name, content, fileurl, file_name, time, file_size)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *`,
-      [sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size] // ✅ 여기도 file_url로 전달
+      `INSERT INTO messages (
+        sender_username,
+        receiver_username,
+        receiver_name,
+        content,
+        fileurl,
+        file_name,
+        file_size,
+        time
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+       RETURNING *`,
+      [
+        sender_username,
+        receiver_username,
+        receiver_name,
+        content,
+        file_url,
+        file_name,
+        Number(file_size) || 0  // ← 여기 반드시 숫자 변환!
+      ]
     );
 
     res.status(200).json(result.rows[0]);

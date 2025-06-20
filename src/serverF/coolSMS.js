@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Coolsms = require('coolsms-node-sdk').default;
 
-const apiKey = 'NCSXNORXIJP78SAD';
-const apiSecret = 'FTJII2DY5DHHARFNEBUZM5R2MRKKWS1';
-
 const messageService = new Coolsms(apiKey, apiSecret);
 
 // 인증번호 생성 함수

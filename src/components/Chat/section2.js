@@ -293,7 +293,7 @@ const handleSend = async () => {
       receiver_username: selectedUser.username,
       receiver_name: selectedUser.name,
       content: input.trim() || "[파일]",
-      fileurl: fileUrl,
+      fileUrl: file_Url,
       file_name: fileName,
       file_size: fileSize,
       read: false,

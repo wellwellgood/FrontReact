@@ -18,16 +18,9 @@ exports.saveMessage = async (req, res) => {
   try {
     const result = await db.query(
       `INSERT INTO messages (
-        sender_username,
-        receiver_username,
-        receiver_name,
-        content,
-        fileurl,
-        file_name,
-        file_size,
-        time
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
-       RETURNING *`,
+        sender_username, receiver_username, receiver_name,
+        content, fileurl, file_name, file_size, time
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`, // NOW()는 SQL 내부에서
       [
         sender_username,
         receiver_username,
@@ -35,7 +28,7 @@ exports.saveMessage = async (req, res) => {
         content,
         file_url,
         file_name,
-        Number(file_size) || 0  // ← 여기 반드시 숫자 변환!
+        Number(file_size) || 0 // 반드시 숫자로 보정
       ]
     );
 

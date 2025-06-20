@@ -21,4 +21,4 @@ node_modules/
 
 # OS 관련
 .DS_Store
-Thumbs.db
+Thumbs.db.env

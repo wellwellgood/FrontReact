@@ -5,339 +5,181 @@ import styles from "./section2.module.css";
 import Search from "../../search";
 import { useNavigate } from "react-router-dom";
 import { FaPaperclip } from "react-icons/fa";
-// import { flushSync } from "react-dom";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase/firebase";
-
 import { ReactComponent as Icon } from '../../image/download-svgrepo-com.svg';
 
+const API = "https://react-server-wmqa.onrender.com";
+
 const Section2 = () => {
-  // Navigate 훅을 먼저 선언
   const navigate = useNavigate();
-  
-  // Socket 관련 상태
+  const chatBoxRef = useRef(null);
+  const fileInputRef = useRef(null);
+
   const [socket, setSocket] = useState(null);
-  
-  // 사용자 관련 상태
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
-  
-  // 메시지 관련 상태
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [readMessages, setReadMessages] = useState(new Set());
-  
-  // UI 관련 상태
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [readMessages, setReadMessages] = useState(new Set());
   const [searchResults, setSearchResults] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userListError, setUserListError] = useState("");
-  
-  // 파일 관련 상태
-  const [selectedFile, setSelectedFile] = useState(null);// ✅ 정상
-  
-  // Refs
-  const chatBoxRef = useRef(null);
-  const fileInputRef = useRef(null);
 
-  const API = "https://react-server-wmqa.onrender.com";
-
-  const uploadToFirebase = async (file) => {
-    const filename = `${Date.now()}-${file.name}`;
-    const fileRef = ref(storage, `chat/${filename}`);
-    await uploadBytes(fileRef, file);
-    return await getDownloadURL(fileRef);
-  };
-
-  // 초기 사용자 인증 확인
+  // 초기 로그인 정보 확인
   useEffect(() => {
-    const storedUsername = sessionStorage.getItem("username");
-    const storedName = sessionStorage.getItem("name");
-    
-    if (storedUsername && storedName) {
-      setUsername(storedUsername);
-      setName(storedName);
+    const u = sessionStorage.getItem("username");
+    const n = sessionStorage.getItem("name");
+    if (!u || !n) {
+      navigate?.("/login") || (window.location.href = "/login");
     } else {
-      console.warn("세션 저장소에 username 또는 name 없음");
-      // navigate가 정의되어 있는지 확인
-      if (navigate) {
-        navigate("/login");
-      } else {
-        // navigate가 없으면 window.location 사용
-        window.location.href = "/login";
-      }
+      setUsername(u);
+      setName(n);
     }
   }, [navigate]);
 
-  // 테마 설정
+  // 테마 반영
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // 소켓 연결 및 이벤트 리스너 설정
+  // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
     if (!username) return;
 
-    const newSocket = io(API, {
-      transports: ["websocket"],
-    });
-    setSocket(newSocket);
+    const s = io(API, { transports: ["websocket"] });
+    setSocket(s);
 
-
-    // 새 메시지 수신 (다른 사용자로부터)
-    newSocket.on("message", (msg) => {
-      if (!msg) {
-        console.warn("⚠️ 수신된 메시지가 null입니다.");
-        return;
-      }
-      
-      // 내가 보낸 메시지는 이미 handleSend에서 처리했으므로 무시
-      if (msg.sender_username === username) {
-        return;
-      }
-      
+    s.on("message", (msg) => {
+      if (!msg || msg.sender_username === username) return;
       const safeMsg = {
         ...msg,
-        content: msg.content || '',
         time: msg.time || new Date().toISOString(),
         read: msg.read || false,
-        id: msg.id || `socket_${Date.now()}`,
+        content: msg.content || '',
+        id: msg.id || `socket_${Date.now()}`
       };
 
-      console.log("✅ 다른 사용자 메시지 추가:", safeMsg);
-      
+      const isCurrentChat = (
+        (safeMsg.sender_username === selectedUser?.username && safeMsg.receiver_username === username) ||
+        (safeMsg.sender_username === username && safeMsg.receiver_username === selectedUser?.username)
+      );
+      if (!isCurrentChat) return;
+
       setMessages((prev) => {
-        // 중복 확인
         const isDuplicate = prev.some((m) =>
-          (m.id && safeMsg.id && m.id === safeMsg.id) ||
+          m.id === safeMsg.id ||
           (m.sender_username === safeMsg.sender_username &&
-          m.receiver_username === safeMsg.receiver_username &&
-          m.content === safeMsg.content &&
-          Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
+            m.receiver_username === safeMsg.receiver_username &&
+            m.content === safeMsg.content &&
+            Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
         );
-        
-        if (isDuplicate) {
-          console.log("🔄 중복 메시지 무시");
-          return prev;
-        }
-        
-        return [...prev, safeMsg];
+        return isDuplicate ? prev : [...prev, safeMsg];
       });
     });
 
-    // 읽음 확인 수신
-    newSocket.on("messageRead", ({ messageId, readBy }) => {
-      console.log("📖 메시지 읽음 확인:", messageId, readBy);
-      setReadMessages(prev => new Set([...prev, messageId]));
-      
+    s.on("messageRead", ({ messageId }) => {
+      setReadMessages((prev) => new Set([...prev, messageId]));
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === messageId
-            ? { ...msg, read: true, isTemporary: false }
-            : msg
+          msg.id === messageId ? { ...msg, read: true } : msg
         )
       );
     });
 
-    return () => newSocket.disconnect();
-  }, [username]);
+    return () => s.disconnect();
+  }, [username, selectedUser]);
 
-  // 사용자 목록 및 메시지 로드
+  // 자동 스크롤
+  useEffect(() => {
+    chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight);
+  }, [messages]);
+
+  // 사용자 목록 불러오기
   useEffect(() => {
     if (!username) return;
 
-    axios.get(`${API}/users`, {
-      params: { exclude: username } // 현재 로그인한 유저 제외 가능
-    })
-    .then(res => {
-      setUsers(res.data);
-      setUserListError("");
-    })
-    .catch(err => {
-      console.error("❌ 유저 목록 불러오기 실패:", err);
-      setUserListError("유저 목록을 불러오지 못했습니다.");
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
-  
-    const newSocket = io(API, {
-      transports: ["websocket"],
-    });
-    setSocket(newSocket);
-  
-    // ✅ null 체크를 통한 메시지 처리 개선
-    newSocket.on("message", (msg) => {
-      if (!msg) {
-        console.warn("⚠️ 수신된 메시지가 null입니다.");
-        return;
-      }
-      
-      // ✅ 메시지에 필수 정보가 있는지 확인
-      if (!msg.sender_username || !msg.receiver_username) {
-        console.warn("⚠️ 메시지에 필수 정보가 없습니다:", msg);
-        return;
-      }
-      
-      // 내가 보낸 메시지는 이미 handleSend에서 처리했으므로 무시
-      if (msg.sender_username === username) {
-        return;
-      }
-      
-      const safeMsg = {
-        ...msg,
-        content: msg.content || '',
-        time: msg.time || new Date().toISOString(),
-        read: msg.read || false,
-        id: msg.id || `socket_${Date.now()}`,
-      };
-  
-      console.log("✅ 다른 사용자 메시지 추가:", safeMsg);
-      
-      setMessages((prev) => {
-        // 중복 확인
-        const isDuplicate = prev.some((m) =>
-          (m.id && safeMsg.id && m.id === safeMsg.id) ||
-          (m.sender_username === safeMsg.sender_username &&
-          m.receiver_username === safeMsg.receiver_username &&
-          m.content === safeMsg.content &&
-          Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
-        );
-        
-        if (isDuplicate) {
-          console.log("🔄 중복 메시지 무시");
-          return prev;
-        }
-        
-        return [...prev, safeMsg];
-      });
-    });
-  
-    // 읽음 확인 수신
-    newSocket.on("messageRead", ({ messageId, readBy }) => {
-      console.log("📖 메시지 읽음 확인:", messageId, readBy);
-      setReadMessages(prev => new Set([...prev, messageId]));
-      
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId
-            ? { ...msg, read: true, isTemporary: false }
-            : msg
-        )
-      );
-    });
-
-  
-    return () => newSocket.disconnect();
+    setIsLoading(true);
+    axios.get(`${API}/users`, { params: { exclude: username } })
+      .then((res) => {
+        setUsers(res.data);
+        setUserListError("");
+      })
+      .catch((err) => {
+        console.error("❌ 유저 목록 불러오기 실패:", err);
+        setUserListError("유저 목록을 불러오지 못했습니다.");
+      })
+      .finally(() => setIsLoading(false));
   }, [username]);
 
-  // ✅ 채팅방 선택될 때 메시지 읽음 처리
+  // 대화 상대 변경 시 메시지 불러오기 + 읽음 처리
   useEffect(() => {
-    const markMessagesAsRead = async () => {
-      if (!selectedUser) return;
-  
-      try {
-        await axios.post(`${API}/api/messages/read`, {
-          sender_username: selectedUser.username,
-          receiver_username: username,
-        });
-  
-        // ✅ 서버에서 읽음 처리 후 최신 메시지 다시 불러오기
-        fetchMessages();
-      } catch (err) {
-        console.error("❌ 읽음 처리 실패:", err);
-      }
-    };
-  
-    markMessagesAsRead();
+    if (!username || !selectedUser) return;
+
+    axios.post(`${API}/api/messages/read`, {
+      sender_username: selectedUser.username,
+      receiver_username: username,
+    }).catch((err) => {
+      console.error("❌ 읽음 처리 실패:", err);
+    });
+
+    axios.get(`${API}/api/messages`, {
+      params: {
+        username,
+        target: selectedUser.username,
+      },
+    })
+      .then((res) => setMessages(res.data))
+      .catch((err) => {
+        console.error("❌ 메시지 불러오기 실패:", err);
+      });
   }, [selectedUser, username]);
 
-  // 메시지 읽음 상태 확인 함수
-  const getMessageReadStatus = (msg) => {
-    if (!msg || msg.sender_username !== username) {
-      return null; // 내가 보낸 메시지가 아니면 읽음 상태 표시 안함
+  // 메시지 전송
+  const handleSend = async () => {
+    if (!input.trim() && !selectedFile) return;
+
+    try {
+      let fileUrl = null, fileName = null, fileSize = null;
+
+      if (selectedFile) {
+        const uniqueName = `${Date.now()}-${selectedFile.name}`;
+        const fileRef = storageRef(storage, `chat/${uniqueName}`);
+        await uploadBytes(fileRef, selectedFile);
+        fileUrl = await getDownloadURL(fileRef);
+        fileName = selectedFile.name;
+        fileSize = selectedFile.size;
+      }
+
+      const res = await axios.post(`${API}/api/messages`, {
+        sender_username: username,
+        receiver_username: selectedUser.username,
+        receiver_name: selectedUser.name,
+        content: input.trim() || "[파일]",
+        file_url: fileUrl,
+        file_name: fileName,
+        file_size: fileSize,
+        read: false,
+      });
+
+      setMessages((prev) => [...prev, res.data]);
+      setInput("");
+      setSelectedFile(null);
+      fileInputRef.current.value = "";
+    } catch (err) {
+      console.error("❌ 메시지 전송 실패:", err);
+      alert("메시지 전송 중 오류 발생");
     }
-    
-    // 읽음 상태 확인
-    if (msg.read || readMessages.has(msg.id)) {
-      return '읽음';
-    }
-    
-    return '안읽음';
-    
   };
 
-  // 필터링된 메시지 가져오기
-  const getFilteredMessages = () => {
-    if (!selectedUser) {
-      return [];
-    }
-
-    return messages.filter((msg) => {
-      const isMyMessage = msg.sender_username === username && msg.receiver_username === selectedUser.username;
-      const isTheirMessage = msg.receiver_username === username && msg.sender_username === selectedUser.username;
-      return isMyMessage || isTheirMessage;
-    });
-  };
-
-  // 메시지 전송 처리
-// Fixed handleSend function
-const handleSend = async () => {
-  if (!input.trim() && !selectedFile) return;
-
-  try {
-    let fileUrl = null;
-    let fileName = null;
-    let fileSize = null;
-
-    // ✅ 파일 업로드 처리
-    if (selectedFile) {
-      const file = selectedFile;
-      const uniqueName = `${Date.now()}-${file.name}`;
-      const fileRef = storageRef(storage, `chat/${uniqueName}`);
-
-      await uploadBytes(fileRef, file);
-      fileUrl = await getDownloadURL(fileRef);    // ✅ const 제거
-      fileName = file.name;
-      fileSize = file.size;                       // ✅ const 제거
-
-      console.log("✅ Firebase 업로드 완료:", fileUrl);
-      console.log("✅ 파일 용량:", fileSize);
-    }
-
-    // ✅ 서버로 메시지 전송
-    const response = await axios.post(`${API}/api/messages`, {
-      sender_username: username,
-      receiver_username: selectedUser.username,
-      receiver_name: selectedUser.name,
-      content: input.trim() || "[파일]",
-      file_url: fileUrl,
-      file_name: fileName,
-      file_size: fileSize,
-      read: false,
-    });
-
-    console.log("보내는 파일 크기:", formatBytes(fileSize)); // ✅ 변수명 수정
-
-    const savedMessage = response.data;
-
-    setMessages((prev) => [...prev, savedMessage]);
-    setInput("");
-    setSelectedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  } catch (err) {
-    console.error("❌ 메시지 전송 실패:", err);
-    alert("메시지 전송 중 오류가 발생했습니다.");
-  }
-};
-
-
-  // 키보드 이벤트 처리
+  // 키 이벤트
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -345,137 +187,84 @@ const handleSend = async () => {
     }
   };
 
-  // 검색 데이터 가져오기
-  const fetchSearchData = () => {
-    console.log("🔍 검색 데이터 가져오기");
+  // 메시지 읽음 표시
+  const getMessageReadStatus = (msg) => {
+    if (msg.sender_username !== username) return null;
+    return msg.read || readMessages.has(msg.id) ? '읽음' : '안읽음';
   };
 
-  // 로그아웃 처리
-  const handleLogout = () => {
-    console.log("🚪 로그아웃 처리");
-    
-    sessionStorage.removeItem("username");
-    sessionStorage.removeItem("name");
-    sessionStorage.clear();
-    
-    if (socket) {
-      socket.disconnect();
-    }
-    
-    setUsername("");
-    setName("");
-    setUsers([]);
-    setMessages([]);
-    setSelectedUser(null);
-    setReadMessages(new Set());
-    
-    // navigate 사용 시도, 실패하면 window.location 사용
+  // 메시지 필터
+  const getFilteredMessages = () => {
+    if (!selectedUser) return [];
+    return messages.filter((msg) =>
+      (msg.sender_username === username && msg.receiver_username === selectedUser.username) ||
+      (msg.receiver_username === username && msg.sender_username === selectedUser.username)
+    );
+  };
+
+  // 하이퍼링크 자동 처리
+  const convertTextToLink = (text) => {
+    const regex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi;
+    return text.split(regex).map((part, i) =>
+      regex.test(part) ? (
+        <a key={i} href={part.startsWith("http") ? part : `https://${part}`} target="_blank" rel="noopener noreferrer" style={{ color: "#4caf50" }}>
+          {part}
+        </a>
+      ) : part
+    );
+  };
+
+  // 용량 포맷
+  const formatBytes = (bytes) => {
+    if (!bytes) return "0 B";
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  // 다운로드
+  const forceDownload = async (url, filename) => {
     try {
-      if (navigate) {
-        navigate("/login");
-      } else {
-        window.location.href = "/login";
-      }
-    } catch (error) {
-      console.error("네비게이션 오류:", error);
-      window.location.href = "/login";
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("❌ 다운로드 실패:", e);
     }
   };
 
-  // 파일 선택 처리
+  // 파일 선택
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      console.log("📎 파일 선택됨:", file.name);
-    }
-  };
-  const forceDownload = async (url, filename) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-  
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-  
-      URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      console.error("다운로드 실패:", err);
     }
   };
 
-  // 네비게이션 핸들러들
   const handleNavigation = (path) => {
-    try {
-      if (navigate) {
-        navigate(path);
-      } else {
-        window.location.href = path;
-      }
-    } catch (error) {
-      console.error("네비게이션 오류:", error);
-      window.location.href = path;
-    }
+    navigate?.(path) || (window.location.href = path);
   };
-  useEffect(() => {
-    if (!username || !selectedUser || !selectedUser.username) return;
-  
-    axios.get(`${API}/api/messages`, {
-      params: {
-        username: username,
-        target: selectedUser.username,
-      },
-    })
-      .then((res) => {
-        setMessages(res.data);
-      })
-      .catch((err) => {
-        console.error("❌ 메시지 불러오기 실패:", err);
-      });
-  }, [selectedUser]);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    socket?.disconnect();
+    setUsername(""); setName(""); setUsers([]);
+    setMessages([]); setSelectedUser(null); setReadMessages(new Set());
+    navigate?.("/login") || (window.location.href = "/login");
+  };
+
+  const fetchSearchData = () => {
+    console.log("🔍 검색 요청");
+  };
 
   const DownIcon = () => (
     <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
   );
-
-
-  //하이러링크 처리
-  const convertTextToLink = (text) => {
-    const Urlregex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi
-    // const result = str.replace(/\/$/, "");
-
-    return text.split(Urlregex).map((part,index) => {
-      if (Urlregex.test(part)) {
-        const href = part.startsWith("http")? part : 'https://${part}';
-        return (
-          <a
-            key={index}
-            href={href}
-            target="_blank"
-            rel='noopener noreferrer'
-            style={{color:"#4caf50" , textdecoration:"underline"}}
-          >
-            {part}
-          </a>
-        );
-      }
-      return part;
-    })
-  }
-
-  //파일 용량 
-  const formatBytes = (bytes) => {
-    if (!bytes) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
 
   return (
     <div className={styles.container}>

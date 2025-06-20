@@ -1,9 +1,10 @@
-// routes/user.js
-const express = require("express");
-const router = express.Router();
-const pool = require("../DB"); // PostgreSQL 연결 풀
+// routes/user.js (ESM 버전)
+import express from "express";
+import pool from "../DB.js";
 
-// 🔹 전체 유저 목록 조회 (내 아이디 제외)
+const router = express.Router();
+
+// 🔹 전체 유저 목록 조회
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query("SELECT username, name, profile_image FROM users");
@@ -29,4 +30,4 @@ router.get("/:username", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

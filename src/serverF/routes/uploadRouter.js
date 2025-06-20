@@ -1,8 +1,13 @@
-// routes/upload.js
-const express = require("express");
-const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
+// routes/uploadRouter.js (ESM 버전)
+import express from "express";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// __dirname 설정
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
@@ -11,7 +16,7 @@ const imagesDir = path.join(uploadDir, "images");
 const docsDir = path.join(uploadDir, "docs");
 
 [uploadDir, imagesDir, docsDir].forEach(dir => {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
 const storage = multer.diskStorage({
@@ -29,20 +34,22 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// 파일 업로드
+// ✅ 파일 업로드
 router.post("/", upload.single("file"), (req, res) => {
-  if (!req.file) return res.status(400).json({ success: false, message: "파일이 업로드되지 않았습니다." });
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "파일이 업로드되지 않았습니다." });
+  }
   res.status(200).json({ success: true, fileName: req.file.filename });
 });
 
-//파일 불러오기
+// ✅ 파일 목록 불러오기
 router.get("/", (req, res) => {
   try {
     const imageFiles = fs.readdirSync(imagesDir).map(file => ({ type: "images", name: file }));
     const docFiles = fs.readdirSync(docsDir).map(file => ({ type: "docs", name: file }));
     const rootFiles = fs.readdirSync(uploadDir)
-      .filter(file => file !== "images" && file !== "docs") // 폴더 이름 제외
-      .map(file => ({ type: "others", name: file })); // 나머지는 "others"로
+      .filter(file => file !== "images" && file !== "docs")
+      .map(file => ({ type: "others", name: file }));
 
     const allFiles = [...imageFiles, ...docFiles, ...rootFiles];
     res.status(200).json({ success: true, files: allFiles });
@@ -52,14 +59,17 @@ router.get("/", (req, res) => {
   }
 });
 
-// 파일 다운로드
+// ✅ 파일 다운로드
 router.get("/download/:type/:filename", (req, res) => {
   const { type, filename } = req.params;
   const baseDir = type === "images" ? imagesDir : docsDir;
   const filePath = path.join(baseDir, filename);
 
-  if (!fs.existsSync(filePath)) return res.status(404).json({ success: false, message: "파일 없음" });
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ success: false, message: "파일 없음" });
+  }
+
   res.download(filePath);
 });
 
-module.exports = router;
+export default router;

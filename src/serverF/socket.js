@@ -1,82 +1,67 @@
-const { Server } = require("socket.io");
-const pool = require("./DB"); // PostgreSQL Pool
+// socket.js
+import { Server } from "socket.io";
+import pool from "./DB.js";
 
-module.exports = (server) => {
+const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: [
-        "http://localhost:3000",
-        "http://localhost:4000",
-        "https://myappboard.netlify.app"
-      ],
-      methods: ["GET", "POST"],
-      credentials: true
+      origin: "*",
+      methods: ["GET", "POST"]
     },
   });
 
   io.on("connection", (socket) => {
-    console.log("📡 Client connected", socket.id);
+    console.log("✅ Socket 연결됨:", socket.id);
 
-    // ✅ 사용자 소켓 join 처리
     socket.on("join", (username) => {
       socket.join(username);
-      console.log(`👤 ${username} joined their personal room`);
+      console.log(`${username} 채팅방에 입장함.`);
     });
 
-    // ✅ 메시지 수신 및 저장 + id 반환
     socket.on("message", async (msg) => {
-      console.log("💬 message received:", msg);
-
       try {
-        const client = await pool.connect();
-        const result = await client.query(
-          `INSERT INTO messages 
-            (sender_username, receiver_username, sender_name, receiver_name, content, time, read) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7)
-           RETURNING id`,
+        const result = await pool.query(
+          `INSERT INTO messages (
+            sender_username, receiver_username, receiver_name,
+            content, fileurl, file_name, file_size, time, read
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), false) RETURNING id`,
           [
             msg.sender_username,
             msg.receiver_username,
-            msg.sender_name,
             msg.receiver_name,
             msg.content,
-            msg.time,
-            msg.read ?? false
+            msg.file_url || null,
+            msg.file_name || null,
+            msg.file_size || 0
           ]
         );
-        client.release();
 
-        const insertedId = result.rows[0].id;
-        msg.id = insertedId; // ✅ ID 추가해서 다시 클라이언트에게 전송
+        msg.id = result.rows[0].id;
+        msg.read = false;
+
+        io.to(msg.receiver_username).emit("message", msg);
+        console.log("📤 메시지 전송됨:", msg);
       } catch (err) {
-        console.error("❌ 메시지 저장 실패:", err);
+        console.error("❌ 메시지 저장 오류:", err);
       }
-
-      io.emit("message", msg); // ✅ 전체 클라이언트에게 전송
     });
 
-    // ✅ 메시지 읽음 처리
-    socket.on("markAsRead", async ({ messageId, readBy }) => {
+    socket.on("markAsRead", async ({ messageId }) => {
       try {
-        const client = await pool.connect();
-        await client.query(
-          `UPDATE messages SET read = TRUE WHERE id = $1`,
-          [messageId]
-        );
-        client.release();
+        await pool.query(`UPDATE messages SET read = true WHERE id = $1`, [messageId]);
+        console.log("✅ 읽음 처리 완료:", messageId);
       } catch (err) {
-        console.error("❌ 메시지 읽음 상태 업데이트 실패:", err);
+        console.error("❌ 읽음 처리 실패:", err);
       }
     });
 
-    // ✅ 읽음 확인 알림 (to 유저 방으로 전송)
     socket.on("messageRead", ({ messageId, readBy, to }) => {
       io.to(to).emit("messageRead", { messageId, readBy });
-      console.log(`📨 messageRead → ${to}:`, messageId);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("❌ Client disconnected", socket.id);
+      console.log(`📬 읽음 알림 전송 → ${to}`);
     });
   });
+
+  return io;
 };
+
+export default initializeSocket;

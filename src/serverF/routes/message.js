@@ -1,6 +1,8 @@
-const express = require("express");
+// routes/message.js (ESM 버전)
+import express from "express";
+import messageController from "../chatServer/controllers/messageController.js";
+
 const router = express.Router();
-const messageController = require("../chatServer/controllers/messageController.js");
 
 // 저장
 router.post("/messages", messageController.saveMessage);
@@ -11,4 +13,4 @@ router.post("/messages/read", messageController.markAllAsRead);
 // 개별 읽음 처리
 router.post("/messages/:messageId/read", messageController.markMessageAsRead);
 
-module.exports = router;
+export default router;

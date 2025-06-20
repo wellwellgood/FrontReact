@@ -1,5 +1,5 @@
 // initDB.js
-const pool = require("./DB"); // pg는 그냥 pool로 가져옴
+import pool from "./DB.js";
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 5000;
@@ -7,11 +7,11 @@ const RETRY_DELAY = 5000;
 const initDB = async (retryCount = 0) => {
   let client;
   try {
-    client = await pool.connect(); // ✅ PostgreSQL 방식
+    client = await pool.connect();
 
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY, -- ✅ PostgreSQL의 자동 증가 필드
+        id SERIAL PRIMARY KEY,
         username VARCHAR(50) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         name VARCHAR(50),
@@ -37,8 +37,8 @@ const initDB = async (retryCount = 0) => {
       return false;
     }
   } finally {
-    if (client) client.release(); // ✅ pg도 release는 동일하게 사용
+    if (client) client.release();
   }
 };
 
-module.exports = initDB;
+export default initDB;

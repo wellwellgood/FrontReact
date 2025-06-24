@@ -1,11 +1,13 @@
+// socket.js
 import { Server } from "socket.io";
 import pool from "./DB.js";
 
 const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
+      origin: "https://kkydashboard.netlify.app", // ✅ 실제 프론트 배포 주소
+      methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 
@@ -14,26 +16,52 @@ const initializeSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("✅ Socket 연결됨:", socket.id);
 
+    // ✅ 유저별 방 입장
     socket.on("join", (username) => {
       socket.join(username);
-      console.log(`${username} 채팅방에 입장함.`);
+      console.log(`${username} 방에 입장`);
     });
 
-    socket.on("message", async (msg) => {
+    // ✅ 메시지 전송 처리 (클라이언트에서 emit: sendMessage)
+    socket.on("sendMessage", async (msg) => {
       try {
         const result = await pool.query(
-          `INSERT INTO messages (...) VALUES (...) RETURNING id`,
-          [/* values */]
+          `INSERT INTO messages 
+            (sender_username, receiver_username, content, file_url, file_name, file_size, read) 
+           VALUES ($1, $2, $3, $4, $5, $6, false) 
+           RETURNING id`,
+          [
+            msg.sender_username,
+            msg.receiver_username,
+            msg.content,
+            msg.file_url || null,
+            msg.file_name || null,
+            msg.file_size || null,
+          ]
         );
+
         msg.id = result.rows[0].id;
         msg.read = false;
+
+        // 📤 받은 사용자에게만 메시지 전송
         io.to(msg.receiver_username).emit("message", msg);
-        console.log("📤 메시지 전송됨:", msg);
+
+        // 📤 보낸 사용자에게도 다시 echo (자기 채팅창에 바로 보이게)
+        socket.emit("message", msg);
+
+        console.log("📤 메시지 저장 및 전송:", msg);
       } catch (err) {
         console.error("❌ 메시지 저장 오류:", err);
       }
     });
 
+    // ✅ 읽음 처리 (서버 → 상대 유저에게 전달)
+    socket.on("messageRead", ({ messageId, to }) => {
+      io.to(to).emit("messageRead", { messageId });
+      console.log(`📬 읽음 알림 전송 → ${to}`);
+    });
+
+    // ✅ DB에서도 읽음 업데이트 처리
     socket.on("markAsRead", async ({ messageId }) => {
       try {
         await pool.query(`UPDATE messages SET read = true WHERE id = $1`, [messageId]);
@@ -43,34 +71,28 @@ const initializeSocket = (server) => {
       }
     });
 
-    socket.on("messageRead", ({ messageId, readBy, to }) => {
-      io.to(to).emit("messageRead", { messageId, readBy });
-      console.log(`📬 읽음 알림 전송 → ${to}`);
-    });
-
-    // ✅ 추가된 부분: 온라인 감지
+    // ✅ 온라인 유저 추적
     socket.on("online", (username) => {
       onlineUsers.add(username);
+      socket.join(username); // 혹시 빠졌을 경우 대비
       io.emit("onlineUsers", Array.from(onlineUsers));
+      console.log("🟢 온라인:", username);
     });
 
-    // ✅ 연결 종료 시 처리
+    // ✅ 연결 종료 시 온라인 목록 갱신
     socket.on("disconnect", () => {
-      for (let user of onlineUsers) {
-        if (socket.rooms.has(user)) {
+      for (let user of socket.rooms) {
+        if (onlineUsers.has(user)) {
           onlineUsers.delete(user);
           break;
         }
       }
       io.emit("onlineUsers", Array.from(onlineUsers));
-    });
-
-    socket.on("sendMessage", (msg) => {
-      console.log("📩 메시지 수신:", msg);
-      io.emit("message", msg); // 모든 클라이언트에게 메시지 전송
+      console.log("🔴 연결 종료:", socket.id);
     });
   });
 
   return io;
 };
+
 export default initializeSocket;

@@ -266,6 +266,9 @@ const Section2 = () => {
     <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
   );
 
+  const s = io(API, { transports: ["websocket"] });
+  s.emit("online", username);
+
   useEffect(() => {
     if (!socket) return;
     socket.on("onlineUsers", (list) => {

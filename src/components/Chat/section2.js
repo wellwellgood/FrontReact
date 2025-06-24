@@ -26,6 +26,11 @@ const Section2 = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [readMessages, setReadMessages] = useState(new Set());
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const u = sessionStorage.getItem("username");
@@ -45,6 +50,20 @@ const Section2 = () => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  const fetchSearchData = async (query) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`/api/search?query=${encodeURIComponent(query)}`);
+      setSearchResults(response.data);
+      setShowResults(true);
+    } catch (error) {
+      console.error("검색 데이터 가져오기 실패:", error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!username) return;
@@ -180,6 +199,13 @@ const Section2 = () => {
       setOnlineUsers(list); // ✅ 상태로 관리
     });
   }, [socket]);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    alert("로그아웃 되었습니다.");
+    navigate("/");
+  };
+
 
 
   return (

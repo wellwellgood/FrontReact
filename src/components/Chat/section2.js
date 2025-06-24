@@ -369,16 +369,10 @@ const Section2 = () => {
                   setSelectedUser(user);
                 }}
               >
-                 <span>
+                <span>
                   {user.name} ({user.username})
                   {onlineUsers.includes(user.username) && <span className={styles.onlineDot}>●</span>}
                 </span>
-                <div className={styles.userInfo}>
-                  <span>{user.name} ({user.username})</span>
-                  {unreadCount > 0 && (
-                    <span className={styles.unreadBadge}>{unreadCount}</span>
-                  )}
-                </div>
               </div>
             );
           })}

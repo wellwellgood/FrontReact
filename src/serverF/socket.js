@@ -64,6 +64,11 @@ const initializeSocket = (server) => {
       }
       io.emit("onlineUsers", Array.from(onlineUsers));
     });
+
+    socket.on("sendMessage", (msg) => {
+      console.log("📩 메시지 수신:", msg);
+      io.emit("message", msg); // 모든 클라이언트에게 메시지 전송
+    });
   });
 
   return io;

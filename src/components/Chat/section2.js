@@ -32,6 +32,7 @@ const Section2 = () => {
   const [showResults, setShowResults] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [userListError, setUserListError] = useState("");
+  const [handleFileSelect, setHandleFileSelect] = useState(() => (e) => {
 
   useEffect(() => {
     const u = sessionStorage.getItem("username");

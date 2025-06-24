@@ -274,7 +274,11 @@ const Section2 = () => {
     <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
   );
 
-  const s = io(API, { transports: ["websocket"] });
+  const s = io(API, { 
+    ransports: ["websocket"],
+    reconnectionAttempts: 3,
+    timeout: 5000,
+  });
   s.emit("online", username);
 
   useEffect(() => {

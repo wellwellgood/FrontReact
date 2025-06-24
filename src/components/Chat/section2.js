@@ -123,30 +123,27 @@ const Section2 = () => {
   // 대화 상대 변경 시 메시지 불러오기 + 읽음 처리
   useEffect(() => {
     if (!username || !selectedUser) return;
-
+  
     axios.post(`${API}/api/messages/read`, {
       sender_username: selectedUser.username,
       receiver_username: username,
     }).then(() => {
-      axios.get('${APi}/api/messages', {
+      return axios.get(`${API}/api/messages`, {
         params: {
-          username, target: selectedUser,username
+          username,
+          target: selectedUser.username,
         },
-      }).then((res) => setMessages(res.data));
-    }).catch((err) => {
-      console.error("❌ 읽음 처리 실패:", err);
-    });
-
-    axios.get(`${API}/api/messages`, {
-      params: {
-        username,
-        target: selectedUser.username,
-      },
-    })
-      .then((res) => setMessages(res.data))
-      .catch((err) => {
-        console.error("❌ 메시지 불러오기 실패:", err);
       });
+    }).then((res) => {
+      if (Array.isArray(res.data)) {
+        setMessages(res.data);
+      } else {
+        console.warn("🚨 메시지 응답이 배열이 아님:", res.data);
+        setMessages([]);
+      }
+    }).catch((err) => {
+      console.error("❌ 메시지 불러오기 또는 읽음 처리 실패:", err);
+    });
   }, [selectedUser, username]);
 
   // 메시지 전송

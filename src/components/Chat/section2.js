@@ -106,8 +106,15 @@ const Section2 = () => {
   }, [username]); // ❗ selectedUser 넣지마! 무한 연결됨
 
   // 자동 스크롤
+  const scrollToBottom = () => {
+    const box = chatBoxRef.current;
+    if (box) {
+      box.scrollTop = box.scrollHeight;
+    }
+  };
+
   useEffect(() => {
-    chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight);
+    scrollToBottom();
   }, [messages]);
 
   // 사용자 목록 불러오기

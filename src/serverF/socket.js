@@ -1,3 +1,6 @@
+import { Server } from "socket.io";
+import pool from "./DB.js";
+
 const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
@@ -65,3 +68,4 @@ const initializeSocket = (server) => {
 
   return io;
 };
+export default initializeSocket;

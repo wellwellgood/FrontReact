@@ -31,6 +31,7 @@ const Section2 = () => {
   const [searchText, setSearchText] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [userListError, setUserListError] = useState("");
 
   useEffect(() => {
     const u = sessionStorage.getItem("username");

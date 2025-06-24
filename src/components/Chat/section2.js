@@ -54,12 +54,18 @@ const Section2 = () => {
   // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
     if (!username) return;
-
-    const s = io(API, { transports: ["websocket"] });
+  
+    const s = io(API, {
+      transports: ["websocket"],
+      withCredentials: true, // CORS 인증 쿠키용 (서버에서 credentials:true일 경우)
+    });
+  
     setSocket(s);
-
+  
+    // 메시지 수신
     s.on("message", (msg) => {
       if (!msg || msg.sender_username === username) return;
+  
       const safeMsg = {
         ...msg,
         time: msg.time || new Date().toISOString(),
@@ -67,13 +73,13 @@ const Section2 = () => {
         content: msg.content || '',
         id: msg.id || `socket_${Date.now()}`
       };
-
-      const isCurrentChat = (
+  
+      const isCurrentChat =
         (safeMsg.sender_username === selectedUser?.username && safeMsg.receiver_username === username) ||
-        (safeMsg.sender_username === username && safeMsg.receiver_username === selectedUser?.username)
-      );
+        (safeMsg.sender_username === username && safeMsg.receiver_username === selectedUser?.username);
+  
       if (!isCurrentChat) return;
-
+  
       setMessages((prev) => {
         const isDuplicate = prev.some((m) =>
           m.id === safeMsg.id ||
@@ -85,18 +91,19 @@ const Section2 = () => {
         return isDuplicate ? prev : [...prev, safeMsg];
       });
     });
-
+  
+    // 읽음 처리
     s.on("messageRead", ({ messageId }) => {
       setReadMessages((prev) => new Set([...prev, messageId]));
       setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId ? { ...msg, read: true } : msg
-        )
+        prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
       );
     });
-
-    return () => s.disconnect();
-  }, [username, selectedUser]);
+  
+    return () => {
+      s.disconnect(); // ✅ 컴포넌트 unmount 시 정리
+    };
+  }, [username]); // ❗ selectedUser 넣지마! 무한 연결됨
 
   // 자동 스크롤
   useEffect(() => {
@@ -273,19 +280,19 @@ const Section2 = () => {
 
 
   useEffect(() => {
-    if (socket && username) {
-      socket.emit("online", username);
+    if (!socket || !username) return;
   
-      const handleOnlineUsers = (list) => {
-        setOnlineUsers(list);
-      };
+    socket.emit("online", username);
   
-      socket.on("onlineUsers", handleOnlineUsers);
+    const handleOnlineUsers = (list) => {
+      setOnlineUsers(list);
+    };
   
-      return () => {
-        socket.off("onlineUsers", handleOnlineUsers);
-      };
-    }
+    socket.on("onlineUsers", handleOnlineUsers);
+  
+    return () => {
+      socket.off("onlineUsers", handleOnlineUsers);
+    };
   }, [socket, username]);
 
   return (

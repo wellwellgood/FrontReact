@@ -271,19 +271,22 @@ const Section2 = () => {
     <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
   );
 
-  const s = io(API, { 
-    ransports: ["websocket"],
-    reconnectionAttempts: 3,
-    timeout: 5000,
-  });
-  s.emit("online", username);
 
   useEffect(() => {
-    if (!socket) return;
+
+    const s = io(API, { 
+      reconnectionAttempts: 3,
+      timeout: 5000,
+    });
+    s.emit("online", username);
+
+    if (!socket && username) {
+      socket.emit("online", username);
+    };
     socket.on("onlineUsers", (list) => {
       setOnlineUsers(list); // ✅ 상태로 관리
     });
-  }, [socket]);
+  }, [socket , username]);
 
   return (
     <div className={styles.container}>

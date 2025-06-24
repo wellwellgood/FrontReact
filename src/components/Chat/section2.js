@@ -273,20 +273,20 @@ const Section2 = () => {
 
 
   useEffect(() => {
-
-    const s = io(API, { 
-      reconnectionAttempts: 3,
-      timeout: 5000,
-    });
-    s.emit("online", username);
-
-    if (!socket && username) {
+    if (socket && username) {
       socket.emit("online", username);
-    };
-    socket.on("onlineUsers", (list) => {
-      setOnlineUsers(list); // ✅ 상태로 관리
-    });
-  }, [socket , username]);
+  
+      const handleOnlineUsers = (list) => {
+        setOnlineUsers(list);
+      };
+  
+      socket.on("onlineUsers", handleOnlineUsers);
+  
+      return () => {
+        socket.off("onlineUsers", handleOnlineUsers);
+      };
+    }
+  }, [socket, username]);
 
   return (
     <div className={styles.container}>

@@ -36,4 +36,20 @@ router.post("/", (req, res) => {
   res.status(201).json({ message: "채팅 로그 저장 완료" });
 });
 
+// 로그인 라우트 추가
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: "아이디 또는 비밀번호 누락" });
+  }
+
+  // 여기서는 예시로 간단한 인증 로직
+  if (username === "admin" && password === "1234") {
+    return res.status(200).json({ message: "로그인 성공", token: "fake-jwt-token" });
+  }
+
+  return res.status(401).json({ message: "로그인 실패: 아이디 또는 비밀번호 오류" });
+});
+
 export default router;

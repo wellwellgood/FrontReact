@@ -31,6 +31,7 @@ const Section2 = () => {
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userListError, setUserListError] = useState("");
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   // 초기 로그인 정보 확인
   useEffect(() => {

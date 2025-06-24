@@ -67,6 +67,10 @@ const initializeSocket = (server) => {
 const onlineUsers = new Set();
 
 io.on("connection", (socket) => {
+  socket.on("sendMessage", (msg) => {
+    socket.broadcast.emit("message", msg);
+  });
+  
   socket.on("online", (username) => {
     onlineUsers.add(username);
     io.emit("onlineUsers", Array.from(onlineUsers)); // 전체에 브로드캐스트

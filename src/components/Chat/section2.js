@@ -127,6 +127,12 @@ const Section2 = () => {
     axios.post(`${API}/api/messages/read`, {
       sender_username: selectedUser.username,
       receiver_username: username,
+    }).then(() => {
+      axios.get('${APi}/api/messages', {
+        params: {
+          username, target: selectedUser,username
+        },
+      }).then((res) => setMessages(res.data));
     }).catch((err) => {
       console.error("❌ 읽음 처리 실패:", err);
     });
@@ -171,6 +177,7 @@ const Section2 = () => {
       });
 
       setMessages((prev) => [...prev, res.data]);
+      socket?.emit("sendMessage", res.data);
       setInput("");
       setSelectedFile(null);
       fileInputRef.current.value = "";

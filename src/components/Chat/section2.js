@@ -25,6 +25,7 @@ const Section2 = () => {
   const [input, setInput] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [readMessages, setReadMessages] = useState(new Set());
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
 
   useEffect(() => {
     const u = sessionStorage.getItem("username");

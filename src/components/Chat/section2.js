@@ -23,132 +23,88 @@ const Section2 = () => {
   const [name, setName] = useState("");
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
   const [selectedFile, setSelectedFile] = useState(null);
   const [readMessages, setReadMessages] = useState(new Set());
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [showResults, setShowResults] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [userListError, setUserListError] = useState("");
 
-  // 초기 로그인 정보 확인
   useEffect(() => {
     const u = sessionStorage.getItem("username");
     const n = sessionStorage.getItem("name");
-    if (!u || !n) {
-      navigate?.("/login") || (window.location.href = "/login");
-    } else {
+    if (!u || !n) navigate("/login");
+    else {
       setUsername(u);
       setName(n);
     }
   }, [navigate]);
 
-  // 테마 반영
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    document.documentElement.setAttribute("data-theme", "light");
+  }, []);
 
-  // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
     if (!username) return;
-
     const s = io(API, { transports: ["websocket"] });
     setSocket(s);
+    s.emit("join", username);
 
     s.on("message", (msg) => {
-      if (!msg || msg.sender_username === username) return;
-      const safeMsg = {
-        ...msg,
-        time: msg.time || new Date().toISOString(),
-        read: msg.read || false,
-        content: msg.content || '',
-        id: msg.id || `socket_${Date.now()}`
-      };
-
       const isCurrentChat = (
-        (safeMsg.sender_username === selectedUser?.username && safeMsg.receiver_username === username) ||
-        (safeMsg.sender_username === username && safeMsg.receiver_username === selectedUser?.username)
+        (msg.sender_username === selectedUser?.username && msg.receiver_username === username) ||
+        (msg.sender_username === username && msg.receiver_username === selectedUser?.username)
       );
       if (!isCurrentChat) return;
 
       setMessages((prev) => {
-        const isDuplicate = prev.some((m) =>
-          m.id === safeMsg.id ||
-          (m.sender_username === safeMsg.sender_username &&
-            m.receiver_username === safeMsg.receiver_username &&
-            m.content === safeMsg.content &&
-            Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
-        );
-        return isDuplicate ? prev : [...prev, safeMsg];
+        const isDuplicate = prev.some((m) => m.id === msg.id);
+        return isDuplicate ? prev : [...prev, msg];
       });
     });
 
     s.on("messageRead", ({ messageId }) => {
       setReadMessages((prev) => new Set([...prev, messageId]));
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId ? { ...msg, read: true } : msg
-        )
-      );
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? { ...m, read: true } : m)));
     });
 
     return () => s.disconnect();
   }, [username, selectedUser]);
 
-  // 자동 스크롤
   useEffect(() => {
     chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight);
   }, [messages]);
 
-  // 사용자 목록 불러오기
   useEffect(() => {
     if (!username) return;
-
-    setIsLoading(true);
     axios.get(`${API}/users`, { params: { exclude: username } })
-      .then((res) => {
-        setUsers(res.data);
-        setUserListError("");
-      })
-      .catch((err) => {
-        console.error("❌ 유저 목록 불러오기 실패:", err);
-        setUserListError("유저 목록을 불러오지 못했습니다.");
-      })
-      .finally(() => setIsLoading(false));
+      .then((res) => setUsers(res.data))
+      .catch(console.error);
   }, [username]);
 
-  // 대화 상대 변경 시 메시지 불러오기 + 읽음 처리
   useEffect(() => {
     if (!username || !selectedUser) return;
 
-    axios.post(`${API}/api/messages/read`, {
-      sender_username: selectedUser.username,
-      receiver_username: username,
-    }).catch((err) => {
-      console.error("❌ 읽음 처리 실패:", err);
-    });
+    const markAsReadAndFetch = async () => {
+      try {
+        await axios.post(`${API}/api/messages/read`, {
+          sender_username: selectedUser.username,
+          receiver_username: username,
+        });
 
-    axios.get(`${API}/api/messages`, {
-      params: {
-        username,
-        target: selectedUser.username,
-      },
-    })
-      .then((res) => setMessages(res.data))
-      .catch((err) => {
-        console.error("❌ 메시지 불러오기 실패:", err);
-      });
+        const res = await axios.get(`${API}/api/messages`, {
+          params: { username, target: selectedUser.username },
+        });
+        setMessages(res.data);
+      } catch (err) {
+        console.error("❌ 읽음 처리/불러오기 실패:", err);
+      }
+    };
+
+    markAsReadAndFetch();
   }, [selectedUser, username]);
 
-  // 메시지 전송
   const handleSend = async () => {
     if (!input.trim() && !selectedFile) return;
 
     try {
       let fileUrl = null, fileName = null, fileSize = null;
-
       if (selectedFile) {
         const uniqueName = `${Date.now()}-${selectedFile.name}`;
         const fileRef = storageRef(storage, `chat/${uniqueName}`);
@@ -170,51 +126,38 @@ const Section2 = () => {
       });
 
       setMessages((prev) => [...prev, res.data]);
+      socket?.emit("message", res.data); // ✅ 서버에 전송
+
       setInput("");
       setSelectedFile(null);
       fileInputRef.current.value = "";
     } catch (err) {
       console.error("❌ 메시지 전송 실패:", err);
-      alert("메시지 전송 중 오류 발생");
     }
   };
 
-  // 키 이벤트
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  // 메시지 읽음 표시
-  const getMessageReadStatus = (msg) => {
-    if (msg.sender_username !== username) return null;
-    return msg.read || readMessages.has(msg.id) ? '읽음' : '안읽음';
-  };
-
-  // 메시지 필터
   const getFilteredMessages = () => {
     if (!selectedUser) return [];
-    return messages.filter((msg) =>
-      (msg.sender_username === username && msg.receiver_username === selectedUser.username) ||
-      (msg.receiver_username === username && msg.sender_username === selectedUser.username)
+    return messages.filter(
+      (m) => (m.sender_username === username && m.receiver_username === selectedUser.username) ||
+             (m.receiver_username === username && m.sender_username === selectedUser.username)
     );
   };
 
-  // 하이퍼링크 자동 처리
-  const convertTextToLink = (text) => {
-    const regex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi;
-    return text.split(regex).map((part, i) =>
-      regex.test(part) ? (
-        <a key={i} href={part.startsWith("http") ? part : `https://${part}`} target="_blank" rel="noopener noreferrer" style={{ color: "#4caf50" }}>
-          {part}
-        </a>
-      ) : part
-    );
+  const getMessageReadStatus = (msg) => {
+    if (msg.sender_username !== username) return null;
+    return msg.read || readMessages.has(msg.id) ? "읽음" : "안읽음";
   };
 
-  // 용량 포맷
+  const forceDownload = async (url, filename) => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+  };
+
   const formatBytes = (bytes) => {
     if (!bytes) return "0 B";
     const sizes = ["B", "KB", "MB", "GB"];
@@ -222,49 +165,16 @@ const Section2 = () => {
     return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // 다운로드
-  const forceDownload = async (url, filename) => {
-    try {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(blobUrl);
-    } catch (e) {
-      console.error("❌ 다운로드 실패:", e);
-    }
-  };
+  const s = io(API, { transports: ["websocket"] });
+  s.emit("online", username);
 
-  // 파일 선택
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("onlineUsers", (list) => {
+      setOnlineUsers(list); // ✅ 상태로 관리
+    });
+  }, [socket]);
 
-  const handleNavigation = (path) => {
-    navigate?.(path) || (window.location.href = path);
-  };
-
-  const handleLogout = () => {
-    sessionStorage.clear();
-    socket?.disconnect();
-    setUsername(""); setName(""); setUsers([]);
-    setMessages([]); setSelectedUser(null); setReadMessages(new Set());
-    navigate?.("/login") || (window.location.href = "/login");
-  };
-
-  const fetchSearchData = () => {
-    console.log("🔍 검색 요청");
-  };
-
-  const DownIcon = () => (
-    <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
-  );
 
   return (
     <div className={styles.container}>
@@ -358,6 +268,10 @@ const Section2 = () => {
                   setSelectedUser(user);
                 }}
               >
+                <span>
+                  {user.name} ({user.username})
+                  {onlineUsers.includes(user.username) && <span className={styles.onlineDot}>●</span>}
+                </span>
                 <div className={styles.userInfo}>
                   <span>{user.name} ({user.username})</span>
                   {unreadCount > 0 && (

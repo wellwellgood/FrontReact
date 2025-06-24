@@ -4,9 +4,9 @@ import axios from "axios";
 const loginWithBackupUrls = async (credentials) => {
 
   const apiUrls = [
-    "http://localhost:4000/users/login",
-    "http://localhost:4000/login",
-    "http://localhost:4000/auth/login"
+    "http://localhost:10000/users/login",
+    "http://localhost:10000/login",
+    "http://localhost:10000/auth/login"
   ];
 
   localStorage.removeItem("SuccessfulLoginUrl");

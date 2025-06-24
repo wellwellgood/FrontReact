@@ -64,4 +64,24 @@ const initializeSocket = (server) => {
   return io;
 };
 
+const onlineUsers = new Set();
+
+io.on("connection", (socket) => {
+  socket.on("online", (username) => {
+    onlineUsers.add(username);
+    io.emit("onlineUsers", Array.from(onlineUsers)); // 전체에 브로드캐스트
+  });
+
+  socket.on("disconnect", () => {
+    for (let user of onlineUsers) {
+      // 단순하게 모든 연결 해제 시 제거
+      if (socket.rooms.has(user)) {
+        onlineUsers.delete(user);
+        break;
+      }
+    }
+    io.emit("onlineUsers", Array.from(onlineUsers));
+  });
+});
+
 export default initializeSocket;

@@ -519,3 +519,9 @@ input[type="file"]{
   justify-content: center;
   background: #000;
 }
+
+.onlineDot {
+  color: #4caf50;
+  font-size: 12px;
+  margin-left: 5px;
+}

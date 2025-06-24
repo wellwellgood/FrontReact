@@ -42,6 +42,11 @@ const Section2 = () => {
   }, []);
 
   useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
     if (!username) return;
     const s = io(API, { transports: ["websocket"] });
     setSocket(s);

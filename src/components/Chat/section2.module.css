@@ -496,19 +496,7 @@ svg {
   overflow-y: scroll;
   padding-right: 12px;
 }
-.chatHeaderContainer::-webkit-scrollbar{
-  width: 6px;
-}
-.chatHeaderContainer::-webkit-scrollbar-track{
-  background: var(--accent-color);
-  border-radius: 10px;
-  border-right: 5px solid transparent;
-  /* background-clip: padding-box; */
-}
-.chatHeaderContainer::-webkit-scrollbar-thumb{
-  background: var(--accent-color);
-  border-radius: 10px;
-}
+
 input[type="file"]{
   width: 100px;
   border-radius: 0px;

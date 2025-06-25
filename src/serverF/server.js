@@ -42,7 +42,6 @@ app.use(async (req, res, next) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
 app.use("/api", messageRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/chat", chatRoutes);

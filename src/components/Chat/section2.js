@@ -61,26 +61,57 @@ const Section2 = () => {
       withCredentials: true,
     });
   
-    s.emit("join", username);
+    // 👉 소켓 연결 후 join 이벤트 보장
+    s.on("connect", () => {
+      console.log("🧷 소켓 연결됨:", s.id);
+      s.emit("join", username); // ✅ 반드시 방 입장
+    });
+  
     setSocket(s);
   
+    // ✅ 메시지 수신
     s.on("message", (msg) => {
       if (!msg) return;
   
-      const isCurrentChat =
-        msg.sender_username === selectedUser?.username ||
-        msg.receiver_username === selectedUser?.username;
+      const safeMsg = {
+        ...msg,
+        time: msg.time || new Date().toISOString(),
+        read: msg.read || false,
+        content: msg.content || '',
+        id: msg.id || `socket_${Date.now()}`,
+      };
   
-      if (!isCurrentChat) return;
+      // ✅ 선택된 유저 기준 양방향 비교
+      const shouldDisplay =
+        safeMsg.sender_username === selectedUser?.username ||
+        safeMsg.receiver_username === selectedUser?.username;
+  
+      if (!shouldDisplay) return;
   
       setMessages((prev) => {
-        const isDuplicate = prev.some((m) => m.id === msg.id);
-        return isDuplicate ? prev : [...prev, msg];
+        const isDuplicate = prev.some((m) =>
+          m.id === safeMsg.id ||
+          (m.sender_username === safeMsg.sender_username &&
+            m.receiver_username === safeMsg.receiver_username &&
+            m.content === safeMsg.content &&
+            Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
+        );
+        return isDuplicate ? prev : [...prev, safeMsg];
       });
     });
   
-    return () => s.disconnect();
-  }, [username, selectedUser]);
+    // ✅ 읽음 처리
+    s.on("messageRead", ({ messageId }) => {
+      setReadMessages((prev) => new Set([...prev, messageId]));
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
+      );
+    });
+  
+    return () => {
+      s.disconnect();
+    };
+  }, [username, selectedUser]); // ✅ selectedUser도 의존성에 포함
   
 
   // 자동 스크롤
@@ -410,7 +441,7 @@ const Section2 = () => {
                       <div className={styles.bubbleWrapper}>
                         <div className={styles.messageBubble}>
                           <div className={styles.messageText}>
-                          {msg.fileurl && msg.file_name &&(
+                          {msg.file_url && msg.file_name &&(
                             <div className={styles.filePreview}>
                               <button className={styles.downBtn} onClick={() => forceDownload(msg.fileurl, msg.file_name)}>
                               {msg.file_name} ({formatBytes(msg.file_size || 0)})

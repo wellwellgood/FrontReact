@@ -167,6 +167,14 @@ const Section2 = () => {
     }).catch((err) => {
       console.error("❌ 메시지 불러오기 또는 읽음 처리 실패:", err);
     });
+
+    socket.emit( "join", username);
+
+    socket.on("sendMessage", (msg) => {
+      console.log("💌 메시지 도착:", msg);
+      console.log("📤 보내는 대상 방:", msg.receiver_username);
+      io.to(msg.receiver_username).emit("message", msg);
+    });
   }, [selectedUser, username]);
 
   // 메시지 전송

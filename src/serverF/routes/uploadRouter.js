@@ -48,7 +48,10 @@ router.get("/", (req, res) => {
     const imageFiles = fs.readdirSync(imagesDir).map(file => ({
       type: "images",
       name: file,
-      file_name: file.split(/-(.+)/)[1] || file
+      file_name: (() => {
+        const idx = file.indexOf("-");
+        return idx !== -1 ? file.slice(idx + 1) : file;
+      })()
     }));
     const docFiles = fs.readdirSync(docsDir).map(file => ({
       type: "docs",

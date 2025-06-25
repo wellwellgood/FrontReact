@@ -16,18 +16,22 @@ const Search = ({
   const navigate = useNavigate();
   const [user, setUser] = useState({ profile_image: "" });
   const [profileImage, setProfileImage] = useState("");
+  const [username, setUsername] = useState(""); // 추가됨
   const [showInfoForm, setShowInfoForm] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const infoRef = useRef();
 
   useEffect(() => {
     const storedImage = sessionStorage.getItem("profileImage");
-    const username = sessionStorage.getItem("username");
-    if (!username) return;
+    const storedUsername = sessionStorage.getItem("username");
+    const receiverUsername = sessionStorage.getItem("receiver_username");
+
+    if (!storedUsername) return;
 
     setProfileImage(storedImage);
+    setUsername(receiverUsername || storedUsername); // receiver 있으면 그걸 사용
 
-    axios.get(`/api/users/${username}`)
+    axios.get(`/api/users/${storedUsername}`)
       .then((res) => setUser(res.data))
       .catch((err) => console.error("유저 정보 가져오기 실패:", err));
   }, []);
@@ -55,7 +59,7 @@ const Search = ({
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchText.trim() === '') return;
-    // 🔍 여기에 fetchSearchData(searchText) 같은 실제 검색 요청 로직 추가
+    // 🔍 실제 검색 요청 로직 추가 가능
   };
 
   const handleResultClick = (path) => {
@@ -116,11 +120,14 @@ const Search = ({
             onClick={handleProfileClick}
             alt="프로필"
           />
-
           {showInfoForm && (
             <div className={styles.infoform}>
               <span className={styles.userInfo}>
-                <h2>{`${user.name || user.username || "사용자"}님, 환영합니다!`}</h2>
+                <h2>
+                  {user.name
+                    ? `${user.name}(${user.username})님, 환영합니다!`
+                    : `${username}님, 환영합니다!`}
+                </h2>
               </span>
 
               <div className={styles.menuItem}>

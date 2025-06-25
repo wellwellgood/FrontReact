@@ -76,14 +76,17 @@ const Section2 = () => {
         time: msg.time || new Date().toISOString(),
         read: msg.read || false,
         content: msg.content || '',
-        id: msg.id || `socket_${Date.now()}`
+        id: msg.id || `socket_${Date.now()}`,
       };
   
-      const isCurrentChat =
-        (safeMsg.sender_username === selectedUserRef.current?.username && safeMsg.receiver_username === username) ||
-        (safeMsg.sender_username === username && safeMsg.receiver_username === selectedUserRef.current?.username);
+      // ❗ 수신자 또는 발신자가 현재 선택된 유저인 경우만 표시 (기존보다 느슨하게 체크)
+      const currentTarget = selectedUserRef.current?.username;
   
-      if (!isCurrentChat) return;
+      const shouldDisplay =
+        safeMsg.sender_username === currentTarget ||
+        safeMsg.receiver_username === currentTarget;
+  
+      if (!shouldDisplay) return;
   
       setMessages((prev) => {
         const isDuplicate = prev.some((m) =>
@@ -97,7 +100,7 @@ const Section2 = () => {
       });
     });
   
-    // 읽음 처리
+    // ✅ 읽음 처리 이벤트
     s.on("messageRead", ({ messageId }) => {
       setReadMessages((prev) => new Set([...prev, messageId]));
       setMessages((prev) =>
@@ -106,9 +109,10 @@ const Section2 = () => {
     });
   
     return () => {
-      s.disconnect(); // ✅ 컴포넌트 unmount 시 정리
+      s.disconnect();
     };
-  }, [username]); // ❗ selectedUser 넣지마! 무한 연결됨
+  }, [username]);
+  
 
   // 자동 스크롤
   const scrollToBottom = () => {

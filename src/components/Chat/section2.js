@@ -32,47 +32,39 @@ const Section2 = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userListError, setUserListError] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const selectedUserRef = useRef(null);
 
-  // 초기 로그인 정보 확인
   useEffect(() => {
     const u = sessionStorage.getItem("username");
     const n = sessionStorage.getItem("name");
-    if (!u || !n) {
-      navigate?.("/login") || (window.location.href = "/login");
-    } else {
+    if (!u || !n) navigate("/login");
+    else {
       setUsername(u);
       setName(n);
     }
   }, [navigate]);
 
-  // 테마 반영
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
     if (!username) return;
-  
+
     const s = io(API, {
       transports: ["websocket"],
       withCredentials: true,
     });
-  
-    // 👉 소켓 연결 후 join 이벤트 보장
+
     s.on("connect", () => {
       console.log("🧷 소켓 연결됨:", s.id);
-      s.emit("join", username); // ✅ 반드시 방 입장
+      s.emit("join", username);
     });
-  
+
     setSocket(s);
-  
-    // ✅ 메시지 수신
+
     s.on("message", (msg) => {
       if (!msg) return;
-  
       const safeMsg = {
         ...msg,
         time: msg.time || new Date().toISOString(),
@@ -80,14 +72,11 @@ const Section2 = () => {
         content: msg.content || '',
         id: msg.id || `socket_${Date.now()}`,
       };
-  
-      // ✅ 선택된 유저 기준 양방향 비교
       const shouldDisplay =
         safeMsg.sender_username === selectedUser?.username ||
         safeMsg.receiver_username === selectedUser?.username;
-  
       if (!shouldDisplay) return;
-  
+
       setMessages((prev) => {
         const isDuplicate = prev.some((m) =>
           m.id === safeMsg.id ||
@@ -99,37 +88,41 @@ const Section2 = () => {
         return isDuplicate ? prev : [...prev, safeMsg];
       });
     });
-  
-    // ✅ 읽음 처리
+
     s.on("messageRead", ({ messageId }) => {
       setReadMessages((prev) => new Set([...prev, messageId]));
       setMessages((prev) =>
         prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
       );
     });
-  
-    return () => {
-      s.disconnect();
-    };
-  }, [username, selectedUser]); // ✅ selectedUser도 의존성에 포함
-  
 
-  // 자동 스크롤
+    return () => s.disconnect();
+  }, [username, selectedUser]);
+
+  useEffect(() => {
+    if (!socket || !username) return;
+    socket.emit("join", username); // ✅ 보장용
+  }, [socket, username]);
+
+  useEffect(() => {
+    if (!socket || !username) return;
+    socket.emit("online", username);
+    const handleOnlineUsers = (list) => setOnlineUsers(list);
+    socket.on("onlineUsers", handleOnlineUsers);
+    return () => socket.off("onlineUsers", handleOnlineUsers);
+  }, [socket, username]);
+
   const scrollToBottom = () => {
     const box = chatBoxRef.current;
-    if (box) {
-      box.scrollTop = box.scrollHeight;
-    }
+    if (box) box.scrollTop = box.scrollHeight;
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // 사용자 목록 불러오기
   useEffect(() => {
     if (!username) return;
-
     setIsLoading(true);
     axios.get(`${API}/users`, { params: { exclude: username } })
       .then((res) => {
@@ -137,53 +130,30 @@ const Section2 = () => {
         setUserListError("");
       })
       .catch((err) => {
-        console.error("❌ 유저 목록 불러오기 실패:", err);
+        console.error("❌ 유저 목록 실패:", err);
         setUserListError("유저 목록을 불러오지 못했습니다.");
       })
       .finally(() => setIsLoading(false));
   }, [username]);
 
-  // 대화 상대 변경 시 메시지 불러오기 + 읽음 처리
   useEffect(() => {
     if (!username || !selectedUser) return;
-  
     axios.post(`${API}/api/messages/read`, {
       sender_username: selectedUser.username,
       receiver_username: username,
-    }).then(() => {
-      return axios.get(`${API}/api/messages`, {
-        params: {
-          username,
-          target: selectedUser.username,
-        },
-      });
-    }).then((res) => {
-      if (Array.isArray(res.data)) {
-        setMessages(res.data);
-      } else {
-        console.warn("🚨 메시지 응답이 배열이 아님:", res.data);
-        setMessages([]);
-      }
+    }).then(() => axios.get(`${API}/api/messages`, {
+      params: { username, target: selectedUser.username },
+    })).then((res) => {
+      setMessages(Array.isArray(res.data) ? res.data : []);
     }).catch((err) => {
-      console.error("❌ 메시지 불러오기 또는 읽음 처리 실패:", err);
-    });
-
-    socket.emit( "join", username);
-
-    socket.on("sendMessage", (msg) => {
-      console.log("💌 메시지 도착:", msg);
-      console.log("📤 보내는 대상 방:", msg.receiver_username);
-      io.to(msg.receiver_username).emit("message", msg);
+      console.error("❌ 메시지 불러오기 실패:", err);
     });
   }, [selectedUser, username]);
 
-  // 메시지 전송
   const handleSend = async () => {
     if (!input.trim() && !selectedFile) return;
-
     try {
       let fileUrl = null, fileName = null, fileSize = null;
-
       if (selectedFile) {
         const uniqueName = `${Date.now()}-${selectedFile.name}`;
         const fileRef = storageRef(storage, `chat/${uniqueName}`);
@@ -192,7 +162,6 @@ const Section2 = () => {
         fileName = selectedFile.name;
         fileSize = selectedFile.size;
       }
-
       const res = await axios.post(`${API}/api/messages`, {
         sender_username: username,
         receiver_username: selectedUser.username,
@@ -203,7 +172,6 @@ const Section2 = () => {
         file_size: fileSize,
         read: false,
       });
-
       setMessages((prev) => [...prev, res.data]);
       socket?.emit("sendMessage", res.data);
       setInput("");
@@ -211,114 +179,18 @@ const Section2 = () => {
       fileInputRef.current.value = "";
     } catch (err) {
       console.error("❌ 메시지 전송 실패:", err);
-      alert("메시지 전송 중 오류 발생");
     }
   };
 
-  // 키 이벤트
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  // 메시지 읽음 표시
-  const getMessageReadStatus = (msg) => {
-    if (msg.sender_username !== username) return null;
-    return msg.read || readMessages.has(msg.id) ? '읽음' : '안읽음';
-  };
-
-  // 메시지 필터
   const getFilteredMessages = () => {
     if (!selectedUser) return [];
     return messages.filter(
       (msg) =>
-        (msg.sender_username === username && msg.receiver_username === selectedUser?.username) ||
-        (msg.receiver_username === username && msg.sender_username === selectedUser?.username)
+        (msg.sender_username === username && msg.receiver_username === selectedUser.username) ||
+        (msg.receiver_username === username && msg.sender_username === selectedUser.username)
     );
   };
 
-  // 하이퍼링크 자동 처리
-  const convertTextToLink = (text) => {
-    const regex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi;
-    return text.split(regex).map((part, i) =>
-      regex.test(part) ? (
-        <a key={i} href={part.startsWith("http") ? part : `https://${part}`} target="_blank" rel="noopener noreferrer" style={{ color: "#4caf50" }}>
-          {part}
-        </a>
-      ) : part
-    );
-  };
-
-  // 용량 포맷
-  const formatBytes = (bytes) => {
-    if (!bytes) return "0 B";
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  // 다운로드
-  const forceDownload = async (url, filename) => {
-    try {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(blobUrl);
-    } catch (e) {
-      console.error("❌ 다운로드 실패:", e);
-    }
-  };
-
-  // 파일 선택
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
-
-  const handleNavigation = (path) => {
-    navigate?.(path) || (window.location.href = path);
-  };
-
-  const handleLogout = () => {
-    sessionStorage.clear();
-    socket?.disconnect();
-    setUsername(""); setName(""); setUsers([]);
-    setMessages([]); setSelectedUser(null); setReadMessages(new Set());
-    navigate?.("/login") || (window.location.href = "/login");
-  };
-
-  const fetchSearchData = () => {
-    console.log("🔍 검색 요청");
-  };
-
-  const DownIcon = () => (
-    <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
-  );
-
-
-  useEffect(() => {
-    if (!socket || !username) return;
-  
-    socket.emit("online", username);
-  
-    const handleOnlineUsers = (list) => {
-      setOnlineUsers(list);
-    };
-  
-    socket.on("onlineUsers", handleOnlineUsers);
-  
-    return () => {
-      socket.off("onlineUsers", handleOnlineUsers);
-    };
-  }, [socket, username]);
 
   return (
     <div className={styles.container}>

@@ -149,7 +149,7 @@ export default function FileUploadPage() {
                 {file.type === "images" ? (
                   <img
                     src={`${API}/uploads/images/${file.file_name}`}
-                    alt={file.file_name}
+                    alt={file_name}
                     className={styles.previewImage}
                   />
                 ) : (

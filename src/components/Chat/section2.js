@@ -191,6 +191,68 @@ const Section2 = () => {
     );
   };
 
+  const convertTextToLink = (text) => {
+    const regex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi;
+    return text.split(regex).map((part, i) =>
+      regex.test(part) ? (
+        <a key={i} href={part.startsWith("http") ? part : `https://${part}`} target="_blank" rel="noopener noreferrer" style={{ color: "#4caf50" }}>
+          {part}
+        </a>
+      ) : part
+    );
+  };
+
+  const formatBytes = (bytes) => {
+    if (!bytes) return "0 B";
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const forceDownload = async (url, filename) => {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("❌ 다운로드 실패:", e);
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    socket?.disconnect();
+    setUsername(""); setName(""); setUsers([]);
+    setMessages([]); setSelectedUser(null); setReadMessages(new Set());
+    navigate("/login");
+  };
+
+  const fetchSearchData = async () => {
+    try {
+      const res = await axios.get(`${API}/api/search`, { params: { q: searchText } });
+      setSearchResults(res.data || []);
+      setShowResults(true);
+    } catch (err) {
+      console.error("🔍 검색 실패:", err);
+    }
+  };
+
+  const DownIcon = () => (
+    <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
+  );
+
 
   return (
     <div className={styles.container}>

@@ -59,8 +59,11 @@ const Section2 = () => {
       transports: ["websocket"],
       withCredentials: true, // CORS 인증 쿠키용 (서버에서 credentials:true일 경우)
     });
+    
+    s.emit("join", username);
   
     setSocket(s);
+
   
     // 메시지 수신
     s.on("message", (msg) => {

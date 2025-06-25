@@ -59,7 +59,7 @@ const Section2 = () => {
       transports: ["websocket"],
       withCredentials: true, // CORS 인증 쿠키용 (서버에서 credentials:true일 경우)
     });
-    
+
     s.emit("join", username);
   
     setSocket(s);
@@ -67,33 +67,35 @@ const Section2 = () => {
   
     // 메시지 수신
     s.on("message", (msg) => {
-      if (!msg || msg.sender_username === username) return;
-  
-      const safeMsg = {
-        ...msg,
-        time: msg.time || new Date().toISOString(),
-        read: msg.read || false,
-        content: msg.content || '',
-        id: msg.id || `socket_${Date.now()}`
-      };
-  
-      const isCurrentChat =
-        (safeMsg.sender_username === selectedUser?.username && safeMsg.receiver_username === username) ||
-        (safeMsg.sender_username === username && safeMsg.receiver_username === selectedUser?.username);
-  
-      if (!isCurrentChat) return;
-  
-      setMessages((prev) => {
-        const isDuplicate = prev.some((m) =>
-          m.id === safeMsg.id ||
-          (m.sender_username === safeMsg.sender_username &&
-            m.receiver_username === safeMsg.receiver_username &&
-            m.content === safeMsg.content &&
-            Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
-        );
-        return isDuplicate ? prev : [...prev, safeMsg];
-      });
-    });
+  if (!msg) return;
+
+  const safeMsg = {
+    ...msg,
+    time: msg.time || new Date().toISOString(),
+    read: msg.read || false,
+    content: msg.content || '',
+    id: msg.id || `socket_${Date.now()}`
+  };
+
+  const isCurrentChat =
+    (safeMsg.sender_username === selectedUser?.username && safeMsg.receiver_username === username) ||
+    (safeMsg.sender_username === username && safeMsg.receiver_username === selectedUser?.username);
+
+  // ✅ 선택된 유저가 아니면 무시 (OK)
+  if (!isCurrentChat) return;
+
+  // ✅ 중복 메시지 필터링
+  setMessages((prev) => {
+    const isDuplicate = prev.some((m) =>
+      m.id === safeMsg.id ||
+      (m.sender_username === safeMsg.sender_username &&
+        m.receiver_username === safeMsg.receiver_username &&
+        m.content === safeMsg.content &&
+        Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
+    );
+    return isDuplicate ? prev : [...prev, safeMsg];
+  });
+});
   
     // 읽음 처리
     s.on("messageRead", ({ messageId }) => {

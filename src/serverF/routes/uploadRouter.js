@@ -45,11 +45,23 @@ router.post("/", upload.single("file"), (req, res) => {
 // ✅ 파일 목록 불러오기
 router.get("/", (req, res) => {
   try {
-    const imageFiles = fs.readdirSync(imagesDir).map(file => ({ type: "images", name: file }));
-    const docFiles = fs.readdirSync(docsDir).map(file => ({ type: "docs", name: file }));
+    const imageFiles = fs.readdirSync(imagesDir).map(file => ({
+      type: "images",
+      name: file,
+      file_name: file.split(/-(.+)/)[1] || file
+    }));
+    const docFiles = fs.readdirSync(docsDir).map(file => ({
+      type: "docs",
+      name: file,
+      file_name: file.split(/-(.+)/)[1] || file
+    }));
     const rootFiles = fs.readdirSync(uploadDir)
       .filter(file => file !== "images" && file !== "docs")
-      .map(file => ({ type: "others", name: file }));
+      .map(file => ({
+        type: "others",
+        name: file,
+        file_name: file.split(/-(.+)/)[1] || file
+      }));
 
     const allFiles = [...imageFiles, ...docFiles, ...rootFiles];
     res.status(200).json({ success: true, files: allFiles });

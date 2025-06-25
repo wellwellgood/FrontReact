@@ -71,6 +71,10 @@ const initializeSocket = (server) => {
       }
     });
 
+    socket.on("sendMessage", (msg) => {
+      io.to(msg.receiver_username).emit("message", msg);
+    });
+
     // ✅ 온라인 유저 추적
     socket.on("online", (username) => {
       onlineUsers.add(username);

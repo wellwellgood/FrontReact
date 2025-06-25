@@ -82,10 +82,6 @@ app.get("/users", async (req, res) => {
 // ✅ 소켓 연결
 initializeSocket(server);
 
-socket.on("sendMessage", (msg) => {
-  io.to(msg.receiver_username).emit("message", msg);
-});
-
 // ✅ 서버 시작
 const startServer = async () => {
   server.listen(PORT, () => {

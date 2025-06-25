@@ -13,15 +13,11 @@ export default function FileUploadPage() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const inputRef = useRef(null);
   const navigate = useNavigate();
-  const [theme, setTheme] = useState(() => {
-      return localStorage.getItem("theme") || "light";
-    });
-    const [searchResults, setSearchResults] = useState([]);
-    const [searchText, setSearchText] = useState("");
-    const [showResults, setShowResults] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    
-    
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const gotoHome = () => navigate("/main");
   const gotoLink1 = () => navigate("/ChatApp");
@@ -61,12 +57,10 @@ export default function FileUploadPage() {
     }
   };
 
-    useEffect(() => {
-      document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem("theme", theme);
-    }, [theme]);
-  
-
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const fetchFiles = async () => {
     try {
@@ -81,14 +75,14 @@ export default function FileUploadPage() {
 
   const handleDownload = async (file) => {
     try {
-      const response = await axios.get(`${API}/api/upload/download/${file.type}/${file.name}`, {
+      const response = await axios.get(`${API}/api/upload/download/${file.type}/${file.file_name}`, {
         responseType: "blob",
       });
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", file_name);
+      link.setAttribute("download", file.file_name);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -110,17 +104,17 @@ export default function FileUploadPage() {
         <div className={styles.nav}>
           <div className={styles.logo1}>
             <h2>Logo</h2>
-              <span></span>
-            </div>
+            <span></span>
+          </div>
           <ul>
             <li><button className={styles.button} onClick={gotoHome}>Home</button></li>
             <li><button className={styles.button} onClick={gotoLink1}>Chat</button></li>
             <li><button className={styles.button} onClick={gotoLink2}>File</button></li>
             <li><button className={styles.button} onClick={gotoLink3}>Email</button></li>
           </ul>
-          {/* <div className={styles.setting}><Link to="/">Setting</Link></div> */}
         </div>
       </nav>
+
       <Search
         setTheme={setTheme}
         fetchSearchData={fetchSearchData}
@@ -132,6 +126,7 @@ export default function FileUploadPage() {
         setShowResults={setShowResults}
         handleLogout={handleLogout}
       />
+
       <div className={styles.fileUpload}>
         <h2>파일 업로드 및 다운로드</h2>
         <div className={styles.upload}>
@@ -153,8 +148,8 @@ export default function FileUploadPage() {
               <div key={index} className={styles.fileItem}>
                 {file.type === "images" ? (
                   <img
-                    src={`${API}/uploads/images/${file_name}`}
-                    alt={file_name}
+                    src={`${API}/uploads/images/${file.file_name}`}
+                    alt={file.file_name}
                     className={styles.previewImage}
                   />
                 ) : (

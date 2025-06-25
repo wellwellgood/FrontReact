@@ -405,13 +405,13 @@ const Section2 = () => {
 
         {/* 채팅 박스 */}
         <div className={styles.chatBox}>
-          <div className={styles.chatHeaderContainer}>
+          <div className={styles.chatHeaderContainer} ref={chatBoxRef}>
             <div className={styles.chatHeader}>
               {selectedUser ? `${selectedUser.name}님과 채팅중...` : "채팅할 유저를 선택하세요"}
             </div>
           
             {/* 메시지 표시 영역 */}
-            <div className={styles.messages} ref={chatBoxRef}>
+            <div className={styles.messages}>
               {(() => {
                 const filteredMessages = getFilteredMessages();
 

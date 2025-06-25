@@ -101,7 +101,7 @@ const Section2 = () => {
 
   useEffect(() => {
     if (!socket || !username) return;
-    socket.emit("join", username); // ✅ 보장용
+    socket.emit("join", username);
   }, [socket, username]);
 
   useEffect(() => {
@@ -182,6 +182,18 @@ const Section2 = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const getMessageReadStatus = (msg) => {
+    if (msg.sender_username !== username) return null;
+    return msg.read || readMessages.has(msg.id) ? '읽음' : '안읽음';
+  };
+
   const getFilteredMessages = () => {
     if (!selectedUser) return [];
     return messages.filter(
@@ -237,6 +249,10 @@ const Section2 = () => {
     setUsername(""); setName(""); setUsers([]);
     setMessages([]); setSelectedUser(null); setReadMessages(new Set());
     navigate("/login");
+  };
+
+  const handleNavigation = (path) => {
+    navigate?.(path) || (window.location.href = path);
   };
 
   const fetchSearchData = async () => {

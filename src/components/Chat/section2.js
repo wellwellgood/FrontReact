@@ -54,10 +54,6 @@ const Section2 = () => {
 
   // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
-    selectedUserRef.current = selectedUser;
-  }, [selectedUser]);
-  
-  useEffect(() => {
     if (!username) return;
   
     const s = io(API, {
@@ -71,47 +67,20 @@ const Section2 = () => {
     s.on("message", (msg) => {
       if (!msg) return;
   
-      const safeMsg = {
-        ...msg,
-        time: msg.time || new Date().toISOString(),
-        read: msg.read || false,
-        content: msg.content || '',
-        id: msg.id || `socket_${Date.now()}`,
-      };
+      const isCurrentChat =
+        msg.sender_username === selectedUser?.username ||
+        msg.receiver_username === selectedUser?.username;
   
-      // ❗ 수신자 또는 발신자가 현재 선택된 유저인 경우만 표시 (기존보다 느슨하게 체크)
-      const currentTarget = selectedUserRef.current?.username;
-  
-      const shouldDisplay =
-        safeMsg.sender_username === currentTarget ||
-        safeMsg.receiver_username === currentTarget;
-  
-      if (!shouldDisplay) return;
+      if (!isCurrentChat) return;
   
       setMessages((prev) => {
-        const isDuplicate = prev.some((m) =>
-          m.id === safeMsg.id ||
-          (m.sender_username === safeMsg.sender_username &&
-            m.receiver_username === safeMsg.receiver_username &&
-            m.content === safeMsg.content &&
-            Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
-        );
-        return isDuplicate ? prev : [...prev, safeMsg];
+        const isDuplicate = prev.some((m) => m.id === msg.id);
+        return isDuplicate ? prev : [...prev, msg];
       });
     });
   
-    // ✅ 읽음 처리 이벤트
-    s.on("messageRead", ({ messageId }) => {
-      setReadMessages((prev) => new Set([...prev, messageId]));
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
-      );
-    });
-  
-    return () => {
-      s.disconnect();
-    };
-  }, [username]);
+    return () => s.disconnect();
+  }, [username, selectedUser]);
   
 
   // 자동 스크롤
@@ -224,9 +193,10 @@ const Section2 = () => {
   // 메시지 필터
   const getFilteredMessages = () => {
     if (!selectedUser) return [];
-    return messages.filter((msg) =>
-      (msg.sender_username === username && msg.receiver_username === selectedUser.username) ||
-      (msg.receiver_username === username && msg.sender_username === selectedUser.username)
+    return messages.filter(
+      (msg) =>
+        (msg.sender_username === username && msg.receiver_username === selectedUser?.username) ||
+        (msg.receiver_username === username && msg.sender_username === selectedUser?.username)
     );
   };
 

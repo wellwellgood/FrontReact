@@ -88,7 +88,7 @@ export default function FileUploadPage() {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", file.name);
+      link.setAttribute("download", file_name);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -153,8 +153,8 @@ export default function FileUploadPage() {
               <div key={index} className={styles.fileItem}>
                 {file.type === "images" ? (
                   <img
-                    src={`${API}/uploads/images/${file.name}`}
-                    alt={file.name}
+                    src={`${API}/uploads/images/${file_name}`}
+                    alt={file_name}
                     className={styles.previewImage}
                   />
                 ) : (

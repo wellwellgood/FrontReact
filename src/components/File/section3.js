@@ -158,7 +158,7 @@ export default function FileUploadPage() {
                     className={styles.previewImage}
                   />
                 ) : (
-                  <span>{file_name}</span>
+                  <span>{file.name}</span>
                 )}
                 <button onClick={() => handleDownload(file)}>다운로드</button>
               </div>

@@ -19,9 +19,14 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+const allowOrigin = 
+process.env.NODE_ENV === "production"
+? "https://react-server-wmqa.onrender.com"
+:  "http://localhost:3000";
+
 // CORS 설정 (withCredentials 허용)
 app.use(cors({
-  origin: "http://localhost:3000", // 배포 시 수정 필요
+  origin: allowOrigin, // 배포 시 수정 필요
   credentials: true
 }));
 
@@ -31,7 +36,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/upload", fileRoutes);
 
 // 서버 실행
-const PORT = 10000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, async () => {
   console.log("🔥 서버 실행 준비 중...");
   console.log(`✅ 서버가 http://localhost:${PORT} 에서 실행 중`);

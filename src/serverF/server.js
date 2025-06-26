@@ -42,15 +42,15 @@ app.use("/api/upload", fileRoutes);
 
 // 서버 실행
 const PORT = process.env.PORT || 10000;
-const server = http.createServer(app);      // ✅ 소켓 붙일 HTTP 서버
-initializeSocket(server);                   // ✅ socket.io 연결
+const server = http.createServer(app); // express 앱을 기반으로 HTTP 서버 생성
+initializeSocket(server);              // 소켓 서버 붙이기
 
 server.listen(PORT, async () => {
   console.log("🔥 서버 실행 준비 중...");
   console.log(`✅ 서버가 http://localhost:${PORT} 에서 실행 중`);
 
   try {
-    await initDB();                         // ✅ DB 연결 확인
+    await initDB();
     console.log(`✅ DB 연결 확인 완료: ${new Date().toISOString()}`);
   } catch (err) {
     console.error("⚠️ DB 연결 실패 (서버는 계속 실행됨)", err.message);

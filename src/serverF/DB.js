@@ -1,32 +1,26 @@
 // DB.js
-import pg from "pg";
+import pkg from "pg";
+const { Client } = pkg;
 import dotenv from "dotenv";
+
+// ✅ 그냥 기본 .env 불러오도록 수정
 dotenv.config();
 
-const { Pool } = pg;
-
-const pool = new Pool({
+// PostgreSQL 클라이언트 설정
+const client = new Client({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeoutMillis: 30000,
-  idleTimeoutMillis: 60000,
+  ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
 });
+console.log("🔐 DB 비밀번호:", process.env.DB_PASSWORD);
 
-export default pool;
-
-export async function testConnection() {
-  let client;
+const connectDB = async () => {
   try {
-    client = await pool.connect();
-    await client.query("SELECT NOW()");
+    await client.connect();
     console.log("✅ DB 연결 성공");
-    return true;
   } catch (err) {
     console.error("❌ DB 연결 실패:", err.message);
-    return false;
-  } finally {
-    if (client) client.release();
+    throw err;
   }
-}
+};
+
+export { client, connectDB };

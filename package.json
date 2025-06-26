@@ -11,6 +11,7 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "axios": "^1.8.4",
+    "cookie-parser": "^1.4.7",
     "coolsms-node-sdk": "^2.1.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -52,5 +53,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:4000"
+  "proxy": "http://localhost:10000"
 }

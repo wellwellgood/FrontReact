@@ -1,44 +1,34 @@
-// initDB.js
-import pool from "./DB.js";
+import pkg from "pg";
+const { Client } = pkg;
+import dotenv from "dotenv";
+dotenv.config();
 
-const MAX_RETRIES = 5;
-const RETRY_DELAY = 5000;
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+});
 
-const initDB = async (retryCount = 0) => {
-  let client;
+const initDB = async () => {
   try {
-    client = await pool.connect();
+    await client.connect();
+    console.log("✅ DB 연결 성공");
 
-    const createTableQuery = `
+    const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
-        username VARCHAR(50) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        name VARCHAR(50),
-        phone1 VARCHAR(10),
-        phone2 VARCHAR(10),
-        phone3 VARCHAR(10)
-      )
+        username VARCHAR(255) UNIQUE NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL
+      );
     `;
 
-    await client.query(createTableQuery);
+    await client.query(createUsersTable);
     console.log("✅ users 테이블 생성 완료");
-    return true;
-
   } catch (err) {
-    console.error(`❌ DB 초기화 실패 (시도 ${retryCount + 1}/${MAX_RETRIES}):`, err.message);
-
-    if (retryCount < MAX_RETRIES) {
-      console.log(`🔄 ${RETRY_DELAY / 1000}초 후 DB 초기화 재시도...`);
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      return initDB(retryCount + 1);
-    } else {
-      console.error(`❌ 최대 재시도 횟수(${MAX_RETRIES}) 초과. DB 초기화 실패.`);
-      return false;
-    }
-  } finally {
-    if (client) client.release();
+    console.error("❌ DB 연결 실패:", err.message);
+    throw err;
   }
 };
 
 export default initDB;
+export { client };

@@ -9,9 +9,7 @@ const Membership = () => {
     name: "",
     password: "",
     confirmPassword: "",
-    phone1: "",
-    phone2: "",
-    phone3: "",
+    phone: ""
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -35,15 +33,13 @@ const Membership = () => {
 
     try {
       const res = await axios.post(
-        "https://react-server-wmqa.onrender.com/api/auth/register",
+        `${process.env.REACT_APP_API_BASE}/api/auth/register`,
         {
           username: formData.username,
           name: formData.name,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
-          phone1: formData.phone1,
-          phone2: formData.phone2,
-          phone3: formData.phone3,
+          phone: `${formData.phone1}-${formData.phone2}-${formData.phone3}`,
         },
         {
           headers: {

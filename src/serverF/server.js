@@ -1,112 +1,45 @@
-// server.js
 import dotenv from "dotenv";
 dotenv.config();
 
-import express from "express";
-import http from "http";
-import path from "path";
-import corsMiddleware from "./middlewares/cors.js";
-import initDB from "./initDB.js";
-import { testConnection } from "./DB.js";
-import db from "./chatServer/controllers/db.js";
+console.log("✅ DB_PASSWORD:", process.env.DB_PASSWORD);
 
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.js";
 import messageRoutes from "./routes/message.js";
-import chatRoutes from "./chatLog/logs.js";
-import initializeSocket from "./socket.js";
-import userRoutes from "./routes/user.js";
-import uploadRoutes from "./routes/uploadRouter.js";
+import fileRoutes from "./routes/uploadRouter.js";
+import initDB from "./initDB.js"; // DB 연결 함수
+import { connectDB } from "./DB.js";
+await connectDB();
 
 const app = express();
-const server = http.createServer(app);
-const PORT = process.env.PORT || 10000;
 
-app.use(corsMiddleware);
+// 미들웨어
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use("/api/users", userRoutes);
+app.use(cookieParser());
 
-let dbConnected = false;
-app.use(async (req, res, next) => {
-  if (!dbConnected && (
-    req.path.startsWith('/api/auth') ||
-    req.path.startsWith('/api/messages') ||
-    req.path.startsWith('/api/chat')
-  )) {
-    return res.status(503).json({
-      status: 'error',
-      message: '데이터베이스 연결이 현재 불가능합니다. 잠시 후 다시 시도해주세요.'
-    });
-  }
-  next();
-});
+// CORS 설정 (withCredentials 허용)
+app.use(cors({
+  origin: "http://localhost:3000", // 배포 시 수정 필요
+  credentials: true
+}));
 
+// 라우터 등록
 app.use("/api/auth", authRoutes);
-app.use("/api", messageRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/chat", chatRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/upload", fileRoutes);
 
-app.get("/", (req, res) => {
-  res.json({
-    status: "online",
-    dbStatus: dbConnected ? "connected" : "disconnected",
-    message: "서버 정상 작동 중입니다."
-  });
-});
+// 서버 실행
+const PORT = 10000;
+app.listen(PORT, async () => {
+  console.log("🔥 서버 실행 준비 중...");
+  console.log(`✅ 서버가 http://localhost:${PORT} 에서 실행 중`);
 
-app.get("/api/status/db", async (req, res) => {
-  const isConnected = await testConnection();
-  dbConnected = isConnected;
-  
-  res.json({
-    dbStatus: isConnected ? "connected" : "disconnected",
-    lastChecked: new Date().toISOString()
-  });
-});
-
-app.get("/users", async (req, res) => {
-  const exclude = req.query.exclude || "";
   try {
-    const result = await db.query(
-      "SELECT username, name FROM users WHERE username != $1 ORDER BY name",
-      [exclude]
-    );
-    res.status(200).json(result.rows);
+    await initDB();
+    console.log(`✅ DB 연결 확인 완료: ${new Date().toISOString()}`);
   } catch (err) {
-    console.error("❌ 유저 목록 조회 실패:", err.message);
-    res.status(500).json({ message: "서버 오류", error: err.message });
+    console.error("⚠️ DB 연결 실패 (서버는 계속 실행됨)", err.message);
   }
 });
-
-// ✅ 소켓 연결
-initializeSocket(server);
-
-// ✅ 서버 시작
-const startServer = async () => {
-  server.listen(PORT, () => {
-    console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
-
-    testConnection().then(connected => {
-      dbConnected = connected;
-      if (connected) {
-        console.log('✅ DB 연결 확인 완료');
-        return initDB();
-      } else {
-        console.log('⚠️ DB 연결 실패 (서버는 계속 실행됨)');
-        setInterval(async () => {
-          const result = await testConnection();
-          if (result && !dbConnected) {
-            dbConnected = true;
-            console.log('✅ DB 연결 복구됨');
-            initDB();
-          } else if (!result && dbConnected) {
-            dbConnected = false;
-            console.log('❌ DB 연결이 끊어짐');
-          }
-        }, 10 * 60 * 1000);
-      }
-    });
-  });
-};
-
-startServer();

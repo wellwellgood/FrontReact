@@ -1,81 +1,129 @@
-import express from "express";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import bcrypt from "bcrypt";
-import db from "../chatServer/controllers/db.js";
+import dotenv from "dotenv";
+dotenv.config(); 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { client } from "../DB.js";
 
 const router = express.Router();
-const logsDir = path.join(__dirname, "../chatLog/logs");
 
-// 로그 디렉토리 없으면 생성
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
-}
+const generateAccessToken = (user) =>
+  jwt.sign(
+    { id: user.id, username: user.username, name: user.name },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
 
-// ✅ 채팅 로그 저장 함수
-function writeChatLog(senderId, receiverId, message) {
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-  const logFilePath = path.join(logsDir, `${today}.log`);
-  const timestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
-  const log = `[${timestamp}] sender_id:${senderId} -> receiver_id:${receiverId} : "${message}"\n`;
+const generateRefreshToken = (user) =>
+  jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
 
-  fs.appendFileSync(logFilePath, log);
-}
-
-// ✅ 채팅 저장 API
-router.post("/", (req, res) => {
-  const { sender_id, receiver_id, content } = req.body;
-
-  if (!sender_id || !receiver_id || !content) {
-    return res.status(400).json({ message: "필수 값 누락" });
-  }
-
-  writeChatLog(sender_id, receiver_id, content);
-  res.status(201).json({ message: "채팅 로그 저장 완료" });
-});
-
-// ✅ 로그인 API (bcrypt + DB)
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: "아이디 또는 비밀번호 누락" });
+// ✅ 회원가입
+router.post("/register", async (req, res) => {
+  const { username, password, name, phone } = req.body;
+  if (!username || !password || !name || !phone) {
+    return res.status(400).json({ message: "입력 누락" });
   }
 
   try {
-    const result = await db.query(
-      "SELECT * FROM users WHERE username = $1",
-      [username]
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await client.query(
+      "INSERT INTO users (username, password, name, phone) VALUES ($1, $2, $3, $4)",
+      [username, hashedPassword, name, phone]
     );
+    res.status(201).json({ message: "회원가입 완료" });
+  } catch (err) {
+    console.error("❌ 회원가입 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
 
-    if (result.rows.length === 0) {
-      return res.status(401).json({ message: "존재하지 않는 사용자입니다." });
-    }
+// ✅ 로그인
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ message: "입력 누락" });
+
+  try {
+    const result = await client.query("SELECT * FROM users WHERE username = $1", [username]);
+    if (result.rows.length === 0) return res.status(401).json({ message: "유저 없음" });
 
     const user = result.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "비밀번호 틀림" });
 
-    if (!isMatch) {
-      return res.status(401).json({ message: "비밀번호가 틀렸습니다." });
-    }
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    res.status(200).json({
-      message: "로그인 성공",
-      user: {
-        id: user.id,
-        username: user.username,
-        name: user.name,
-        phone: user.phone,
-      },
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    res.status(200).json({ message: "로그인 성공", accessToken });
   } catch (err) {
-    console.error("❌ 로그인 오류:", err.message);
-    res.status(500).json({ message: "서버 오류", error: err.message });
+    console.error("❌ 로그인 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
   }
+});
+
+// ✅ 아이디 찾기
+router.post("/find-id", async (req, res) => {
+  const { name, phone1, phone2, phone3 } = req.body;
+  const phone = `${phone1}-${phone2}-${phone3}`;
+
+  try {
+    const result = await client.query("SELECT username FROM users WHERE name = $1 AND phone = $2", [name, phone]);
+    if (result.rows.length === 0) return res.status(404).json({ message: "일치하는 사용자 없음" });
+
+    return res.status(200).json({ username: result.rows[0].username });
+  } catch (err) {
+    console.error("❌ 아이디 찾기 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+// ✅ 비밀번호 찾기 (임시)
+router.post("/find-password", async (req, res) => {
+  const { username, name, phone1, phone2, phone3 } = req.body;
+  const phone = `${phone1}-${phone2}-${phone3}`;
+
+  try {
+    const result = await client.query(
+      "SELECT * FROM users WHERE username = $1 AND name = $2 AND phone = $3",
+      [username, name, phone]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ message: "정보 불일치" });
+
+    const token = jwt.sign({ id: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    res.status(200).json({ message: "인증 완료", token });
+  } catch (err) {
+    console.error("❌ 비밀번호 찾기 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+// ✅ 토큰 재발급
+router.post("/token", async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(401).json({ message: "Refresh Token 없음" });
+
+  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
+    if (err) return res.status(403).json({ message: "토큰 유효하지 않음" });
+
+    const result = await client.query("SELECT * FROM users WHERE id = $1", [decoded.id]);
+    if (result.rows.length === 0) return res.status(404).json({ message: "사용자 없음" });
+
+    const newAccessToken = generateAccessToken(result.rows[0]);
+    res.status(200).json({ accessToken: newAccessToken });
+  });
+});
+
+// ✅ 로그아웃
+router.post("/logout", (req, res) => {
+  res.clearCookie("refreshToken");
+  res.status(200).json({ message: "로그아웃 완료" });
 });
 
 export default router;

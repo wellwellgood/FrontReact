@@ -4,7 +4,7 @@ import cors from "cors";
 const allowedOrigins = [
   "https://kkydashboard.netlify.app",
   "http://localhost:3000",
-  "http://localhost:4000",
+  "http://localhost:10000",
   "https://react-server-wmqa.onrender.com"
 ];
 

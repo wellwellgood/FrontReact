@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 const allowOrigin = 
 process.env.NODE_ENV === "production"
-? "https://react-server-wmqa.onrender.com"
+? "https://kkydashboard.netlify.app"
 :  "http://localhost:3000";
 
 // CORS 설정 (withCredentials 허용)

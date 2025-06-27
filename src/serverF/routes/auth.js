@@ -4,7 +4,7 @@ dotenv.config();
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { client } from "../DB.js";
+import  pool  from "../DB.js";
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router.post("/register", async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    await client.query(
+    await pool.query(
       "INSERT INTO users (username, password, name, phone) VALUES ($1, $2, $3, $4)",
       [username, hashedPassword, name, phone]
     );
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
   if (!username || !password) return res.status(400).json({ message: "입력 누락" });
 
   try {
-    const result = await client.query("SELECT * FROM users WHERE username = $1", [username]);
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
     if (result.rows.length === 0) return res.status(401).json({ message: "유저 없음" });
 
     const user = result.rows[0];
@@ -74,7 +74,7 @@ router.post("/find-id", async (req, res) => {
   const phone = `${phone1}-${phone2}-${phone3}`;
 
   try {
-    const result = await client.query("SELECT username FROM users WHERE name = $1 AND phone = $2", [name, phone]);
+    const result = await pool.query("SELECT username FROM users WHERE name = $1 AND phone = $2", [name, phone]);
     if (result.rows.length === 0) return res.status(404).json({ message: "일치하는 사용자 없음" });
 
     return res.status(200).json({ username: result.rows[0].username });
@@ -90,7 +90,7 @@ router.post("/find-password", async (req, res) => {
   const phone = `${phone1}-${phone2}-${phone3}`;
 
   try {
-    const result = await client.query(
+    const result = await pool.query(
       "SELECT * FROM users WHERE username = $1 AND name = $2 AND phone = $3",
       [username, name, phone]
     );
@@ -112,7 +112,7 @@ router.post("/token", async (req, res) => {
   jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
     if (err) return res.status(403).json({ message: "토큰 유효하지 않음" });
 
-    const result = await client.query("SELECT * FROM users WHERE id = $1", [decoded.id]);
+    const result = await pool.query("SELECT * FROM users WHERE id = $1", [decoded.id]);
     if (result.rows.length === 0) return res.status(404).json({ message: "사용자 없음" });
 
     const newAccessToken = generateAccessToken(result.rows[0]);

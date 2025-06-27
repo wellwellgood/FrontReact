@@ -1,6 +1,6 @@
 // socket.js
 import { Server } from "socket.io";
-import { client } from "./DB.js"; 
+import pool from "./DB.mjs";
 
 const initializeSocket = (server) => {
   const io = new Server(server, {
@@ -28,7 +28,7 @@ const initializeSocket = (server) => {
     // ✅ 메시지 전송 처리 (클라이언트에서 emit: sendMessage)
     socket.on("sendMessage", async (msg) => {
       try {
-        const result = await client.query(
+        const result = await pool.query(
           `INSERT INTO messages 
             (sender_username, receiver_username, content, file_url, file_name, file_size, read) 
            VALUES ($1, $2, $3, $4, $5, $6, false) 
@@ -67,7 +67,7 @@ const initializeSocket = (server) => {
     // ✅ DB에서도 읽음 업데이트 처리
     socket.on("markAsRead", async ({ messageId }) => {
       try {
-        await client.query(`UPDATE messages SET read = true WHERE id = $1`, [messageId]);
+        await pool.query(`UPDATE messages SET read = true WHERE id = $1`, [messageId]);
         console.log("✅ 읽음 처리 완료:", messageId);
       } catch (err) {
         console.error("❌ 읽음 처리 실패:", err);

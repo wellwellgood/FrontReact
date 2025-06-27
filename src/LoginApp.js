@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./App.module.css";
 // import axios from "axios";
-import api from "./utill/api";
+import api from "./utill/api.js"; // API 호출을 위한 axios 인스턴스
 
 function LoginPage() {
   const navigate = useNavigate();

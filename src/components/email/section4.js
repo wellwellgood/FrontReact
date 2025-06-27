@@ -3,12 +3,12 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Search from "../../search";
+import Search from "../../search.js";
 import emailjs from "@emailjs/browser";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import styles from "./AA/email.js/SendEmail.module.css"
-import AccountSetting from '../../AccountSetting';
+import AccountSetting from '../../AccountSetting.js';
 import axios from "axios";
 
 // 🔧 Firebase 설정

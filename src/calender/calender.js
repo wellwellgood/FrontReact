@@ -3,9 +3,9 @@ import 'react-calendar/dist/Calendar.css';
 import "./calender.css";
 import Calendar from "react-calendar";
 import moment from "moment";
-import CalendarContainer from "./CalendarContainer";  // CalendarContainer 임포트
-import DropdownButton from "./DropdownButton";  // DropdownButton 임포트
-import CalendarWrapper from "./CalendarWrapper";  // CalendarWrapper 임포트
+import CalendarContainer from "./CalendarContainer.js";  // CalendarContainer 임포트
+import DropdownButton from "./DropdownButton.js";  // DropdownButton 임포트
+import CalendarWrapper from "./CalendarWrapper.js";  // CalendarWrapper 임포트
 
 const CustomCalendar = ({ onChange, value }) => {
   const [nowDate, setNowDate] = useState("날짜");

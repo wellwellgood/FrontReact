@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
 import styles from "./section2.module.css";
-import Search from "../../search";
+import Search from "../../search.js";
 import { useNavigate } from "react-router-dom";
 import { FaPaperclip } from "react-icons/fa";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebase/firebase";
+import { storage } from "../../firebase/firebase.js";
 import { ReactComponent as Icon } from '../../image/download-svgrepo-com.svg';
 
 const API = "https://react-server-wmqa.onrender.com";

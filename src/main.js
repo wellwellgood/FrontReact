@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, Navigate } from "react-router-dom";
-import CustomCalendar from "./calender/calender";
+import CustomCalendar from "./calender/calender.js";
 import styles from "./main.module.css";
-import Search from "./search";
+import Search from "./search.js";
 import axios from "axios";
-import AccountSetting from './AccountSetting';
+import AccountSetting from './AccountSetting.js';
 
 function Main() {
   const navigate = useNavigate();

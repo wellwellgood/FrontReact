@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./section3.module.css";
-import Search from "../../search";
+import Search from "../../search.js";
 
 // ✅ 환경에 따라 API 주소 자동 선택
 const API = process.env.REACT_APP_API || "http://localhost:4000";

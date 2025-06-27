@@ -1,6 +1,6 @@
 // routes/user.js (ESM 버전)
 import express from "express";
-import pool from "../DB.js";
+import pool from "../DB.mjs";
 
 const router = express.Router();
 

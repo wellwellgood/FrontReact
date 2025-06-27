@@ -14,7 +14,7 @@ import user from "./routes/user.js"
 import messageRoutes from "./routes/message.js";
 import fileRoutes from "./routes/uploadRouter.js";
 import initDB from "./initDB.js"; // DB 연결 함수
-import { connectDB } from "./DB.js";
+import { connectDB } from "./DB.mjs";
 await connectDB();
 
 const app = express();

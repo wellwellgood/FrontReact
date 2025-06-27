@@ -4,7 +4,7 @@ dotenv.config();
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import  pool  from "../DB.js";
+import  pool  from "../DB.mjs";
 
 const router = express.Router();
 

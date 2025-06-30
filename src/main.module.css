@@ -265,6 +265,19 @@ li link{
     transform: rotate(90deg);
   }
 }
+
+.mainboard .sign{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 82%;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  
+}
 .mainboard .info{
   position: relative;
   display: flex;

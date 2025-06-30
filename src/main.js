@@ -93,7 +93,12 @@ function Main() {
             <span>MAIN</span>
             <div className={styles.morebtn}><Link to="/"></Link></div>
           </div>
-          <div><h1>aaa</h1></div>
+          <div className={styles.sign}>
+            <h1>
+              해당 프로젝트는 구조 기능에 대한 프로젝트임으로 <br />
+              서버의 슬립모드 이슈가 있어 기능 실행의 로딩시간이 있을 수 있습니다.
+            </h1>
+          </div>
         </div>
         <div className={styles.info}>
           <div className={styles.title}>

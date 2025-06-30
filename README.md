@@ -1,3 +1,5 @@
+무료배포로 사용중이라 로딩 및 노출이 늦을수 있음!
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -3,6 +3,10 @@
 React + Node.js + Firebase 기반의 **실시간 채팅 및 파일 공유 대시보드**입니다.  
 팀 협업을 위한 기능을 중심으로, 사용자 친화적인 UI와 다양한 설정 기능을 제공합니다.
 
+# Free Deploy
+
+비용 부담 없이도 최대한 실제 서비스에 가깝게 구축하고자 했고, Neon의 Free 플랜의 슬립모드 특성을 고려해 UX 최적화를 시도했습니다. 추후 확장 시 유료 플랜도 고려해봤습니다
+
 ## 🔗 배포 링크
 - 🖥️ 프론트엔드: [https://kkydashboard.netlify.app](https://kkydashboard.netlify.app)
 - 🛠️ 백엔드(API): [https://react-server-wmqa.onrender.com](https://react-server-wmqa.onrender.com)

@@ -1,4 +1,4 @@
-무료배포로 사용중이라 로딩 및 노출이 늦을수 있음!
+#무료배포로 사용중이라 로딩 및 노출이 늦을수 있음!
 
 # Getting Started with Create React App
 

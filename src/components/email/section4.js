@@ -52,7 +52,7 @@ const FirebaseEmailForm = () => {
       setSearchResults(response.data);
       setShowResults(true);
     } catch (error) {
-      console.error("검색 데이터 가져오기 실패:", error);
+      console.error( error);
       setSearchResults([]);
     } finally {
       setIsLoading(false);
@@ -96,7 +96,7 @@ const FirebaseEmailForm = () => {
       form.current.reset();
       setFile(null);
     } catch (error) {
-      console.error("업로드 또는 이메일 전송 오류:", error);
+      console.error(error);
       alert("실패: " + error.message);
     } finally {
       setUploading(false);
@@ -121,7 +121,7 @@ const FirebaseEmailForm = () => {
         setUser(res.data);
       })
       .catch((err) => {
-        console.error("유저 정보 가져오기 실패:", err);
+        console.error(err);
       });
   }, [username]);
 

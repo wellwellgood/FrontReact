@@ -57,7 +57,7 @@ const Section2 = () => {
     });
 
     s.on("connect", () => {
-      console.log("🧷 소켓 연결됨:", s.id);
+      // console.log("🧷 소켓 연결됨:", s.id);
       s.emit("join", username);
     });
 
@@ -130,7 +130,7 @@ const Section2 = () => {
         setUserListError("");
       })
       .catch((err) => {
-        console.error("❌ 유저 목록 실패:", err);
+        // console.error("❌ 유저 목록 실패:", err);
         setUserListError("유저 목록을 불러오지 못했습니다.");
       })
       .finally(() => setIsLoading(false));
@@ -146,7 +146,7 @@ const Section2 = () => {
     })).then((res) => {
       setMessages(Array.isArray(res.data) ? res.data : []);
     }).catch((err) => {
-      console.error("❌ 메시지 불러오기 실패:", err);
+      console.error(err);
     });
   }, [selectedUser, username]);
 
@@ -178,7 +178,7 @@ const Section2 = () => {
       setSelectedFile(null);
       fileInputRef.current.value = "";
     } catch (err) {
-      console.error("❌ 메시지 전송 실패:", err);
+      console.error(err);
     }
   };
 
@@ -232,7 +232,7 @@ const Section2 = () => {
       a.click();
       URL.revokeObjectURL(blobUrl);
     } catch (e) {
-      console.error("❌ 다운로드 실패:", e);
+      console.error(e);
     }
   };
 
@@ -261,7 +261,7 @@ const Section2 = () => {
       setSearchResults(res.data || []);
       setShowResults(true);
     } catch (err) {
-      console.error("🔍 검색 실패:", err);
+      console.error(err);
     }
   };
 

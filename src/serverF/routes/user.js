@@ -4,13 +4,23 @@ import pool from "../DB.mjs";
 
 const router = express.Router();
 
-// 🔹 전체 유저 목록 조회
+// 🔹 전체 유저 목록 (exclude 파라미터 지원)
 router.get("/", async (req, res) => {
+  const exclude = req.query.exclude;
+
   try {
-    const result = await pool.query("SELECT username, name, profile_image FROM users");
+    let result;
+    if (exclude) {
+      result = await pool.query(
+        "SELECT username, name, profile_image FROM users WHERE username != $1",
+        [exclude]
+      );
+    } else {
+      result = await pool.query("SELECT username, name, profile_image FROM users");
+    }
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ 전체 유저 조회 실패:", err);
+    console.error("❌ 유저 조회 실패:", err);
     res.status(500).json({ error: "서버 오류" });
   }
 });

@@ -10,7 +10,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.js";
-import user from "./routes/user.js"
+import userRoutes from "./routes/user.js"
 import messageRoutes from "./routes/message.js";
 import fileRoutes from "./routes/uploadRouter.js";
 import initDB from "./initDB.js"; // DB 연결 함수
@@ -22,7 +22,6 @@ const app = express();
 // 미들웨어
 app.use(express.json());
 app.use(cookieParser());
-app.use("/user",user);
 
 const allowOrigin = 
 process.env.NODE_ENV === "production"
@@ -39,6 +38,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/upload", fileRoutes);
+app.use("/users", userRoutes);
 
 // 서버 실행
 const PORT = process.env.PORT || 10000;

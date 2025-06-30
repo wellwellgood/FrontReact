@@ -124,7 +124,7 @@ const Section2 = () => {
   useEffect(() => {
     if (!username) return;
     setIsLoading(true);
-    axios.get(`${API}/api/users`, { params: { exclude: username } })
+    axios.get(`${API}/users`, { params: { exclude: username } })
       .then((res) => {
         setUsers(res.data);
         setUserListError("");

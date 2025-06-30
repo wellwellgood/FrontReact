@@ -7,13 +7,6 @@ React + Node.js + Firebase 기반의 **실시간 채팅 및 파일 공유 대시
 - 🖥️ 프론트엔드: [https://kkydashboard.netlify.app](https://kkydashboard.netlify.app)
 - 🛠️ 백엔드(API): [https://react-server-wmqa.onrender.com](https://react-server-wmqa.onrender.com)
 
-## 📸 스크린샷
-> ※ 아래는 실제 UI 예시입니다.
-
-| 채팅 UI | 설정 페이지 |
-|--------|-------------|
-| ![chat](./screenshots/chat.png) | ![settings](./screenshots/settings.png) |
-
 ## ✨ 주요 기능
 - 🧑‍💻 로그인 / 회원가입 (sessionStorage 기반)
 - 💬 실시간 채팅 (Socket.IO)
@@ -87,12 +80,6 @@ npm start
 cd ../serverF
 npm install
 node server.mjs
-\`\`\`
-
-## 🧪 테스트 계정
-\`\`\`
-ID: testuser
-PW: 1234
 \`\`\`
 
 ## 🧑‍💻 개발자

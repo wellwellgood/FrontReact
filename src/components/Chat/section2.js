@@ -138,7 +138,7 @@ const Section2 = () => {
 
   useEffect(() => {
     if (!username || !selectedUser) return;
-    axios.post(`${API}/messages/read`, {
+    axios.post(`${API}/api/messages/read`, {
       sender_username: selectedUser.username,
       receiver_username: username,
     }).then(() => axios.get(`${API}/api/messages`, {

@@ -36,7 +36,7 @@ app.use(cors({
 
 // 라우터 등록
 app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
+app.use("/api", messageRoutes);
 app.use("/api/upload", fileRoutes);
 app.use("/users", userRoutes);
 

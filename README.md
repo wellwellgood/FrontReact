@@ -1,73 +1,104 @@
-#무료배포로 사용중이라 로딩 및 노출이 늦을수 있음!
+# 💬 KKY Dashboard – 실시간 채팅 대시보드
 
-# Getting Started with Create React App
+React + Node.js + Firebase 기반의 **실시간 채팅 및 파일 공유 대시보드**입니다.  
+팀 협업을 위한 기능을 중심으로, 사용자 친화적인 UI와 다양한 설정 기능을 제공합니다.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🔗 배포 링크
+- 🖥️ 프론트엔드: [https://kkydashboard.netlify.app](https://kkydashboard.netlify.app)
+- 🛠️ 백엔드(API): [https://react-server-wmqa.onrender.com](https://react-server-wmqa.onrender.com)
 
-## Available Scripts
+## 📸 스크린샷
+> ※ 아래는 실제 UI 예시입니다.
 
-In the project directory, you can run:
+| 채팅 UI | 설정 페이지 |
+|--------|-------------|
+| ![chat](./screenshots/chat.png) | ![settings](./screenshots/settings.png) |
 
-### `npm start`
+## ✨ 주요 기능
+- 🧑‍💻 로그인 / 회원가입 (sessionStorage 기반)
+- 💬 실시간 채팅 (Socket.IO)
+- 📎 파일 업로드 & 다운로드 (Firebase Storage)
+- 🛠️ 프로필 / 테마 / 알림 설정
+- 🔔 채팅 알림 (브라우저 푸시 or 토스트)
+- 🧾 메시지 읽음 처리
+- 🌙 고대비 테마 모드
 
-Runs the app in the development mode.\
-Open [http://localhost:10000](http://localhost:10000) to view it in your browser.
+## 🧩 기술 스택
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Frontend
+- React (Hooks, Router)
+- CSS Module
+- Axios
+- Netlify 배포
 
-### `npm test`
+### Backend
+- Node.js + Express
+- PostgreSQL (Neon)
+- Firebase Admin SDK (파일 업로드 관리)
+- Socket.IO
+- Render 배포
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 기타
+- localStorage 기반 사용자 설정 저장
+- dotenv + .env 환경변수 구성
 
-### `npm run build`
+## 📁 프로젝트 구조
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+\`\`\`
+📦 root
+├─ client/             # React 프론트엔드
+│  ├─ src/
+│  │  ├─ components/
+│  │  ├─ pages/
+│  │  └─ App.jsx
+├─ serverF/            # 백엔드(Node.js + Express)
+│  ├─ routes/
+│  ├─ middlewares/
+│  ├─ server.mjs
+│  └─ DB.js
+\`\`\`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## ⚙️ 로컬 실행 방법
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### ✅ 환경 변수 설정
 
-### `npm run eject`
+`.env` 파일 생성 (serverF 폴더에):
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+\`\`\`env
+DATABASE_URL=your_postgresql_url
+FIREBASE_PROJECT_ID=...
+FIREBASE_PRIVATE_KEY=...
+FIREBASE_CLIENT_EMAIL=...
+\`\`\`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### ▶ 실행 절차
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+\`\`\`bash
+# 1. 저장소 클론
+git clone https://github.com/yourname/kkydashboard.git
+cd kkydashboard
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# 2. 클라이언트 실행
+cd client
+npm install
+npm start
 
-## Learn More
+# 3. 서버 실행
+cd ../serverF
+npm install
+node server.mjs
+\`\`\`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🧪 테스트 계정
+\`\`\`
+ID: testuser
+PW: 1234
+\`\`\`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🧑‍💻 개발자
+| 이름 | 포지션 | GitHub |
+|------|--------|--------|
+| 김기윤 | 웹 기획 및 제작 견습생 | [@wellwellgood](https://github.com/wellwellgood) |
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# FrontReact
+## 📄 라이선스
+MIT License

@@ -46,12 +46,6 @@ const initializeSocket = (server) => {
         msg.id = result.rows[0].id;
         msg.read = false;
 
-        // 📤 받은 사용자에게만 메시지 전송
-        io.to(msg.receiver_username).emit("message", msg);
-
-        // 📤 보낸 사용자에게도 다시 echo (자기 채팅창에 바로 보이게)
-        socket.emit("message", msg);
-
         console.log("📤 메시지 저장 및 전송:", msg);
       } catch (err) {
         console.error("❌ 메시지 저장 오류:", err);

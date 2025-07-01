@@ -11,7 +11,7 @@ const client = new Client({
 const initDB = async () => {
   try {
     await client.connect();
-    console.log("✅ DB 연결 성공");
+    // console.log("✅ DB 연결 성공");
 
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
@@ -23,9 +23,9 @@ const initDB = async () => {
     `;
 
     await client.query(createUsersTable);
-    console.log("✅ users 테이블 생성 완료");
+    // console.log("✅ users 테이블 생성 완료");
   } catch (err) {
-    console.error("❌ DB 연결 실패:", err.message);
+    console.error(err.message);
     throw err;
   }
 };

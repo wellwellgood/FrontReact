@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log("✅ DB_PASSWORD:", process.env.DB_PASSWORD);
+// console.log("✅ DB_PASSWORD:", process.env.DB_PASSWORD);
 
 import http from "http";
 import initializeSocket from "./socket.js"
 
+import corsMiddleware from "./middlewares/cors.js";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -19,14 +20,16 @@ await connectDB();
 
 const app = express();
 
+
 // 미들웨어
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(cookieParser());
 
 const allowOrigin = 
 process.env.NODE_ENV === "production"
 ? "https://kkydashboard.netlify.app"
-:  "http://localhost:3000";
+:  "http://localhost:10000";
 
 // CORS 설정 (withCredentials 허용)
 app.use(cors({
@@ -46,13 +49,11 @@ const server = http.createServer(app); // express 앱을 기반으로 HTTP 서�
 initializeSocket(server);              // 소켓 서버 붙이기
 
 server.listen(PORT, async () => {
-  console.log("🔥 서버 실행 준비 중...");
-  console.log(`✅ 서버가 http://localhost:${PORT} 에서 실행 중`);
 
   try {
     await initDB();
-    console.log(`✅ DB 연결 확인 완료: ${new Date().toISOString()}`);
+    console.log(`Running : ${new Date().toISOString()}`);
   } catch (err) {
-    console.error("⚠️ DB 연결 실패 (서버는 계속 실행됨)", err.message);
+    console.error( err.message);
   }
 });

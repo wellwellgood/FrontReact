@@ -1,4 +1,4 @@
-import React, { useState , useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "react-calendar/dist/Calendar.css";
 import "./calender.css";
 import Calendar from "react-calendar";
@@ -42,13 +42,18 @@ const CustomCalendar = ({ onChange, value }) => {
     if (selectedDate && dateRefs.current[formatDate(selectedDate)]) {
       const target = dateRefs.current[formatDate(selectedDate)];
       const rect = target.getBoundingClientRect();
+
+      const popupHeight = 0; // 예상 메모창 높이 (px)
+      const willOverflow = rect.top + popupHeight > window.innerHeight;
+
       setMemoPosition({
-        top: rect.top + window.scrollY - 480,
+        top: willOverflow
+          ? rect.top + window.scrollY - popupHeight
+          : rect.top + window.scrollY - 480,
         left: rect.left + window.scrollX - 280,
       });
     }
   }, [selectedDate]);
-
 
   return (
     <CalendarContainer>
@@ -63,12 +68,12 @@ const CustomCalendar = ({ onChange, value }) => {
             const key = formatDate(date);
             return (
               <div
-                ref={(el) => {(dateRefs.current[key] = el)}}
-                className="calender-cell-wrapper"
-                >
-                  {memos[key] ? <span className="memo-dot">●</span> : null}
+                ref={(el) => (dateRefs.current[formatDate(date)] = el)}
+                className="calendar-cell-wrapper"
+              >
+                {memos[key] ? <span className="memo-dot">📝</span> : null}
               </div>
-            )
+            );
           }}
           tileClassName={({ date }) => {
             const isSelected =
@@ -79,23 +84,22 @@ const CustomCalendar = ({ onChange, value }) => {
       </CalendarWrapper>
 
       {showMemoInput && selectedDate && (
-        <div className="memo-popup"
-        style={{
-          position: "absolute",
-          top : `${memoPosition.top}px`,
-          left: `${memoPosition.left}px`,
-          zIndex: 1000,
-        }}
+        <div
+          className="memo-popup"
+          style={{
+            position: "absolute",
+            top: `${memoPosition.top}px`,
+            left: `${memoPosition.left}px`,
+            zIndex: 999,
+          }}
         >
           <h4>{formatDate(selectedDate)} 메모</h4>
-        <div className="memoarea">
           <textarea
-              rows="4"
-              value={memos[formatDate(selectedDate)] || ""}
-              onChange={handleMemoChange}
-            ></textarea>
-            <button className="memoareabtn" onClick={() => setShowMemoInput(false)}>저장</button>
-          </div>
+            rows="4"
+            value={memos[formatDate(selectedDate)] || ""}
+            onChange={handleMemoChange}
+          ></textarea>
+          <button className="memoareabtn" onClick={() => setShowMemoInput(false)}>저장</button>
         </div>
       )}
     </CalendarContainer>

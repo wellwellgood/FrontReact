@@ -30,6 +30,7 @@ setInterval( async () => {
   } catch (err) {
     console.log(err.message);
   }
+  console.log("ping");
 }, 1000 * 60 *4.5)
 
 export default pool;

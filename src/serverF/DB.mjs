@@ -24,5 +24,13 @@ const connectDB = async () => {
   }
 };
 
+setInterval( async () => {
+  try {
+    await pool.query('SELECT 1');
+  } catch (err) {
+    console.log(err.message);
+  }
+}, 1000 * 60 *4.5)
+
 export default pool;
 export { connectDB };

@@ -44,6 +44,11 @@ function AppContent() {
         />
       )}
 
+      {showSettings && (
+        <AccountSetting onClose={() => setShowSettings(false)} />
+      )}
+
+      {/* 페이지 라우팅 */}
       <Routes>
         {/* 비로그인 허용 */}
         <Route path="/" element={<LoginPage />} />
@@ -75,10 +80,6 @@ function AppContent() {
           </ProtectedRoute>
         } />
       </Routes>
-
-      {showSettings && (
-        <AccountSetting onClose={() => setShowSettings(false)} />
-      )}
     </div>
   );
 }

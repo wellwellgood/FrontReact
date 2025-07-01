@@ -125,8 +125,8 @@ const Search = ({
               <span className={styles.userInfo}>
                 <h2>
                   {user.name
-                    ? `${user.name}(${user.username})님, 환영합니다!`
-                    : `${username}(${user.username})님, 환영합니다!`}
+                    ? `${user.name}님, 환영합니다!`
+                    : `${username}님, 환영합니다!`}
                 </h2>
               </span>
 

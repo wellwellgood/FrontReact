@@ -19,7 +19,7 @@ exports.saveMessage = async (req, res) => {
     const result = await db.query(
       `INSERT INTO messages (
         sender_username, receiver_username, receiver_name,
-        content, fileurl, file_name, file_size, read, time
+        content, file_url, file_name, file_size, read, time
        ) VALUES ($1, $2, $3, $4, $5, $6, $7, false, NOW()) RETURNING *`,
       [
         sender_username,

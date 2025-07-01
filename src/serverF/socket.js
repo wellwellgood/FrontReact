@@ -31,8 +31,8 @@ const initializeSocket = (server) => {
         const result = await pool.query(
           `INSERT INTO messages 
             (sender_username, receiver_username, content, file_url, file_name, file_size, read) 
-           VALUES ($1, $2, $3, $4, $5, $6, false) 
-           RETURNING id`,
+          VALUES ($1, $2, $3, $4, $5, $6, false) 
+          RETURNING id`,
           [
             msg.sender_username,
             msg.receiver_username,

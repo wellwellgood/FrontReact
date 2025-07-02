@@ -6,22 +6,25 @@ const router = express.Router();
 
 // 🔹 전체 유저 목록 (exclude 파라미터 지원)
 router.get("/", async (req, res) => {
-  const exclude = req.query.exclude;
-
   try {
-    let result;
+    const { exclude } = req.query;
+    const client = await pool.connect();
+
+    let query = "SELECT id, username, name FROM users";
+    let values = [];
+
     if (exclude) {
-      result = await pool.query(
-        "SELECT username, name, profile_image FROM users WHERE username != $1",
-        [exclude]
-      );
-    } else {
-      result = await pool.query("SELECT username, name, profile_image FROM users");
+      query += " WHERE username != $1";
+      values.push(exclude);
     }
+
+    const result = await client.query(query, values);
+    client.release();
+
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ 유저 조회 실패:", err);
-    res.status(500).json({ error: "서버 오류" });
+    console.error(err.message);
+    res.status(500).send("서버 오류");
   }
 });
 

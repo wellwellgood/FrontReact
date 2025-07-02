@@ -16,7 +16,7 @@ exports.getUsers = async (req, res) => {
   const excludeUsername = req.query.exclude;
   try {
     const [users] = await db.query(
-      "SELECT username, name FROM users WHERE username != ?",
+      "SELECT username, name FROM users WHERE username IS NOT NULL AND username != ?",
       [excludeUsername]
     );
     res.status(200).json(users);

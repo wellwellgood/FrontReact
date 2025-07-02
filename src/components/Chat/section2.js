@@ -59,6 +59,7 @@ const Section2 = () => {
     s.on("connect", () => {
       s.emit("join", username);
     });
+    console.log("내 username:", username);
   
     setSocket(s);
   

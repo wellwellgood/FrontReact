@@ -33,10 +33,6 @@ const Section2 = () => {
   const [userListError, setUserListError] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
 
-  // 현재 시간 출력 (한국 시간)
-const date = new Date(msg.created_at);
-const koreaTime = date.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
-
   useEffect(() => {
     const u = sessionStorage.getItem("username");
     const n = sessionStorage.getItem("name");

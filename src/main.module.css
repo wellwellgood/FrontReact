@@ -112,7 +112,7 @@ li:hover::after{
 }
 li:nth-of-type(1)::before{
   content: '';
-  background-image: url(image/house.svg);
+  background-image: url("image/house.svg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -124,7 +124,7 @@ li:nth-of-type(1)::before{
 }
 li:nth-of-type(2)::before{
   content: '';
-  background-image: url(image/chat-dots.svg);
+  background-image: url("image/chat-dots.svg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -136,7 +136,7 @@ li:nth-of-type(2)::before{
 }
 li:nth-of-type(3)::before{
   content: '';
-  background-image: url(image/cloud.svg);
+  background-image: url("image/cloud.svg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -148,7 +148,7 @@ li:nth-of-type(3)::before{
 }
 li:nth-of-type(4)::before{
   content: '';
-  background-image: url(image/envelope.svg);
+  background-image: url("image/envelope.svg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;

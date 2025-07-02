@@ -19,8 +19,6 @@ import { connectDB } from "./DB.mjs";
 await connectDB();
 
 const app = express();
-const koreaTime = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
-
 
 // 미들웨어
 app.use(corsMiddleware);

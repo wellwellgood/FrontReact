@@ -3,6 +3,8 @@ import pkg from "pg";
 const { Pool } = pkg;
 import dotenv from "dotenv";
 
+const timestamp = new Date().toISOString();
+
 dotenv.config();
 
 // PostgreSQL 커넥션 풀 설정

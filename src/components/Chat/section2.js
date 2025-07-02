@@ -33,6 +33,10 @@ const Section2 = () => {
   const [userListError, setUserListError] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
 
+  // 현재 시간 출력 (한국 시간)
+const date = new Date(msg.created_at);
+const koreaTime = date.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+
   useEffect(() => {
     const u = sessionStorage.getItem("username");
     const n = sessionStorage.getItem("name");
@@ -50,94 +54,54 @@ const Section2 = () => {
 
   useEffect(() => {
     if (!username) return;
-
+  
     const s = io(API, {
       transports: ["websocket"],
       withCredentials: true,
     });
-
+  
     s.on("connect", () => {
-      // console.log("🧷 소켓 연결됨:", s.id);
       s.emit("join", username);
     });
-
+  
     setSocket(s);
-
+  
+    // ✅ 메시지 수신 (중복 메시지 방지)
     s.on("message", (msg) => {
       if (!msg) return;
+  
       const safeMsg = {
         ...msg,
         time: msg.time || new Date().toISOString(),
-        read: msg.read || false,
+        read: msg.read ?? false,
         content: msg.content || '',
         id: msg.id || `socket_${Date.now()}`,
       };
+  
       const shouldDisplay =
         safeMsg.sender_username === selectedUser?.username ||
         safeMsg.receiver_username === selectedUser?.username;
+  
       if (!shouldDisplay) return;
-
+  
       setMessages((prev) => {
-        const isDuplicate = prev.some((m) =>
-          m.id === safeMsg.id ||
-          (m.sender_username === safeMsg.sender_username &&
-            m.receiver_username === safeMsg.receiver_username &&
-            m.content === safeMsg.content &&
-            Math.abs(new Date(m.time) - new Date(safeMsg.time)) < 2000)
-        );
+        const isDuplicate = prev.some((m) => m.id === safeMsg.id);
         return isDuplicate ? prev : [...prev, safeMsg];
       });
     });
-
+  
+    // ✅ 읽음 처리
     s.on("messageRead", ({ messageId }) => {
       setReadMessages((prev) => new Set([...prev, messageId]));
       setMessages((prev) =>
         prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
       );
     });
-
-    return () => s.disconnect();
-  }, [username, selectedUser]);
-
-  useEffect(() => {
-    if (!socket || !username) return;
-    socket.emit("join", username);
-  }, [socket, username]);
-
-  useEffect(() => {
-    if (!socket || !username) return;
-    socket.emit("online", username);
-    const handleOnlineUsers = (list) => setOnlineUsers(list);
-    socket.on("onlineUsers", handleOnlineUsers);
-    return () => socket.off("onlineUsers", handleOnlineUsers);
-  }, [socket, username]);
-
-  const scrollToBottom = () => {
-    const box = chatBoxRef.current;
-    if (box) box.scrollTop = box.scrollHeight;
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    if (!username) return;
-    setIsLoading(true);
-    axios.get(`${API}/users`,
-      { params: { exclude: username },
-      withCredentials: true
-    })
-      .then((res) => {
-        setUsers(res.data);
-        setUserListError("");
-      })
-      .catch((err) => {
-        // console.error("❌ 유저 목록 실패:", err);
-        setUserListError("유저 목록을 불러오지 못했습니다.");
-      })
-      .finally(() => setIsLoading(false));
-  }, [username]);
+  
+    return () => {
+      s.disconnect();
+    };
+  }, [username]); // ✅ selectedUser 제거됨
 
 
 
@@ -167,7 +131,8 @@ const Section2 = () => {
         fileName = selectedFile.name;
         fileSize = selectedFile.size;
       }
-      const res = await axios.post(`${API}/api/messages`, {
+  
+      await axios.post(`${API}/api/messages`, {
         sender_username: username,
         receiver_username: selectedUser.username,
         receiver_name: selectedUser.name,
@@ -177,8 +142,7 @@ const Section2 = () => {
         file_size: fileSize,
         read: false,
       });
-      setMessages((prev) => [...prev, res.data]);
-      socket?.emit("sendMessage", res.data);
+  
       setInput("");
       setSelectedFile(null);
       fileInputRef.current.value = "";
@@ -186,6 +150,7 @@ const Section2 = () => {
       console.error(err);
     }
   };
+  
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -418,6 +383,7 @@ const Section2 = () => {
                             <span className={styles.time}>
                               {msg.time
                                 ? new Date(msg.time).toLocaleTimeString("ko-KR", {
+                                    timeZone: "Asia/Seoul",
                                     year: "2-digit",
                                     hour: "2-digit",
                                     minute: "2-digit",

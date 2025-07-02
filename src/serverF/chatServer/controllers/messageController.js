@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("./db.js");
 
+const time = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(' ', 'T');
 // ✅ 메시지 저장
 exports.saveMessage = async (req, res) => {
   const {
@@ -28,7 +29,8 @@ exports.saveMessage = async (req, res) => {
         content,
         file_url,
         file_name,
-        Number(file_size) || 0
+        Number(file_size) || 0,
+        time
       ]
     );
 

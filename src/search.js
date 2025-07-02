@@ -116,7 +116,7 @@ const Search = ({
         <div className={styles.userInfoBox} ref={infoRef}>
           <img
             className={styles.profileImage}
-            src={user.profile_image ? `https://react-server-wmqa.onrender.com${profileImage}` : "/img/icons8-user-48.png"}
+            src={user.profile_image ? `https://react-server-wmqa.onrender.com${profileImage}` : "/img/person-circle.png"}
             onClick={handleProfileClick}
             alt="프로필"
           />

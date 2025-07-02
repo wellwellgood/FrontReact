@@ -75,8 +75,10 @@ const Section2 = () => {
       };
   
       const shouldDisplay =
-        safeMsg.sender_username === selectedUser?.username ||
-        safeMsg.receiver_username === selectedUser?.username;
+        selectedUser && (
+          safeMsg.sender_username === selectedUser?.username ||
+          safeMsg.receiver_username === selectedUser?.username
+        );
   
       if (!shouldDisplay) return;
   

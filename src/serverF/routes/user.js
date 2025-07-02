@@ -10,11 +10,11 @@ router.get("/", async (req, res) => {
     const { exclude } = req.query;
     const client = await pool.connect();
 
-    let query = "SELECT id, username, name FROM users";
+    let query = "SELECT id, username, name FROM users WHERE username IS NOT NULL";
     let values = [];
 
     if (exclude) {
-      query += " WHERE username != $1";
+      query += " AND username != $1";
       values.push(exclude);
     }
 
@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 
     res.json(result.rows);
   } catch (err) {
-    console.error(err.message);
+    console.error("❌ 유저 목록 오류:", err.message);
     res.status(500).send("서버 오류");
   }
 });

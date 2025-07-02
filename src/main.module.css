@@ -112,7 +112,7 @@ li:hover::after{
 }
 li:nth-of-type(1)::before {
   content: "";
-  background-image: url("/image/setting.png");
+  background-image: url("image/house.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -123,7 +123,7 @@ li:nth-of-type(1)::before {
 
 li:nth-of-type(2)::before {
   content: "";
-  background-image: url("/image/plus.png");
+  background-image: url("image/chat-dots.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -134,7 +134,7 @@ li:nth-of-type(2)::before {
 
 li:nth-of-type(3)::before {
   content: "";
-  background-image: url("/image/cloud.png");
+  background-image: url("image/cloud.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -144,7 +144,7 @@ li:nth-of-type(3)::before {
 }
 li:nth-of-type(4)::before{
   content: '';
-  background-image: url("/image/envelope.png");
+  background-image: url("image/envelope.png");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -181,7 +181,7 @@ li link{
 }
 .setting::before{
   content: '';
-  background-image: url(image/setting.png);
+  /* background-image: url(image/setting.png); */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;

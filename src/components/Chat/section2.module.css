@@ -120,7 +120,7 @@ nav {
 
 .setting::before {
   content: '';
-  background-image: url(../../image/setting.png);
+  /* background-image: url(../../image/setting.png); */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -143,12 +143,13 @@ li:nth-of-type(3)::before {
   z-index: 9;
 }
 li:nth-of-type(4)::before{
-  content: '';
+  content: "";
   background-image: url("image/envelope.png");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   width: 30px;
+  height: 30px;
   z-index: 9;
 }
 li link{

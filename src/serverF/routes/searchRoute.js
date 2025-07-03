@@ -43,39 +43,41 @@ router.get("/", async (req, res) => {
  * @desc 실시간 자동완성 추천 (입력 중 검색어 힌트)
  */
 router.get("/suggest", async (req, res) => {
-  const { keyword } = req.query;
-  if (!keyword || keyword.trim() === "") {
-    return res.json([]);
-  }
-
-  const key = `%${keyword}%`;
-
-  try {
-    const [userRes, fileRes] = await Promise.all([
-      pool.query(`
-        SELECT name AS label, 'user' AS type
-        FROM users
-        WHERE username ILIKE $1 OR name ILIKE $1
-        LIMIT 5;
-      `, [key]),
-
-      pool.query(`
-        SELECT file_name AS label, 'file' AS type
-        FROM uploads
-        WHERE file_name ILIKE $1 OR description ILIKE $1
-        LIMIT 5;
-      `, [key])
-    ]);
-
-    console.log("🔍 Suggest 요청:", keyword);
-    console.log("👤 사용자 결과:", userRes.rows);
-    console.log("📁 파일 결과:", fileRes.rows);
-
-    res.json([...userRes.rows, ...fileRes.rows]);
-  } catch (e) {
-    console.error("❌ 자동완성 실패:", e);
-    res.status(500).json({ error: "서버 오류" });
-  }
-});
+    const { keyword } = req.query;
+    if (!keyword || keyword.trim() === "") {
+      return res.json([]);
+    }
+  
+    const key = `%${keyword}%`;
+  
+    try {
+      const [userRes, fileRes] = await Promise.all([
+        pool.query(`
+            SELECT name AS label, 'user' AS type
+            FROM users
+            WHERE username ILIKE $1 OR name ILIKE $1
+            LIMIT 5;
+          `, [key]),
+    
+          pool.query(`
+            SELECT file_name AS label, 'file' AS type
+            FROM messages
+            WHERE file_name ILIKE $1
+            LIMIT 5;
+          `, [key]),
+          
+        pool.query(`
+            SELECT DISTINCT content AS label, 'text' AS type
+            FROM messages
+            WHERE content ILIKE $1
+            LIMIT 5;`)
+      ]);
+  
+      res.json([...userRes.rows, ...fileRes.rows]);
+    } catch (err) {
+      console.error("❌ 자동완성 실패:", err);
+      res.status(500).json({ error: "서버 오류" });
+    }
+  });
 
 export default router;

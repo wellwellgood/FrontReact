@@ -44,7 +44,7 @@ const Search = ({
   
     const timer = setTimeout(async () => {
       try {
-        const res = axios.get(`/api/search/suggest?keyword=${searchText}`);
+        const res = await axios.get(`/api/search/suggest?keyword=${searchText}`); // ✅ await 붙임
         const data = Array.isArray(res.data) ? res.data : [];
         console.log("✅ 자동완성 응답:", data);
         setSearchResults(data);
@@ -144,9 +144,13 @@ const Search = ({
       <div className={styles.resultItem}>결과 없음</div>
     ) : (
       searchResults.map((s, i) => (
-        <div key={i} className={styles.resultItem}>
-          <pre style={{ color: "white" }}>{JSON.stringify(s, null, 2)}</pre>
-        </div>
+<div
+  key={i}
+  className={styles.resultItem}
+  onClick={() => handleResultClick(`/search?keyword=${s.label}`)}
+>
+  [{s.type}] {s.label}
+</div>
       ))
     )}
   </div>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
-// import { Link } from 'react-router-dom';
 import axios from 'axios';
 import styles from './search.module.css';
-import personIcon from './image/person-circle.jpg'
+import personIcon from './image/person-circle.jpg';
 
 const Search = ({
   showSettings = false,
@@ -17,12 +16,12 @@ const Search = ({
   const navigate = useNavigate();
   const [user, setUser] = useState({ profile_image: "" });
   const [profileImage, setProfileImage] = useState("");
-  const [username, setUsername] = useState(""); // 추가됨
+  const [username, setUsername] = useState("");
   const [showInfoForm, setShowInfoForm] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const infoRef = useRef();
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const infoRef = useRef();
 
   useEffect(() => {
     const storedImage = sessionStorage.getItem("profileImage");
@@ -32,19 +31,20 @@ const Search = ({
     if (!storedUsername) return;
 
     setProfileImage(storedImage);
-    setUsername(receiverUsername || storedUsername); // receiver 있으면 그걸 사용
+    setUsername(receiverUsername || storedUsername);
 
     axios.get(`/api/users/${storedUsername}`)
-    .then(res => console.log("자동완성 응답:", res.data))
-    .catch(err => console.error("자동완성 실패:", err));
+      .then(res => console.log("유저 정보:", res.data))
+      .catch(err => console.error("유저 로딩 실패:", err));
   }, []);
 
+  // 자동완성
   useEffect(() => {
     if (!searchText.trim()) return setSearchResults([]);
-  
+
     const timer = setTimeout(async () => {
       try {
-        const res = await axios.get(`/api/search/suggest?keyword=${searchText}`); // ✅ await 붙임
+        const res = await axios.get(`/api/search/suggest?keyword=${searchText}`);
         const data = Array.isArray(res.data) ? res.data : [];
         console.log("✅ 자동완성 응답:", data);
         setSearchResults(data);
@@ -54,19 +54,28 @@ const Search = ({
         setSearchResults([]);
       }
     }, 300);
-  
+
     return () => clearTimeout(timer);
   }, [searchText]);
-  
 
+  // 키워드 검색
   const handleSearch = async (e) => {
     e.preventDefault();
     if (searchText.trim() === '') return;
-  
+
     try {
       setIsLoading(true);
       const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
-      setSearchResults(res.data);
+
+      const data = Array.isArray(res.data) ? res.data : [];
+      const formatted = data.map((item) => {
+        if (item.type === "user") return { type: "user", label: item.name || item.username };
+        if (item.type === "file") return { type: "file", label: item.file_name };
+        if (item.type === "content") return { type: "content", label: item.content };
+        return { type: "unknown", label: "Unknown" };
+      });
+
+      setSearchResults(formatted);
       setShowResults(true);
     } catch (err) {
       console.error("🔍 검색 실패:", err);
@@ -75,7 +84,6 @@ const Search = ({
       setIsLoading(false);
     }
   };
-  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -138,23 +146,24 @@ const Search = ({
             />
             <button type="submit" className={styles.searchButton}><FaSearch /></button>
           </form>
+
           {showResults && Array.isArray(searchResults) && (
-  <div className={styles.resultsPanel}>
-    {searchResults.length === 0 ? (
-      <div className={styles.resultItem}>결과 없음</div>
-    ) : (
-      searchResults.map((s, i) => (
-<div
-  key={i}
-  className={styles.resultItem}
-  onClick={() => handleResultClick(`/search?keyword=${s.label}`)}
->
-  [{s.type}] {s.label}
-</div>
-      ))
-    )}
-  </div>
-)}
+            <div className={styles.resultsPanel}>
+              {searchResults.length === 0 ? (
+                <div className={styles.resultItem}>결과 없음</div>
+              ) : (
+                searchResults.map((s, i) => (
+                  <div
+                    key={i}
+                    className={styles.resultItem}
+                    onClick={() => handleResultClick(`/search?keyword=${s.label}`)}
+                  >
+                    [{s.type}] {s.label}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         <div className={styles.userInfoBox} ref={infoRef}>
@@ -176,10 +185,7 @@ const Search = ({
 
               <div className={styles.menuItem}>
                 <button
-                  onClick={() => {
-                    console.log("⚙️ 설정 버튼 클릭됨");
-                    setShowSettings(true);
-                  }}
+                  onClick={() => setShowSettings(true)}
                   className={styles.settingsButton}
                 >
                   ⚙️ 설정 열기
@@ -197,9 +203,7 @@ const Search = ({
               </div>
 
               <div className={styles.user}>
-                <span className={styles.userbox}>
-                  <button className={styles.logout} onClick={handleLogout}>로그아웃</button>
-                </span>
+                <button className={styles.logout} onClick={handleLogout}>로그아웃</button>
               </div>
             </div>
           )}

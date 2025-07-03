@@ -1,54 +1,54 @@
 import express from "express";
-import pool from "../DB.mjs";
+import { pool } from "../DB.mjs";
+
 const router = express.Router();
 
+// 🔍 자동완성 API
 router.get("/suggest", async (req, res) => {
   const { keyword } = req.query;
-
-  if (!keyword || keyword.trim() === "") {
-    return res.json([]);
-  }
+  if (!keyword) return res.json([]);
 
   const key = `%${keyword}%`;
 
   try {
     const [userRes, fileRes, contentRes] = await Promise.all([
-      // 사용자 이름 + ID 검색
-      pool.query(`
-        SELECT name AS label, 'user' AS type
-        FROM users
-        WHERE username ILIKE $1 OR name ILIKE $1
-        LIMIT 5;
-      `, [key]),
-
-      // 파일명 검색 (메시지에 첨부된 파일)
-      pool.query(`
-        SELECT file_name AS label, 'file' AS type
-        FROM messages
-        WHERE file_name IS NOT NULL AND file_name ILIKE $1
-        LIMIT 5;
-      `, [key]),
-
-      // 메시지 내용 검색 (선택사항)
-      pool.query(`
-        SELECT DISTINCT content AS label, 'content' AS type
-        FROM messages
-        WHERE content IS NOT NULL AND content ILIKE $1
-        LIMIT 5;
-      `, [key])
+      pool.query(`SELECT username, name FROM users WHERE username ILIKE $1 OR name ILIKE $1 LIMIT 5`, [key]),
+      pool.query(`SELECT file_name FROM messages WHERE file_name ILIKE $1 LIMIT 5`, [key]),
+      pool.query(`SELECT content FROM messages WHERE content ILIKE $1 LIMIT 5`, [key]),
     ]);
 
-    const results = [
-      ...userRes.rows,
-      ...fileRes.rows,
-      ...contentRes.rows
-    ].filter(item => item.label); // null 제거
+    const suggestions = [
+      ...userRes.rows.map(u => ({ type: "user", label: u.name || u.username })),
+      ...fileRes.rows.map(f => ({ type: "file", label: f.file_name })),
+      ...contentRes.rows.map(c => ({ type: "content", label: c.content })),
+    ];
 
-    console.log("🔍 자동완성 결과:", results);
-    res.json(results);
+    res.json(suggestions);
   } catch (err) {
-    console.error("❌ 자동완성 에러:", err);
-    res.status(500).json({ error: "서버 오류" });
+    console.error("❌ 자동완성 실패:", err);
+    res.status(500).json([]);
+  }
+});
+
+// 🔎 전체 검색 API
+router.get("/", async (req, res) => {
+  const { query } = req.query;
+  if (!query) return res.json([]);
+
+  const key = `%${query}%`;
+
+  try {
+    const [userRes, fileRes, contentRes] = await Promise.all([
+      pool.query(`SELECT 'user' AS type, id, username, name FROM users WHERE username ILIKE $1 OR name ILIKE $1`, [key]),
+      pool.query(`SELECT 'file' AS type, id, file_name FROM messages WHERE file_name ILIKE $1`, [key]),
+      pool.query(`SELECT 'content' AS type, id, content FROM messages WHERE content ILIKE $1`, [key]),
+    ]);
+
+    const allResults = [...userRes.rows, ...fileRes.rows, ...contentRes.rows];
+    res.json(allResults);
+  } catch (err) {
+    console.error("❌ 검색 실패:", err);
+    res.status(500).json([]);
   }
 });
 

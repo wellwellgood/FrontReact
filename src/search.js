@@ -44,7 +44,7 @@ const Search = ({
   
     const timer = setTimeout(async () => {
       try {
-        const res = await axios.get(`/api/suggest?keyword=${searchText}`);
+        const res = axios.get(`/api/search/suggest?keyword=${searchText}`);
         const data = Array.isArray(res.data) ? res.data : [];
         console.log("✅ 자동완성 응답:", data);
         setSearchResults(data);

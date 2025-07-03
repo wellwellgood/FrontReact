@@ -45,7 +45,7 @@ const Search = ({
     const timer = setTimeout(async () => {
       try {
         const res = await axios.get(`/api/suggest?keyword=${searchText}`);
-        setSearchResults(res.data);
+        setSearchResults(Array.isArray(res.data) ? res.data : []);
         setShowResults(true);
       } catch (e) {
         console.error("자동완성 실패:", e);
@@ -135,7 +135,7 @@ const Search = ({
             />
             <button type="submit" className={styles.searchButton}><FaSearch /></button>
           </form>
-          {showResults && (
+          {showResults && Array.isArray(searchResults) && (
             <div className={styles.resultsPanel}>
               {searchResults.map((s, i) => (
                 <div key={i} className={styles.resultItem} onClick={() => handleResultClick(s.type === "user" ? `/user/${s.label}` : `/file`)}>

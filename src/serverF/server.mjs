@@ -25,9 +25,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowOrigin = 
-process.env.DATABASE_URL === "production"
-? "https://kkydashboard.netlify.app"
-:  "http://localhost:3000";
+process.env.NODE_ENV === "production"
+? "https://kkydashboard.netlify.app" 
+: "http://localhost:3000";
 
 // CORS 설정 (withCredentials 허용)
 app.use(cors({

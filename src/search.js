@@ -43,20 +43,26 @@ const Search = ({
     if (!searchText.trim()) return setSearchResults([]);
 
     const timer = setTimeout(async () => {
-      try {
-        const res = await axios.get(`/api/search/suggest?keyword=${searchText}`);
-        const data = Array.isArray(res.data) ? res.data : [];
-        console.log("✅ 자동완성 응답:", data);
-        setSearchResults(data);
-        setShowResults(true);
-      } catch (e) {
-        console.error("❌ 자동완성 실패:", e);
-        setSearchResults([]);
-      }
+        try {
+            console.log("🔍 자동완성 요청 시작:", searchText);
+            const res = await axios.get(`/api/search/suggest?keyword=${searchText}`);
+            console.log("📡 자동완성 응답 상태:", res.status);
+            console.log("📡 자동완성 응답 데이터:", res.data);
+            
+            const data = Array.isArray(res.data) ? res.data : [];
+            console.log("✅ 자동완성 결과:", data);
+            setSearchResults(data);
+            setShowResults(true);
+        } catch (e) {
+            console.error("❌ 자동완성 실패:", e);
+            console.error("❌ 자동완성 응답:", e.response?.data);
+            console.error("❌ 자동완성 상태:", e.response?.status);
+            setSearchResults([]);
+        }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchText]);
+}, [searchText]);
 
   // 키워드 검색
   const handleSearch = async (e) => {
@@ -64,26 +70,33 @@ const Search = ({
     if (searchText.trim() === '') return;
 
     try {
-      setIsLoading(true);
-      const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
+        console.log("🔎 검색 요청 시작:", searchText);
+        setIsLoading(true);
+        const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
+        
+        console.log("📡 검색 응답 상태:", res.status);
+        console.log("📡 검색 응답 데이터:", res.data);
 
-      const data = Array.isArray(res.data) ? res.data : [];
-      const formatted = data.map((item) => {
-        if (item.type === "user") return { type: "user", label: item.name || item.username };
-        if (item.type === "file") return { type: "file", label: item.file_name };
-        if (item.type === "content") return { type: "content", label: item.content };
-        return { type: "unknown", label: "Unknown" };
-      });
+        const data = Array.isArray(res.data) ? res.data : [];
+        const formatted = data.map((item) => {
+            if (item.type === "user") return { type: "user", label: item.name || item.username };
+            if (item.type === "file") return { type: "file", label: item.file_name };
+            if (item.type === "content") return { type: "content", label: item.content };
+            return { type: "unknown", label: "Unknown" };
+        });
 
-      setSearchResults(formatted);
-      setShowResults(true);
+        console.log("✅ 포맷된 검색 결과:", formatted);
+        setSearchResults(formatted);
+        setShowResults(true);
     } catch (err) {
-      console.error("🔍 검색 실패:", err);
-      setSearchResults([]);
+        console.error("🔍 검색 실패:", err);
+        console.error("🔍 검색 응답:", err.response?.data);
+        console.error("🔍 검색 상태:", err.response?.status);
+        setSearchResults([]);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
   useEffect(() => {
     const handleClickOutside = (event) => {

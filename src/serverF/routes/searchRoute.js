@@ -34,25 +34,23 @@ router.get("/suggest", async (req, res) => {
 router.get("/", async (req, res) => {
     const { query } = req.query;
     if (!query) return res.json([]);
-
+  
     const key = `%${query}%`;
-
+  
     try {
-        const [userRes, fileRes, contentRes] = await Promise.all([
+      const [userRes, fileRes, contentRes] = await Promise.all([
         pool.query(`SELECT 'user' AS type, id, username, name FROM users WHERE username ILIKE $1 OR name ILIKE $1`, [key]),
         pool.query(`SELECT 'file' AS type, id, file_name FROM messages WHERE file_name ILIKE $1`, [key]),
         pool.query(`SELECT 'content' AS type, id, content FROM messages WHERE content ILIKE $1`, [key]),
-    ]);
-
-        const allResults = [...userRes.rows, ...fileRes.rows, ...contentRes.rows];
-        res.json(allResults);
+      ]);
+  
+      const allResults = [...userRes.rows, ...fileRes.rows, ...contentRes.rows];
+      console.log("🔎 검색 결과:", allResults); // ✅ 이건 있어도 OK
+      res.json(allResults); // 🔥 이걸로만 응답해야 함
     } catch (err) {
-        console.error("❌ 검색 실패:", err);
-        res.status(500).json([]);
+      console.error("❌ 검색 실패:", err);
+      res.status(500).json([]);
     }
-
-    console.log("🔎 응답 rows:", rows);
-    res.json(rows);
-});
+  });
 
 export default router;

@@ -39,10 +39,11 @@ router.get("/", async (req, res) => {
       console.error("자동완성 쿼리 실패:", e);
       res.status(500).json({ error: "서버 오류" });
     }
+
+    console.log("🔍 Suggest 요청:", keyword);
+    console.log("👤 사용자 결과:", userRes.rows);
+    console.log("📁 파일 결과:", fileRes.rows);
+    
   });
-  
-  console.log("🔍 Suggest 요청:", keyword);
-  console.log("👤 사용자 결과:", userRes.rows);
-  console.log("📁 파일 결과:", fileRes.rows);
 
 export default router;

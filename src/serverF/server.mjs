@@ -5,7 +5,7 @@ dotenv.config();
 
 import http from "http";
 import initializeSocket from "./socket.js"
-import search from "./routes/searchRoute.js";
+import searchRoutes from "./routes/searchRoute.js";
 import corsMiddleware from "./middlewares/cors.js";
 import express from "express";
 import cors from "cors";
@@ -40,7 +40,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", messageRoutes);
 app.use("/api/upload", fileRoutes);
 app.use("/users", userRoutes);
-app.use("/api/search", search);
+app.use("/api/search", searchRoutes);
 
 // 서버 실행
 const PORT = process.env.PORT || 10000;

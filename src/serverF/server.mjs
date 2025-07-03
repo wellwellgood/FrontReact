@@ -21,14 +21,13 @@ await connectDB();
 const app = express();
 
 // 미들웨어
-app.use(corsMiddleware);
 app.use(express.json());
 app.use(cookieParser());
 
 const allowOrigin = 
 process.env.NODE_ENV === "production"
 ? "https://kkydashboard.netlify.app"
-:  "http://localhost:10000";
+:  "http://localhost:3000";
 
 // CORS 설정 (withCredentials 허용)
 app.use(cors({
@@ -56,3 +55,5 @@ server.listen(PORT, async () => {
     console.error( err.message);
   }
 });
+
+console.log("NODE_ENV:", process.env.NODE_ENV);

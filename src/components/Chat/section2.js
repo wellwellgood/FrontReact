@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { FaPaperclip } from "react-icons/fa";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase/firebase.js";
+import AccountSetting from '../../AccountSetting.js';
 // import { ReactComponent as Icon } from '../../image/download-svgrepo-com.svg';
 
 const API = "https://react-server-wmqa.onrender.com";
@@ -32,6 +33,7 @@ const Section2 = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userListError, setUserListError] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const u = sessionStorage.getItem("username");
@@ -267,7 +269,10 @@ const Section2 = () => {
         showResults={showResults}
         setShowResults={setShowResults}
         handleLogout={handleLogout}
+        setShowSettings={setShowSettings}
       />
+
+      
 
       {/* 메인 채팅 화면 */}
       <div className={styles.chatscreen}>
@@ -452,6 +457,9 @@ const Section2 = () => {
           </div>
         </div>
       </div>
+      {showSettings && (
+        <AccountSetting onClose={() => setShowSettings(false)} />
+      )}
     </div>
   );
 };

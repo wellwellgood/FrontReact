@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import axios from 'axios';
 import styles from './search.module.css';
+import personIcon from './image/person-circle.jpg'
 
 const Search = ({
   showSettings = false,
@@ -35,6 +36,9 @@ const Search = ({
       .then((res) => setUser(res.data))
       .catch((err) => console.error("유저 정보 가져오기 실패:", err));
   }, []);
+
+
+  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -116,7 +120,7 @@ const Search = ({
         <div className={styles.userInfoBox} ref={infoRef}>
           <img
             className={styles.profileImage}
-            src={user.profile_image ? `https://react-server-wmqa.onrender.com${profileImage}` : "/img/person-circle.png"}
+            src={user.profile_image ? `https://react-server-wmqa.onrender.com${profileImage}` : personIcon}
             onClick={handleProfileClick}
             alt="프로필"
           />

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./section3.module.css";
 import Search from "../../search.js";
+import AccountSetting from '../../AccountSetting.js';
 
 // ✅ 환경에 따라 API 주소 자동 선택
 const API = process.env.REACT_APP_API || "http://localhost:4000";
@@ -18,6 +19,7 @@ export default function FileUploadPage() {
   const [searchText, setSearchText] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const gotoHome = () => navigate("/main");
   const gotoLink1 = () => navigate("/ChatApp");
@@ -125,6 +127,7 @@ export default function FileUploadPage() {
         showResults={showResults}
         setShowResults={setShowResults}
         handleLogout={handleLogout}
+        setShowSettings={setShowSettings}
       />
 
       <div className={styles.fileUpload}>
@@ -161,6 +164,9 @@ export default function FileUploadPage() {
           )}
         </div>
       </div>
+      {showSettings && (
+        <AccountSetting onClose={() => setShowSettings(false)} />
+      )}
     </div>
   );
 }

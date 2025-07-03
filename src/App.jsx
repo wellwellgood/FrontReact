@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 // 페이지 컴포넌트
 import Main from './main';
@@ -19,7 +19,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function AppContent() {
   const location = useLocation(); // 현재 경로 확인
-  const [showSettings, setShowSettings] = useState(false);
+  const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [theme, setTheme] = useState(() => sessionStorage.getItem('theme') || 'light');
@@ -35,17 +35,13 @@ function AppContent() {
     <div>
       {!hideSearch && (
         <Search
-          showSettings={showSettings}
-          setShowSettings={setShowSettings}
-          searchText={searchText}
           setSearchText={setSearchText}
+          searchText={searchText}
           showResults={showResults}
           setShowResults={setShowResults}
+          showSettingsButton={true}
+          onSettingsClick={() => navigate("/settings")}
         />
-      )}
-
-      {showSettings && (
-        <AccountSetting onClose={() => setShowSettings(false)} />
       )}
 
       {/* 페이지 라우팅 */}
@@ -58,7 +54,7 @@ function AppContent() {
         <Route path="/password" element={<Password />} />
         <Route path="/customCalendar" element={<CustomCalendar />} />
 
-        {/* 로그인 보호 */}
+        {/* 로그인 보호 라우터 */}
         <Route path="/main" element={
           <ProtectedRoute>
             <Main setTheme={setTheme} />
@@ -77,6 +73,11 @@ function AppContent() {
         <Route path="/sendEmail" element={
           <ProtectedRoute>
             <Section4SendEmail />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <AccountSetting />
           </ProtectedRoute>
         } />
       </Routes>

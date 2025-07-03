@@ -8,7 +8,7 @@ const path = require("path");
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 // PostgreSQL 연결
 const pool = new Pool({

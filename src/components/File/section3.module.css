@@ -93,7 +93,7 @@ nav {
 
 .navmenu li:hover::after {
   width: 150px;
-  background: var(--hover-bg);
+  background: rgba(89, 0, 255, 0.4);
 }
 
 .navmenu li a {

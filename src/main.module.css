@@ -93,7 +93,7 @@ li a{
 }
 li::after{
   content: '';
-  background: rgba(255,255,255, 1);
+  background: var(--gradient-end);
   position: absolute;
   /* left: 5px; */
   width: 0px;
@@ -106,7 +106,7 @@ li::after{
 }
 
 li:hover::after{
-  background: rgba(85, 224, 163, 0.4);
+  background: rgba(89, 0, 255, 0.4);
   /* left: -10px; */
   width: 150px;
 }
@@ -116,8 +116,8 @@ li:nth-of-type(1)::before {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   z-index: 9;
 }
 
@@ -127,8 +127,8 @@ li:nth-of-type(2)::before {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   z-index: 9;
 }
 
@@ -138,8 +138,8 @@ li:nth-of-type(3)::before {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   z-index: 9;
 }
 li:nth-of-type(4)::before{
@@ -148,8 +148,8 @@ li:nth-of-type(4)::before{
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   z-index: 9;
 }
 li link{
@@ -264,7 +264,7 @@ li link{
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 82%;
+  width: 65%;
   text-align: center;
   position: absolute;
   left: 50%;

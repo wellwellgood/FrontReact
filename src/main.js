@@ -85,6 +85,19 @@ function Main() {
           </ul>
         </div>
       </nav>
+
+      <Search
+          setTheme={setTheme}
+          fetchSearchData={fetchSearchData}
+          searchResults={searchResults}
+          isLoading={isLoading}
+          setSearchText={setSearchText}
+          searchText={searchText}
+          showResults={showResults}
+          setShowResults={setShowResults}
+          handleLogout={handleLogout}
+          setShowSettings={setShowSettings}
+        />
 .0
 
       <div className={styles.mainboard}>

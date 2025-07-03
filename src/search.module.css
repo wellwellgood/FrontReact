@@ -1,13 +1,14 @@
 .topbar {
-  position: absolute;
-    right: 0;
-    width: calc(100% - 200px);
-    background: var(--header-bg);
-    height: 52.5px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 20px;
+  position: fixed;
+  right: 0;
+  width: calc(100% - 200px);
+  background: var(--header-bg);
+  height: 52.5px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px;
+  z-index: 9999;
 }
 .topbarContainer{
   display: flex;
@@ -21,6 +22,7 @@
   display: flex;
   align-items: center;
   background: transparent;
+  flex-direction: column;
 }
 
 .searchForm {
@@ -81,6 +83,20 @@
   display: none;
 }
 
+.resultsPanel {
+  position: absolute;
+  top: 50px; /* 검색창 아래로 떨어뜨리기 */
+  left: 0;
+  width: 100%;
+  background: var(--text-color);
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+  text-align: center;
+}
+
 .resultTitle {
   font-weight: bold;
 }
@@ -103,8 +119,8 @@
 
 .profileImage {
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
 }
 
@@ -150,4 +166,9 @@
   background: none;
   width: 280px;
   height: 34px;
+  color: #fff;
+}
+
+.searchForm input[type="text"]:focus {
+  outline: none;
 }

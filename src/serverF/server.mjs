@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowOrigin = 
-process.env.NODE_ENV === "production"
+process.env.DATABASE_URL === "production"
 ? "https://kkydashboard.netlify.app"
 :  "http://localhost:3000";
 
@@ -57,4 +57,4 @@ server.listen(PORT, async () => {
   }
 });
 
-console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("DATABASE_URL:", process.env.DATABASE_URL);

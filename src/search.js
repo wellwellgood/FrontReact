@@ -45,12 +45,15 @@ const Search = ({
     const timer = setTimeout(async () => {
       try {
         const res = await axios.get(`/api/suggest?keyword=${searchText}`);
-        setSearchResults(Array.isArray(res.data) ? res.data : []);
+        const data = Array.isArray(res.data) ? res.data : [];
+        console.log("✅ 자동완성 응답:", data);
+        setSearchResults(data);
         setShowResults(true);
       } catch (e) {
-        console.error("자동완성 실패:", e);
+        console.error("❌ 자동완성 실패:", e);
+        setSearchResults([]);
       }
-    }, 300); // ⏱️ debounce
+    }, 300);
   
     return () => clearTimeout(timer);
   }, [searchText]);

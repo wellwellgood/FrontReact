@@ -21,6 +21,8 @@ const Search = ({
   const [showInfoForm, setShowInfoForm] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const infoRef = useRef();
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const storedImage = sessionStorage.getItem("profileImage");
@@ -37,7 +39,39 @@ const Search = ({
       .catch((err) => console.error("유저 정보 가져오기 실패:", err));
   }, []);
 
+  useEffect(() => {
+    if (!searchText.trim()) return setSearchResults([]);
+  
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get(`/api/suggest?keyword=${searchText}`);
+        setSearchResults(res.data);
+        setShowResults(true);
+      } catch (e) {
+        console.error("자동완성 실패:", e);
+      }
+    }, 300); // ⏱️ debounce
+  
+    return () => clearTimeout(timer);
+  }, [searchText]);
+  
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (searchText.trim() === '') return;
+  
+    try {
+      setIsLoading(true);
+      const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
+      setSearchResults(res.data);
+      setShowResults(true);
+    } catch (err) {
+      console.error("🔍 검색 실패:", err);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
 
   useEffect(() => {
@@ -58,12 +92,6 @@ const Search = ({
   const handleInputChange = (e) => {
     setSearchText(e.target.value);
     setShowResults(e.target.value.trim() !== '');
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchText.trim() === '') return;
-    // 🔍 실제 검색 요청 로직 추가 가능
   };
 
   const handleResultClick = (path) => {
@@ -109,10 +137,11 @@ const Search = ({
           </form>
           {showResults && (
             <div className={styles.resultsPanel}>
-              <p>검색 결과 표시 영역입니다.</p>
-              <button onClick={() => setShowResults(false)} className={styles.closeResults}>
-                닫기
-              </button>
+              {searchResults.map((s, i) => (
+                <div key={i} className={styles.resultItem} onClick={() => handleResultClick(s.type === "user" ? `/user/${s.label}` : `/file`)}>
+                  {s.type === "user" ? "👤" : "📁"} {s.label}
+                </div>
+              ))}
             </div>
           )}
         </div>

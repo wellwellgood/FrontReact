@@ -35,8 +35,8 @@ const Search = ({
     setUsername(receiverUsername || storedUsername); // receiver 있으면 그걸 사용
 
     axios.get(`/api/users/${storedUsername}`)
-      .then((res) => setUser(res.data))
-      .catch((err) => console.error("유저 정보 가져오기 실패:", err));
+    .then(res => console.log("자동완성 응답:", res.data))
+    .catch(err => console.error("자동완성 실패:", err));
   }, []);
 
   useEffect(() => {

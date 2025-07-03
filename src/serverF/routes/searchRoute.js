@@ -2,82 +2,54 @@ import express from "express";
 import pool from "../DB.mjs";
 const router = express.Router();
 
-/**
- * @route GET /api/search?query=검색어
- * @desc 사용자 + 파일 전체 검색 (엔터 입력용)
- */
-router.get("/", async (req, res) => {
-  const { query } = req.query;
-  if (!query || query.trim() === "") {
-    return res.status(400).json({ error: "검색어가 비어있습니다." });
+router.get("/suggest", async (req, res) => {
+  const { keyword } = req.query;
+
+  if (!keyword || keyword.trim() === "") {
+    return res.json([]);
   }
 
-  const key = `%${query}%`;
+  const key = `%${keyword}%`;
 
   try {
-    const [userRes, fileRes] = await Promise.all([
+    const [userRes, fileRes, contentRes] = await Promise.all([
+      // 사용자 이름 + ID 검색
       pool.query(`
-        SELECT username, name, profile_image, 'user' AS type
+        SELECT name AS label, 'user' AS type
         FROM users
         WHERE username ILIKE $1 OR name ILIKE $1
-        LIMIT 20;
+        LIMIT 5;
       `, [key]),
 
+      // 파일명 검색 (메시지에 첨부된 파일)
       pool.query(`
-        SELECT file_name, file_size, file_type, uploader, created_at, 'file' AS type
-        FROM uploads
-        WHERE file_name ILIKE $1 OR description ILIKE $1
-        LIMIT 20;
+        SELECT file_name AS label, 'file' AS type
+        FROM messages
+        WHERE file_name IS NOT NULL AND file_name ILIKE $1
+        LIMIT 5;
+      `, [key]),
+
+      // 메시지 내용 검색 (선택사항)
+      pool.query(`
+        SELECT DISTINCT content AS label, 'content' AS type
+        FROM messages
+        WHERE content IS NOT NULL AND content ILIKE $1
+        LIMIT 5;
       `, [key])
     ]);
 
-    res.json([...userRes.rows, ...fileRes.rows]);
-  } catch (e) {
-    console.error("❌ 전체 검색 실패:", e);
+    const results = [
+      ...userRes.rows,
+      ...fileRes.rows,
+      ...contentRes.rows
+    ].filter(item => item.label); // null 제거
+
+    console.log("🔍 자동완성 결과:", results);
+    res.json(results);
+  } catch (err) {
+    console.error("❌ 자동완성 에러:", err);
     res.status(500).json({ error: "서버 오류" });
   }
 });
-
-/**
- * @route GET /api/search/suggest?keyword=입력값
- * @desc 실시간 자동완성 추천 (입력 중 검색어 힌트)
- */
-router.get("/suggest", async (req, res) => {
-    const { keyword } = req.query;
-    if (!keyword || keyword.trim() === "") {
-      return res.json([]);
-    }
-  
-    const key = `%${keyword}%`;
-  
-    try {
-      const [userRes, fileRes] = await Promise.all([
-        pool.query(`
-            SELECT name AS label, 'user' AS type
-            FROM users
-            WHERE username ILIKE $1 OR name ILIKE $1
-            LIMIT 5;
-          `, [key]),
-    
-          pool.query(`
-            SELECT file_name AS label, 'file' AS type
-            FROM messages
-            WHERE file_name ILIKE $1
-            LIMIT 5;
-          `, [key]),
-          
-        pool.query(`
-            SELECT DISTINCT content AS label, 'text' AS type
-            FROM messages
-            WHERE content ILIKE $1
-            LIMIT 5;`)
-      ]);
-  
-      res.json([...userRes.rows, ...fileRes.rows]);
-    } catch (err) {
-      console.error("❌ 자동완성 실패:", err);
-      res.status(500).json({ error: "서버 오류" });
-    }
-  });
 
 export default router;

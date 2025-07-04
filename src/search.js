@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import styles from "./Search.module.css";
+import styles from "./search.module.css";
 import { FaSearch } from "react-icons/fa";
 
 const Search = () => {

@@ -98,6 +98,23 @@ const Section2 = () => {
         prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
       );
     });
+
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(`${API}/users`, {
+          params: { exclude: username },
+        });
+        setUsers(res.data || []);
+      } catch (err) {
+        console.error("❌ 유저 목록 불러오기 실패:", err);
+        setUserListError("유저 목록을 불러오는 데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    setIsLoading(true);
+    fetchUsers();
   
     return () => {
       s.disconnect();

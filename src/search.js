@@ -4,6 +4,7 @@ import { FaSearch } from 'react-icons/fa';
 import axios from 'axios';
 import styles from './search.module.css';
 import personIcon from './image/person-circle.jpg';
+import AccountSetting from './AccountSetting.js';
 
 const Search = () => {
   const navigate = useNavigate();

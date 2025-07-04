@@ -51,21 +51,28 @@ const Search = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchText.trim()) return;
-
+  
     try {
       setIsLoading(true);
       const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
-      console.log("서버 응답:", res.data);
-      const formatted = res.data.map((item) => {
-        if (item.type === "user") return { type: "user", label: item.name || item.username };
-        if (item.type === "file") return { type: "file", label: item.file_name };
-        if (item.type === "content") return { type: "content", label: item.content };
-        return { type: "unknown", label: "Unknown" };
+      
+      // ✅ 배열 체크 및 null-safe 처리
+      const rawData = Array.isArray(res.data) ? res.data : [];
+      
+      const formatted = rawData.map((item) => {
+        let label = "";
+        if (item.type === "user") label = item.name || item.username || "이름 없음";
+        else if (item.type === "file") label = item.file_name || "파일 없음";
+        else if (item.type === "content") label = item.content?.slice(0, 50) || "내용 없음";
+        else label = "Unknown";
+  
+        return { type: item.type || "unknown", label };
       });
+  
       setSearchResults(formatted);
       setShowResults(true);
     } catch (err) {
-      console.error("검색 실패:", err);
+      console.error("❌ 검색 실패:", err);
       setSearchResults([]);
     } finally {
       setIsLoading(false);
@@ -104,10 +111,6 @@ const Search = () => {
     window.location.href = '/';
   };
 
-  useEffect(() => {
-    console.log("🧪 searchResults:", searchResults);
-  }, [searchResults]);
-
   return (
     <div className={styles.topbar}>
       <div className={styles.topbarContainer}>
@@ -125,18 +128,13 @@ const Search = () => {
 
           {Array.isArray(searchResults) && searchResults.length > 0 ? (
   searchResults.map((s, i) => (
-    <div
-      key={i}
-      className={styles.resultItem}
-      onClick={() => handleResultClick(s.label)}
-    >
+    <div key={i} className={styles.resultItem} onClick={() => handleResultClick(s.label)}>
       [{s.type}] {s.label}
     </div>
   ))
 ) : (
   <div className={styles.resultItem}>결과 없음</div>
 )}
-
 
         </div>
 

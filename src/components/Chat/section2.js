@@ -253,9 +253,9 @@ const Section2 = () => {
     }
   };
 
-  const DownIcon = () => (
-    <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
-  );
+  // const DownIcon = () => (
+  //   <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
+  // );
 
 
   return (

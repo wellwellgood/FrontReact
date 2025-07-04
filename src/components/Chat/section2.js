@@ -52,6 +52,10 @@ const Section2 = () => {
   }, [theme]);
 
   useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
     if (!username) return;
   
     const s = io(API, {
@@ -255,10 +259,7 @@ const Section2 = () => {
   };
 
   const scrollToBottom = () => {
-    const chatContainer = chatBoxRef.current;
-    if (chatContainer) {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   // const DownIcon = () => (
@@ -436,6 +437,7 @@ const Section2 = () => {
                   );
                 });
               })()}
+              <div ref={messageEndRef} />
             </div>
           </div>
 
@@ -485,7 +487,6 @@ const Section2 = () => {
       {showSettings && (
         <AccountSetting onClose={() => setShowSettings(false)} />
       )}
-      <div ref={messageEndRef} />
     </div>
   );
 };

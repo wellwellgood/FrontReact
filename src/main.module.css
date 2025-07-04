@@ -5,18 +5,6 @@
   padding: 0;
   box-sizing: border-box;
 }
-
-.nav button{
-  background: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
-  color: var(--text-color);
-  font-size: 16px;
-  width: 100%;
-  background: none;
-  z-index: 1;
-}
 nav{
   position: absolute;
   left: 0;
@@ -28,7 +16,7 @@ nav{
   justify-content: space-between;
   align-items: center;
   background-color: var(--text-color);
-  z-index: 99;
+  z-index: 9;
 }
 .nav{
   position: relative;
@@ -76,7 +64,17 @@ li{
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 20px;
+  gap: 20px;;
+}
+li button{
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: var(--text-color);
+  font-size: 16px;
+  background: none;
+  z-index: 999 !important;
 }
 li a{
   display: flex;
@@ -92,6 +90,7 @@ li a{
   font-style: normal;
 }
 li::after{
+  pointer-events: none;
   content: '';
   background: var(--gradient-end);
   position: absolute;
@@ -154,10 +153,6 @@ li:nth-of-type(4)::before{
 }
 li link{
   color: var(--accent-text);
-}
-.button{
-  background: none;
-  z-index: 111;
 }
 .setting{
   position: absolute;

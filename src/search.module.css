@@ -156,9 +156,12 @@
   font-size: 16px;
   padding: 10px;
 }
-.userInfo button{
-  background-color: none;
+.infoform button{
+  background: transparent;
+  border: none;
   font-size: 16px;
+  color: var(--text-color);
+  cursor: pointer;
 }
 .themeMenu div:hover{
   color: #fff;

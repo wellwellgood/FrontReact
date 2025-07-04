@@ -1,38 +1,35 @@
-// DB.js
+// ✅ DB.mjs - 충돌 해결
 import pkg from "pg";
 const { Pool } = pkg;
 import dotenv from "dotenv";
 
-const timestamp = new Date().toISOString();
-
 dotenv.config();
 
-// PostgreSQL 커넥션 풀 설정
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+// pool 변수 이름 중복 방지 (pool → dbPool 등)
+const dbPool = new Pool({
+  connectionString:
+    process.env.DATABASE_URL ||
+    `postgresql://neondb_owner:zLsRmsjkEJIPDoUHTFRnzpGUjZxVVfAy@ep-xxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`,
   ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
 });
-// console.log("🔐 DB 비밀번호:", process.env.DB_PASSWORD);
 
-// 연결 테스트 함수 (선택)
 const connectDB = async () => {
   try {
-    const client = await pool.connect();
-    // console.log("✅ DB 풀 연결 성공");
-    client.release(); // 연결 반환
+    const client = await dbPool.connect();
+    client.release();
   } catch (err) {
-    console.error(err.message);
+    console.error("❌ DB 연결 실패:", err.message);
     throw err;
   }
 };
 
-setInterval( async () => {
+setInterval(async () => {
   try {
-    await pool.query('SELECT 1');
+    await dbPool.query("SELECT 1");
   } catch (err) {
-    console.log(err.message);
+    console.log("🔁 DB ping 실패:", err.message);
   }
-}, 1000 * 60 *4.5)
+}, 1000 * 60 * 4.5);
 
-export default pool;
-export { connectDB };
+export default dbPool;         // ✅ default로 내보내기
+export { connectDB };         // ✅ connectDB는 named export

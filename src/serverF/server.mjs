@@ -35,6 +35,10 @@ app.use(cors({
   credentials: true
 }));
 
+const koreaTime = new Date().toLocaleString("ko-KR", {
+  timeZone: "Asia/Seoul",
+});
+
 // 라우터 등록
 app.use("/api/auth", authRoutes);
 app.use("/api", messageRoutes);
@@ -51,10 +55,17 @@ server.listen(PORT, async () => {
 
   try {
     await initDB();
-    console.log(`Running :`, koreaTime);
+    console.log("Running Time:", koreaTime);
+    console.log(`✅ 서버 실행됨: http://localhost:${PORT}`);
   } catch (err) {
     console.error( err.message);
+    console.error("❌ 서버 시작 실패:", err.message);
   }
 });
 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
+app.use((req, res, next) => {
+  console.log("🔥 요청 도착:", req.method, req.url);
+  next();
+});
+
+console.log("DATABASE_URL:", process.env.NODE_ENV);

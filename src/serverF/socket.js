@@ -7,7 +7,7 @@ const initializeSocket = (server) => {
     cors: {
       origin: [
       "https://kkydashboard.netlify.app",
-      "http://localhost:10000"// ✅ 실제 프론트 배포 주소
+      "http://localhost:3000"// ✅ 실제 프론트 배포 주소
       ],
       methods: ["GET", "POST"],
       credentials: true,

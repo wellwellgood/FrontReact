@@ -78,10 +78,14 @@ nav {
   width: 100%;
 }
 
+.navmenu li button{
+  background: none !important;
+  z-index: 999 !important;
+}
 .navmenu li::after {
   content: '';
   position: absolute;
-  background: rgba(255,255,255, 1);
+  background: var(--gradient-end);
   width: 0;
   height: 50px;
   border-radius: 15px;

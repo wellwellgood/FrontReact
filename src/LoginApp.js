@@ -61,7 +61,7 @@ function LoginPage() {
       sessionStorage.setItem("name", response.data.name);
       sessionStorage.setItem("userToken", token);
       sessionStorage.setItem("userId", ID);
-      sessionStorage.setItem("username", ID); // ✅ 이 줄 추가
+      sessionStorage.setItem("username", ID);
   
       navigate("/main");
     } catch (error) {

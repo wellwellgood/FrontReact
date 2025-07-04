@@ -49,10 +49,10 @@
 .navStyle button {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-direction: row;
     padding: 10px 5px;
-    color: #fff;
+    color: #000;
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 8px;

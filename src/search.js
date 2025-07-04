@@ -130,6 +130,13 @@ const Search = () => {
   };
 
   return (
+    <>
+    {/* ✅ 설정창이 중앙에 떠야 하니까 topbar 바깥에 둬야 함 */}
+    {showSettings && (
+      <AccountSetting onClose={() => setShowSettings(false)} />
+    )}
+
+    {/* ✅ 기존 topbar */}
     <div className={styles.topbar}>
       <div className={styles.topbarContainer}>
         <div className={styles.search}>
@@ -141,7 +148,9 @@ const Search = () => {
               placeholder="검색어 입력..."
               className={styles.searchInput}
             />
-            <button type="submit" className={styles.searchButton}><FaSearch /></button>
+            <button type="submit" className={styles.searchButton}>
+              <FaSearch />
+            </button>
           </form>
 
           {showResults && Array.isArray(searchResults) && (
@@ -163,10 +172,15 @@ const Search = () => {
           )}
         </div>
 
+        {/* ✅ 프로필 및 설정 버튼 */}
         <div className={styles.userInfoBox} ref={infoRef}>
           <img
             className={styles.profileImage}
-            src={user.profile_image ? `https://react-server-wmqa.onrender.com${profileImage}` : personIcon}
+            src={
+              user.profile_image
+                ? `https://react-server-wmqa.onrender.com${profileImage}`
+                : personIcon
+            }
             onClick={handleProfileClick}
             alt="프로필"
           />
@@ -190,26 +204,32 @@ const Search = () => {
               </div>
 
               <div className={styles.menuItem}>
-                <span onClick={toggleThemeMenu} className={styles.link}>Theme</span>
+                <span onClick={toggleThemeMenu} className={styles.link}>
+                  Theme
+                </span>
                 {showThemeMenu && (
                   <div className={styles.themeMenu}>
-                    <div className={styles.light} onClick={() => toggleTheme("light")}>Light</div>
-                    <div className={styles.dark} onClick={() => toggleTheme("dark")}>Dark</div>
+                    <div className={styles.light} onClick={() => toggleTheme("light")}>
+                      Light
+                    </div>
+                    <div className={styles.dark} onClick={() => toggleTheme("dark")}>
+                      Dark
+                    </div>
                   </div>
                 )}
               </div>
 
               <div className={styles.user}>
-                <button className={styles.logout} onClick={handleLogout}>로그아웃</button>
+                <button className={styles.logout} onClick={handleLogout}>
+                  로그아웃
+                </button>
               </div>
             </div>
           )}
         </div>
       </div>
-      {showSettings && (
-        <AccountSetting onClose={() => setShowSettings(false)} />
-      )}
     </div>
+  </>
   );
 };
 

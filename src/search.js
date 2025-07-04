@@ -142,16 +142,23 @@ const Search = () => {
             <button type="submit" className={styles.searchButton}><FaSearch /></button>
           </form>
 
-          {Array.isArray(searchResults) && searchResults.length > 0 ? (
-  searchResults.map((s, i) => (
-    <div key={i} className={styles.resultItem} onClick={() => handleResultClick(s.label)}>
-      [{s.type}] {s.label}
-    </div>
-  ))
-) : (
-  <div className={styles.resultItem}>결과 없음</div>
-)}
-
+          {showResults && Array.isArray(searchResults) && (
+            <div className={styles.resultsPanel}>
+              {searchResults.length === 0 ? (
+                <div className={styles.resultItem}>결과 없음</div>
+              ) : (
+                searchResults.map((s, i) => (
+                  <div
+                    key={i}
+                    className={styles.resultItem}
+                    onClick={() => handleResultClick(`/search?keyword=${s.label}`)}
+                  >
+                    [{s.type}] {s.label}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         <div className={styles.userInfoBox} ref={infoRef}>
@@ -172,11 +179,20 @@ const Search = () => {
               </span>
 
               <div className={styles.menuItem}>
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className={styles.settingsButton}
+                >
+                  ⚙️ 설정 열기
+                </button>
+              </div>
+
+              <div className={styles.menuItem}>
                 <span onClick={toggleThemeMenu} className={styles.link}>Theme</span>
                 {showThemeMenu && (
                   <div className={styles.themeMenu}>
-                    <div onClick={() => toggleTheme("light")}>Light</div>
-                    <div onClick={() => toggleTheme("dark")}>Dark</div>
+                    <div className={styles.light} onClick={() => toggleTheme("light")}>Light</div>
+                    <div className={styles.dark} onClick={() => toggleTheme("dark")}>Dark</div>
                   </div>
                 )}
               </div>

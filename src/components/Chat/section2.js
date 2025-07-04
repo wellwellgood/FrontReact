@@ -34,7 +34,7 @@ const Section2 = () => {
   const [userListError, setUserListError] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [showSettings, setShowSettings] = useState(false);
-  const messageEndRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const u = sessionStorage.getItem("username");
@@ -469,7 +469,7 @@ const Section2 = () => {
                   );
                 });
               })()}
-              <div ref={messageEndRef} />
+              <div ref={messagesEndRef} />
             </div>
           </div>
 

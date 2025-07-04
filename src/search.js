@@ -5,21 +5,16 @@ import axios from 'axios';
 import styles from './search.module.css';
 import personIcon from './image/person-circle.jpg';
 
-const Search = ({
-  showSettings = false,
-  setShowSettings = () => {},
-  showResults = false,
-  setShowResults = () => {},
-  searchText = '',
-  setSearchText = () => {}
-}) => {
+const Search = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({ profile_image: "" });
   const [profileImage, setProfileImage] = useState("");
   const [username, setUsername] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
   const [showInfoForm, setShowInfoForm] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const infoRef = useRef();
 
@@ -34,92 +29,55 @@ const Search = ({
     setUsername(receiverUsername || storedUsername);
 
     axios.get(`/api/users/${storedUsername}`)
-      .then(res => console.log("유저 정보:", res.data))
+      .then(res => setUser(res.data))
       .catch(err => console.error("유저 로딩 실패:", err));
   }, []);
 
-  // 자동완성
   useEffect(() => {
-    if (!searchText.trim()) return setSearchResults([]);
-
     const timer = setTimeout(async () => {
-        try {
-            console.log("🔍 자동완성 요청 시작:", searchText);
-            const res = await axios.get(`/api/search/suggest?keyword=${searchText}`);
-            console.log("📡 자동완성 응답 상태:", res.status);
-            console.log("📡 자동완성 응답 데이터:", res.data);
-            
-            const data = Array.isArray(res.data) ? res.data : [];
-            console.log("✅ 자동완성 결과:", data);
-            setSearchResults(data);
-            setShowResults(true);
-        } catch (e) {
-            console.error("❌ 자동완성 실패:", e);
-            console.error("❌ 자동완성 응답:", e.response?.data);
-            console.error("❌ 자동완성 상태:", e.response?.status);
-            setSearchResults([]);
-        }
+      if (!searchText.trim()) return;
+
+      try {
+        const res = await axios.get(`/api/search/suggest?keyword=${searchText}`);
+        setSearchResults(res.data);
+        setShowResults(true);
+      } catch (err) {
+        console.error("자동완성 실패:", err);
+      }
     }, 300);
-
     return () => clearTimeout(timer);
-}, [searchText]);
+  }, [searchText]);
 
-  // 키워드 검색
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (searchText.trim() === '') return;
+    if (!searchText.trim()) return;
 
     try {
-        console.log("🔎 검색 요청 시작:", searchText);
-        setIsLoading(true);
-        const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
-        
-        console.log("📡 검색 응답 상태:", res.status);
-        console.log("📡 검색 응답 데이터:", res.data);
-
-        const data = Array.isArray(res.data) ? res.data : [];
-        const formatted = data.map((item) => {
-            if (item.type === "user") return { type: "user", label: item.name || item.username };
-            if (item.type === "file") return { type: "file", label: item.file_name };
-            if (item.type === "content") return { type: "content", label: item.content };
-            return { type: "unknown", label: "Unknown" };
-        });
-
-        console.log("✅ 포맷된 검색 결과:", formatted);
-        setSearchResults(formatted);
-        setShowResults(true);
+      setIsLoading(true);
+      const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
+      const formatted = res.data.map((item) => {
+        if (item.type === "user") return { type: "user", label: item.name || item.username };
+        if (item.type === "file") return { type: "file", label: item.file_name };
+        if (item.type === "content") return { type: "content", label: item.content };
+        return { type: "unknown", label: "Unknown" };
+      });
+      setSearchResults(formatted);
+      setShowResults(true);
     } catch (err) {
-        console.error("🔍 검색 실패:", err);
-        console.error("🔍 검색 응답:", err.response?.data);
-        console.error("🔍 검색 상태:", err.response?.status);
-        setSearchResults([]);
+      console.error("검색 실패:", err);
+      setSearchResults([]);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        !event.target.closest(`.${styles.search}`) &&
-        !infoRef.current?.contains(event.target)
-      ) {
-        setShowResults(false);
-        setShowInfoForm(false);
-        setShowThemeMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  };
 
   const handleInputChange = (e) => {
     setSearchText(e.target.value);
     setShowResults(e.target.value.trim() !== '');
   };
 
-  const handleResultClick = (path) => {
-    navigate(path);
+  const handleResultClick = (label) => {
+    navigate(`/search?keyword=${label}`);
     setShowResults(false);
     setSearchText('');
   };
@@ -160,7 +118,7 @@ const Search = ({
             <button type="submit" className={styles.searchButton}><FaSearch /></button>
           </form>
 
-          {showResults && Array.isArray(searchResults) && (
+          {showResults && (
             <div className={styles.resultsPanel}>
               {searchResults.length === 0 ? (
                 <div className={styles.resultItem}>결과 없음</div>
@@ -169,7 +127,7 @@ const Search = ({
                   <div
                     key={i}
                     className={styles.resultItem}
-                    onClick={() => handleResultClick(`/search?keyword=${s.label}`)}
+                    onClick={() => handleResultClick(s.label)}
                   >
                     [{s.type}] {s.label}
                   </div>
@@ -197,20 +155,11 @@ const Search = ({
               </span>
 
               <div className={styles.menuItem}>
-                <button
-                  onClick={() => setShowSettings(true)}
-                  className={styles.settingsButton}
-                >
-                  ⚙️ 설정 열기
-                </button>
-              </div>
-
-              <div className={styles.menuItem}>
                 <span onClick={toggleThemeMenu} className={styles.link}>Theme</span>
                 {showThemeMenu && (
                   <div className={styles.themeMenu}>
-                    <div className={styles.light} onClick={() => toggleTheme("light")}>Light</div>
-                    <div className={styles.dark} onClick={() => toggleTheme("dark")}>Dark</div>
+                    <div onClick={() => toggleTheme("light")}>Light</div>
+                    <div onClick={() => toggleTheme("dark")}>Dark</div>
                   </div>
                 )}
               </div>

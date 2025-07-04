@@ -11,7 +11,6 @@ function LoginPage() {
   const [PWvalid, setPWvalid] = useState(false);
   const [notAllow, setNotAllow] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const { accessToken, username, name } = res.data;
 
   const goToid = () => navigate("/id");
   const goToPassword = () => navigate("/password");

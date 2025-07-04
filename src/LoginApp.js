@@ -11,6 +11,7 @@ function LoginPage() {
   const [PWvalid, setPWvalid] = useState(false);
   const [notAllow, setNotAllow] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const { accessToken, username, name } = res.data;
 
   const goToid = () => navigate("/id");
   const goToPassword = () => navigate("/password");
@@ -51,28 +52,30 @@ function LoginPage() {
 
   const loginButton = async () => {
     try {
-      const response = await api.post("/api/auth/login",  data, {
-        username: ID,
-        password: PW
-      }, { withCredentials: true });
+      const response = await api.post(
+        "/api/auth/login",
+        {
+          username: ID,
+          password: PW,
+        },
+        { withCredentials: true }
+      );
   
-      const { token } = response.data;
-      sessionStorage.setItem("username", ID);        // 로그인 ID
-      sessionStorage.setItem("name", response.data.name);
-      sessionStorage.setItem("userToken", token);
-      sessionStorage.setItem("userId", ID);
-      sessionStorage.setItem("username", ID);
+      const { accessToken, username, name } = response.data;
+  
+      sessionStorage.setItem("username", username);
+      sessionStorage.setItem("name", name);
+      sessionStorage.setItem("userToken", accessToken);
   
       navigate("/main");
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
+      if (error.response && error.response.data?.message) {
         alert(error.response.data.message);
       } else {
         alert("로그인 중 오류가 발생했습니다.");
       }
     }
   };
-
   return (
     <div className={styles.App}>
       <header className={styles["App-header"]}>

@@ -118,23 +118,20 @@ const Search = () => {
             <button type="submit" className={styles.searchButton}><FaSearch /></button>
           </form>
 
-          {showResults && (
-            <div className={styles.resultsPanel}>
-              {searchResults.length === 0 ? (
-                <div className={styles.resultItem}>결과 없음</div>
-              ) : (
-                searchResults.map((s, i) => (
-                  <div
-                    key={i}
-                    className={styles.resultItem}
-                    onClick={() => handleResultClick(s.label)}
-                  >
-                    [{s.type}] {s.label}
-                  </div>
-                ))
-              )}
-            </div>
-          )}
+          {Array.isArray(searchResults) && searchResults.length > 0 ? (
+  searchResults.map((s, i) => (
+    <div
+      key={i}
+      className={styles.resultItem}
+      onClick={() => handleResultClick(s.label)}
+    >
+      [{s.type}] {s.label}
+    </div>
+  ))
+) : (
+  <div className={styles.resultItem}>결과 없음</div>
+)}
+
         </div>
 
         <div className={styles.userInfoBox} ref={infoRef}>

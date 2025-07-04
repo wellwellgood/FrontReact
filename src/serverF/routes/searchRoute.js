@@ -84,4 +84,18 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/debug", async (req, res) => {
+    try {
+        const userCount = await pool.query('SELECT COUNT(*) FROM users');
+        const messageCount = await pool.query('SELECT COUNT(*) FROM messages');
+        res.json({
+            userCount: userCount.rows[0].count,
+            messageCount: messageCount.rows[0].count,
+            message: "디버그 엔드포인트 작동 중"
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default router;

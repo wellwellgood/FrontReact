@@ -55,6 +55,7 @@ const Search = () => {
     try {
       setIsLoading(true);
       const res = await axios.get(`/api/search?query=${encodeURIComponent(searchText)}`);
+      console.log("서버 응답:", res.data);
       const formatted = res.data.map((item) => {
         if (item.type === "user") return { type: "user", label: item.name || item.username };
         if (item.type === "file") return { type: "file", label: item.file_name };
@@ -103,6 +104,10 @@ const Search = () => {
     window.location.href = '/';
   };
 
+  useEffect(() => {
+    console.log("🧪 searchResults:", searchResults);
+  }, [searchResults]);
+
   return (
     <div className={styles.topbar}>
       <div className={styles.topbarContainer}>
@@ -131,6 +136,7 @@ const Search = () => {
 ) : (
   <div className={styles.resultItem}>결과 없음</div>
 )}
+
 
         </div>
 

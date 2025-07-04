@@ -17,6 +17,7 @@ const Search = () => {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const infoRef = useRef();
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const storedImage = sessionStorage.getItem("profileImage");

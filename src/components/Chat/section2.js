@@ -394,7 +394,7 @@ const Section2 = () => {
                             <div className={styles.filePreview}>
                               <button className={styles.downBtn} onClick={() => forceDownload(msg.file_url, msg.file_name)}>
                               {msg.file_name} ({formatBytes(msg.file_size || 0)})
-                              <DownIcon />
+                              {/* <DownIcon /> */}
                               </ button>
                             </div>
                           )}

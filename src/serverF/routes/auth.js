@@ -61,7 +61,12 @@ router.post("/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ message: "로그인 성공", accessToken });
+    res.status(200).json({
+      message: "로그인 성공",
+      accessToken,
+      username: user.username,   // 🔥 추가
+      name: user.name            // 🔥 추가
+    });
   } catch (err) {
     console.error("❌ 로그인 오류:", err);
     res.status(500).json({ message: "서버 오류" });

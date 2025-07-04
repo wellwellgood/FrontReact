@@ -34,6 +34,7 @@ const Section2 = () => {
   const [userListError, setUserListError] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [showSettings, setShowSettings] = useState(false);
+  const messageEndRef = useRef(null);
 
   useEffect(() => {
     const u = sessionStorage.getItem("username");
@@ -250,6 +251,13 @@ const Section2 = () => {
       setShowResults(true);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const scrollToBottom = () => {
+    const chatContainer = chatBoxRef.current;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   };
 
@@ -477,6 +485,7 @@ const Section2 = () => {
       {showSettings && (
         <AccountSetting onClose={() => setShowSettings(false)} />
       )}
+      <div ref={messageEndRef} />
     </div>
   );
 };

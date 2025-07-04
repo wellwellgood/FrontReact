@@ -205,6 +205,9 @@ const Search = () => {
           )}
         </div>
       </div>
+      {showSettings && (
+        <AccountSetting onClose={() => setShowSettings(false)} />
+      )}
     </div>
   );
 };

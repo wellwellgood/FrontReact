@@ -156,6 +156,10 @@
   font-size: 16px;
   padding: 10px;
 }
+.userInfo button{
+  background-color: none;
+  font-size: 16px;
+}
 .themeMenu div:hover{
   color: #fff;
 }

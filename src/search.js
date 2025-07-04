@@ -79,19 +79,6 @@ const Search = () => {
 
   return (
     <div className={styles.search}>
-      <form onSubmit={handleSearch} className={styles.searchForm}>
-        <input
-          type="text"
-          value={searchText}
-          onChange={handleInputChange}
-          placeholder="검색어 입력..."
-          className={styles.searchInput}
-        />
-        <button type="submit" className={styles.searchButton}>
-          <FaSearch />
-        </button>
-      </form>
-
       {/* 🔍 자동완성 결과 */}
       {showResults && suggestResults.length > 0 && (
         <div className={styles.suggestPanel}>

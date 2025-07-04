@@ -53,7 +53,17 @@ const Section2 = () => {
 
   useEffect(() => {
     scrollToBottom();
+  
+    // 마지막 메시지 ID 저장
+    if (messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg?.id && selectedUser?.username) {
+        const key = `${selectedUser.username}_lastMessageId`;
+        localStorage.setItem(key, lastMsg.id);
+      }
+    }
   }, [messages]);
+
 
   useEffect(() => {
     if (!username) return;
@@ -126,7 +136,28 @@ const Section2 = () => {
     };
   }, [username]); // ✅ selectedUser 제거됨
 
-
+  useEffect(() => {
+    if (!selectedUser || messages.length === 0) return;
+  
+    // 읽지 않은 메시지 중 첫 번째 찾기
+    const firstUnread = messages.find(
+      (msg) =>
+        msg.sender_username === selectedUser.username &&
+        msg.receiver_username === username &&
+        !msg.read
+    );
+  
+    if (firstUnread) {
+      const el = document.getElementById(`msg-${firstUnread.id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+  
+    // 안 읽은 메시지 없으면 맨 아래로
+    scrollToBottom();
+  }, [selectedUser, messages]);
 
   useEffect(() => {
     if (!username || !selectedUser) return;
@@ -390,6 +421,7 @@ const Section2 = () => {
                   return (
                     <div 
                       key={msg.id || index} 
+                      id={`msg-${msg.id}`}
                       className={isMine ? styles.myMessage : styles.theirMessage}
                     >
                       {!isMine && (

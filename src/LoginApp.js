@@ -51,7 +51,7 @@ function LoginPage() {
 
   const loginButton = async () => {
     try {
-      const response = await api.post("/api/auth/login", {
+      const response = await api.post("/api/auth/login",  data, {
         username: ID,
         password: PW
       }, { withCredentials: true });

@@ -14,7 +14,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40%;
   gap: 20px;
 }
 .search {
@@ -122,6 +121,7 @@
 
 .logout {
   cursor: pointer;
+  font-weight: 900;
 }
 
 .profileImage {
@@ -133,15 +133,17 @@
 
 .infoform {
   position: absolute;
-  right: 0;
+  right: 20px;
   margin-top: 10px;
   background-color: var(--card-bg);
   border-radius: 8px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   z-index: 100;
   color: var(--text-color);
+  height: 190px;
+  box-shadow: 0 0 0 2px #000 inset;
 }
 .infoform div{
+  border-radius: 8px;
   padding: 10px;
   cursor: pointer;
 }
@@ -151,6 +153,9 @@
 }
 .infoform div:hover{
   background-color: var(--hover-bg);
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  gap : 5px;
 }
 .userInfo h2{
   font-size: 16px;
@@ -163,6 +168,14 @@
   color: var(--text-color);
   cursor: pointer;
 }
+.themeMenu{
+  position: absolute;
+  z-index: 100;
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  background-color: var(--hover-bg);
+}
+
 .themeMenu div:hover{
   color: #fff;
 }
@@ -180,7 +193,7 @@
   background: none;
   width: 280px;
   height: 34px;
-  color: #fff;
+  color: var(--accent-text);
 }
 
 .searchForm input[type="text"]:focus {

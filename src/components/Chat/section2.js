@@ -161,14 +161,24 @@ const Section2 = () => {
 
   useEffect(() => {
     if (!username || !selectedUser) return;
+  
     axios.post(`${API}/api/messages/read`, {
       sender_username: selectedUser.username,
       receiver_username: username,
-    }).then(() => axios.get(`${API}/api/messages`, {
+    })
+    .then(() => axios.get(`${API}/api/messages`, {
       params: { username, target: selectedUser.username },
-    })).then((res) => {
+    }))
+    .then((res) => {
       setMessages(Array.isArray(res.data) ? res.data : []);
-    }).catch((err) => {
+  
+      // ✅ 추가: 읽음 완료 후 서버에 socket으로 알림
+      socket?.emit("messageRead", {
+        sender_username: username,
+        receiver_username: selectedUser.username,
+      });
+    })
+    .catch((err) => {
       console.error(err);
     });
   }, [selectedUser, username]);

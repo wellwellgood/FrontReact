@@ -83,6 +83,7 @@ const Section2 = () => {
     // ✅ 메시지 수신 (중복 메시지 방지)
     s.on("message", (msg) => {
       if (!msg) return;
+      console.log("📥 수신된 메시지:", msg);
   
       const safeMsg = {
         ...msg,

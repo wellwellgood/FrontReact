@@ -1,11 +1,8 @@
 // controllers/messageController.js
-const express = require("express");
-const router = express.Router();
-const db = require("../../DB.mjs");
+import pool from "../../DB.mjs";
 
-const time = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(' ', 'T');
 // ✅ 메시지 저장
-exports.saveMessage = async (req, res) => {
+const saveMessage = async (req, res) => {
   const {
     sender_username,
     receiver_username,
@@ -17,7 +14,7 @@ exports.saveMessage = async (req, res) => {
   } = req.body;
 
   try {
-    const result = await db.query(
+    const result = await pool.query(
       `INSERT INTO messages (
         sender_username, receiver_username, receiver_name,
         content, file_url, file_name, file_size, read, time
@@ -29,8 +26,7 @@ exports.saveMessage = async (req, res) => {
         content,
         file_url,
         file_name,
-        Number(file_size) || 0,
-        time
+        Number(file_size) || 0
       ]
     );
 
@@ -42,7 +38,7 @@ exports.saveMessage = async (req, res) => {
 };
 
 // ✅ 메시지 조회
-exports.getMessages = async (req, res) => {
+const getMessages = async (req, res) => {
   const { username, target } = req.query;
 
   if (!username || !target) {
@@ -50,7 +46,7 @@ exports.getMessages = async (req, res) => {
   }
 
   try {
-    const result = await db.query(
+    const result = await pool.query(
       `SELECT * FROM messages 
        WHERE (sender_username = $1 AND receiver_username = $2)
           OR (sender_username = $2 AND receiver_username = $1)
@@ -65,12 +61,16 @@ exports.getMessages = async (req, res) => {
   }
 };
 
-// ✅ 읽음 처리 (전체 읽음)
-exports.markAllAsRead = async (req, res) => {
+// ✅ 읽음 처리 (전체)
+const markAllAsRead = async (req, res) => {
   const { sender_username, receiver_username } = req.body;
 
+  if (!sender_username || !receiver_username) {
+    return res.status(400).json({ message: "파라미터 누락" });
+  }
+
   try {
-    await db.query(
+    await pool.query(
       `UPDATE messages
        SET read = true
        WHERE sender_username = $1 AND receiver_username = $2`,
@@ -84,12 +84,12 @@ exports.markAllAsRead = async (req, res) => {
   }
 };
 
-// ✅ 개별 메시지 읽음 처리 (선택적 구현)
-exports.markMessageAsRead = async (req, res) => {
+// ✅ 개별 메시지 읽음 처리
+const markMessageAsRead = async (req, res) => {
   const { messageId } = req.params;
 
   try {
-    await db.query(
+    await pool.query(
       "UPDATE messages SET read = true WHERE id = $1",
       [messageId]
     );
@@ -99,4 +99,11 @@ exports.markMessageAsRead = async (req, res) => {
     console.error("❌ 개별 메시지 읽음 실패:", err);
     res.status(500).json({ error: "개별 읽음 처리 실패" });
   }
+};
+
+export default {
+  saveMessage,
+  getMessages,
+  markAllAsRead,
+  markMessageAsRead,
 };

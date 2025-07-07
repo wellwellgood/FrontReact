@@ -148,27 +148,25 @@ const Section2 = () => {
   }, [username]); // ✅ selectedUser 제거됨
 
   useEffect(() => {
-    if (!selectedUser || messages.length === 0) return;
+    if (!username || !selectedUser) return;
   
-    // 읽지 않은 메시지 중 첫 번째 찾기
-    const firstUnread = messages.find(
-      (msg) =>
-        msg.sender_username === selectedUser.username &&
-        msg.receiver_username === username &&
-        !msg.read
-    );
+    console.log("📬 읽음 요청 시도:", selectedUser.username, username);
   
-    if (firstUnread) {
-      const el = document.getElementById(`msg-${firstUnread.id}`);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-    }
-  
-    // 안 읽은 메시지 없으면 맨 아래로
-    scrollToBottom();
-  }, [selectedUser, messages]);
+    axios.post(`${API}/api/messages/read`, {
+      sender_username: selectedUser.username,
+      receiver_username: username,
+    })
+    .then(() => {
+      console.log("✅ 읽음 처리됨. socket emit 진행");
+      socket?.emit("messageRead", {
+        sender_username: username,
+        receiver_username: selectedUser.username,
+      });
+    })
+    .catch((err) => {
+      console.error("❌ 읽음 처리 실패:", err);
+    });
+  }, [selectedUser, username]);
 
 useEffect(() => {
   if (!username || !selectedUser) return;

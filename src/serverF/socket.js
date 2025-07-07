@@ -57,36 +57,33 @@ const initializeSocket = (server) => {
 
     // ✅ 읽음 처리 (서버 → 상대 유저에게 전달)
     socket.on("messageRead", async ({ sender_username, receiver_username }) => {
-      try {
-        // 1. 읽지 않은 메시지들 DB에서 가져오기
-        const result = await pool.query(
-          `SELECT id FROM messages 
-           WHERE sender_username = $1 AND receiver_username = $2 AND read = false`,
-          [receiver_username, sender_username]
-        );
+      console.log("📨 읽음 처리 요청 받음:", sender_username, receiver_username);
     
-        const unreadMessages = result.rows;
+      const unreadResult = await pool.query(
+        `SELECT id FROM messages 
+         WHERE sender_username = $1 AND receiver_username = $2 AND read = false`,
+        [sender_username, receiver_username]
+      );
     
-        if (unreadMessages.length === 0) return;
+      const unreadMessages = unreadResult.rows;
     
-        // 2. DB에서 읽음 처리
-        await pool.query(
-          `UPDATE messages 
-           SET read = true 
-           WHERE sender_username = $1 AND receiver_username = $2 AND read = false`,
-          [receiver_username, sender_username]
-        );
-    
-        // 3. 읽음 알림 전송 (각 메시지 ID에 대해)
-        unreadMessages.forEach(({ id }) => {
-          io.to(receiver_username).emit("messageRead", { messageId: id });
-        });
-    
-        console.log(`✅ ${receiver_username}에게 읽음 알림 전송 (${unreadMessages.length}건)`);
-      } catch (err) {
-        console.error("❌ 읽음 처리 중 오류:", err);
+      if (unreadMessages.length === 0) {
+        console.log("✅ 읽을 메시지 없음");
+        return;
       }
+    
+      await pool.query(
+        `UPDATE messages SET read = true 
+         WHERE sender_username = $1 AND receiver_username = $2`,
+        [sender_username, receiver_username]
+      );
+    
+      unreadMessages.forEach(({ id }) => {
+        io.to(receiver_username).emit("messageRead", { messageId: id });
+        console.log("📤 읽음 알림 전송 →", receiver_username, id);
+      });
     });
+    
 
     // ✅ DB에서도 읽음 업데이트 처리
     socket.on("markAsRead", async ({ messageId }) => {

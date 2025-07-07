@@ -82,6 +82,16 @@ const initializeSocket = (server) => {
         io.to(receiver_username).emit("messageRead", { messageId: id });
         console.log("📤 읽음 알림 전송 →", receiver_username, id);
       });
+
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.sender_username === username &&
+          msg.receiver_username === sender_username &&
+          !msg.read
+            ? { ...msg, read: true }
+            : msg
+        )
+      );
     });
     
 

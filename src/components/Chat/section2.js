@@ -81,6 +81,7 @@ const Section2 = () => {
     setSocket(s);
   
     // ✅ 메시지 수신 (중복 메시지 방지)
+    s.off("message");
     s.on("message", (msg) => {
       console.log("📥 수신된 메시지:", msg);
     
@@ -103,7 +104,7 @@ const Section2 = () => {
       const isCurrentChat =
         selectedUser &&
         (msg.sender_username === selectedUser.username ||
-         msg.receiver_username === selectedUser.username);
+        msg.receiver_username === selectedUser.username);
     
       // 현재 채팅 중이 아니고, 내가 받은 메시지면
       if (!isCurrentChat && !isMine) {
@@ -111,7 +112,7 @@ const Section2 = () => {
         // 예: 뱃지 증가, 토스트 알림, 사운드 등
         console.log("🔔 새 메시지 도착 from:", msg.sender_username);
       }
-    });
+    }, []);
     
   
     // ✅ 읽음 처리

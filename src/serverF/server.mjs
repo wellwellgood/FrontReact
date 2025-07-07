@@ -6,7 +6,7 @@ dotenv.config();
 import http from "http";
 import initializeSocket from "./socket.js"
 import searchRoutes from "./routes/searchRoute.js";
-import corsMiddleware from "./middlewares/cors.js";
+// import corsMiddleware from "./middlewares/cors.js";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -27,7 +27,7 @@ app.use(cookieParser());
 const allowOrigin = 
 process.env.NODE_ENV === "production"
 ? "https://kkydashboard.netlify.app" 
-: "http://localhost:10000";
+: "http://localhost:3000"
 
 // CORS 설정 (withCredentials 허용)
 app.use(cors({

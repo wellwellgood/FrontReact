@@ -148,27 +148,39 @@ const Section2 = () => {
   }, [username]); // ✅ selectedUser 제거됨
 
   useEffect(() => {
-    console.log("🧪 [읽음처리 useEffect] 실행됨");
-    console.log("🧪 username:", username);
-    console.log("🧪 selectedUser:", selectedUser);
+    if (!username || !selectedUser || messages.length === 0) return;
   
-    if (!username || !selectedUser) return;
+    console.log("📬 [읽음 요청] selectedUser:", selectedUser.username, "| messages:", messages.length);
   
-    axios.post(`${API}/api/messages/read`, {
-      sender_username: selectedUser.username,
-      receiver_username: username,
-    })
-    .then(() => {
-      console.log("✅ 읽음 처리 완료 → emit 진행");
-      socket?.emit("messageRead", {
-        sender_username: username,
-        receiver_username: selectedUser.username,
+    // 안 읽은 메시지 있는지 확인
+    const hasUnread = messages.some(
+      (msg) =>
+        msg.sender_username === selectedUser.username &&
+        msg.receiver_username === username &&
+        !msg.read
+    );
+  
+    if (!hasUnread) {
+      console.log("✅ 모든 메시지 이미 읽음");
+      return;
+    }
+  
+    axios
+      .post(`${API}/api/messages/read`, {
+        sender_username: selectedUser.username,
+        receiver_username: username,
+      })
+      .then(() => {
+        console.log("✅ 읽음 처리 완료 → emit");
+        socket?.emit("messageRead", {
+          sender_username: username,
+          receiver_username: selectedUser.username,
+        });
+      })
+      .catch((err) => {
+        console.error("❌ 읽음 처리 실패:", err);
       });
-    })
-    .catch((err) => {
-      console.error("❌ 읽음 처리 API 실패:", err);
-    });
-  }, [selectedUser, username]);
+  }, [messages, selectedUser, username]);
 
 useEffect(() => {
   if (!username || !selectedUser) return;

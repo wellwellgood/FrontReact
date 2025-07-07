@@ -1,7 +1,7 @@
 // controllers/messageController.js
 const express = require("express");
 const router = express.Router();
-const db = require("./db.js");
+const db = require("../../DB.mjs");
 
 const time = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(' ', 'T');
 // ✅ 메시지 저장

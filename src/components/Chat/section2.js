@@ -159,61 +159,73 @@ const Section2 = () => {
     scrollToBottom();
   }, [selectedUser, messages]);
 
-  useEffect(() => {
-    if (!username || !selectedUser) return;
-  
-    axios.post(`${API}/api/messages/read`, {
-      sender_username: selectedUser.username,
-      receiver_username: username,
-    })
-    .then(() => axios.get(`${API}/api/messages`, {
-      params: { username, target: selectedUser.username },
-    }))
-    .then((res) => {
-      setMessages(Array.isArray(res.data) ? res.data : []);
-  
-      // ✅ 추가: 읽음 완료 후 서버에 socket으로 알림
-      socket?.emit("messageRead", {
-        sender_username: username,
-        receiver_username: selectedUser.username,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-  }, [selectedUser, username]);
+useEffect(() => {
+  if (!username || !selectedUser) return;
 
-  const handleSend = async () => {
-    if (!input.trim() && !selectedFile) return;
-    try {
-      let fileUrl = null, fileName = null, fileSize = null;
-      if (selectedFile) {
-        const uniqueName = `${Date.now()}-${selectedFile.name}`;
-        const fileRef = storageRef(storage, `chat/${uniqueName}`);
-        await uploadBytes(fileRef, selectedFile);
-        fileUrl = await getDownloadURL(fileRef);
-        fileName = selectedFile.name;
-        fileSize = selectedFile.size;
-      }
-  
-      await axios.post(`${API}/api/messages`, {
-        sender_username: username,
-        receiver_username: selectedUser.username,
-        receiver_name: selectedUser.name,
-        content: input.trim() || "[파일]",
-        file_url: fileUrl,
-        file_name: fileName,
-        file_size: fileSize,
-        read: false,
-      });
-  
-      setInput("");
-      setSelectedFile(null);
-      fileInputRef.current.value = "";
-    } catch (err) {
-      console.error(err);
+  axios.post(`${API}/api/messages/read`, {
+    sender_username: selectedUser.username,
+    receiver_username: username,
+  })
+  .then(() => axios.get(`${API}/api/messages`, {
+    params: { username, target: selectedUser.username },
+  }))
+  .then((res) => {
+    setMessages(Array.isArray(res.data) ? res.data : []);
+
+    // ✅ 추가: 읽음 완료 후 서버에 socket으로 알림
+    socket?.emit("messageRead", {
+      sender_username: username,
+      receiver_username: selectedUser.username,
+    });
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+}, [selectedUser, username]);
+
+const handleSend = async () => {
+  if (!input.trim() && !selectedFile) return;
+
+  try {
+    let fileUrl = null, fileName = null, fileSize = null;
+    if (selectedFile) {
+      const uniqueName = `${Date.now()}-${selectedFile.name}`;
+      const fileRef = storageRef(storage, `chat/${uniqueName}`);
+      await uploadBytes(fileRef, selectedFile);
+      fileUrl = await getDownloadURL(fileRef);
+      fileName = selectedFile.name;
+      fileSize = selectedFile.size;
     }
-  };
+
+    // 1. 서버에 저장
+    const res = await axios.post(`${API}/api/messages`, {
+      sender_username: username,
+      receiver_username: selectedUser.username,
+      receiver_name: selectedUser.name,
+      content: input.trim() || "[파일]",
+      file_url: fileUrl,
+      file_name: fileName,
+      file_size: fileSize,
+      read: false,
+    });
+
+    const savedMessage = res.data;
+
+    // 2. ✅ 내 화면에도 즉시 반영
+    setMessages((prev) => [...prev, savedMessage]);
+
+    // 3. ✅ 소켓으로 상대방에게 전송
+    socket?.emit("sendMessage", savedMessage);
+
+    // 초기화
+    setInput("");
+    setSelectedFile(null);
+    fileInputRef.current.value = "";
+
+  } catch (err) {
+    console.error(err);
+  }
+};
   
 
   const handleKeyPress = (e) => {

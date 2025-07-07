@@ -82,9 +82,8 @@ const Section2 = () => {
   
     // ✅ 메시지 수신 (중복 메시지 방지)
     s.on("message", (msg) => {
-      if (!msg) return;
       console.log("📥 수신된 메시지:", msg);
-  
+    
       const safeMsg = {
         ...msg,
         time: msg.time || new Date().toISOString(),
@@ -92,20 +91,28 @@ const Section2 = () => {
         content: msg.content || '',
         id: msg.id || `socket_${Date.now()}`,
       };
-  
-      const shouldDisplay =
-        selectedUser && (
-          safeMsg.sender_username === selectedUser?.username ||
-          safeMsg.receiver_username === selectedUser?.username
-        );
-  
-      if (!shouldDisplay) return;
-  
+    
+      // ✅ 중복 체크 후 messages에 무조건 추가
       setMessages((prev) => {
         const isDuplicate = prev.some((m) => m.id === safeMsg.id);
         return isDuplicate ? prev : [...prev, safeMsg];
       });
+    
+      // ✅ 읽음 상태 갱신 안된 상태면 알림용으로 표시
+      const isMine = msg.sender_username === username;
+      const isCurrentChat =
+        selectedUser &&
+        (msg.sender_username === selectedUser.username ||
+         msg.receiver_username === selectedUser.username);
+    
+      // 현재 채팅 중이 아니고, 내가 받은 메시지면
+      if (!isCurrentChat && !isMine) {
+        // 알림 표시용 로직이 필요하면 여기에 작성
+        // 예: 뱃지 증가, 토스트 알림, 사운드 등
+        console.log("🔔 새 메시지 도착 from:", msg.sender_username);
+      }
     });
+    
   
     // ✅ 읽음 처리
     s.on("messageRead", ({ messageId }) => {
@@ -415,6 +422,9 @@ const handleSend = async () => {
                 <span>
                 {onlineUsers.includes(user.username) && <span className={styles.onlineDot}>●</span>}
                   {user.name} ({user.username})
+                  {unreadCount > 0 && (
+                    <span className={styles.unreadBadge}>{unreadCount}</span>
+                  )}
                 </span>
               </div>
             );

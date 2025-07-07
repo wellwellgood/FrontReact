@@ -155,7 +155,6 @@ const Section2 = () => {
         msg.receiver_username === username &&
         !msg.read
     );
-    console.log("메세지 읽음", msg.read);
   
     if (firstUnread) {
       const el = document.getElementById(`msg-${firstUnread.id}`);

@@ -148,23 +148,25 @@ const Section2 = () => {
   }, [username]); // ✅ selectedUser 제거됨
 
   useEffect(() => {
-    if (!username || !selectedUser) return;
+    console.log("🧪 [읽음처리 useEffect] 실행됨");
+    console.log("🧪 username:", username);
+    console.log("🧪 selectedUser:", selectedUser);
   
-    console.log("📬 읽음 요청 시도:", selectedUser.username, username);
+    if (!username || !selectedUser) return;
   
     axios.post(`${API}/api/messages/read`, {
       sender_username: selectedUser.username,
       receiver_username: username,
     })
     .then(() => {
-      console.log("✅ 읽음 처리됨. socket emit 진행");
+      console.log("✅ 읽음 처리 완료 → emit 진행");
       socket?.emit("messageRead", {
         sender_username: username,
         receiver_username: selectedUser.username,
       });
     })
     .catch((err) => {
-      console.error("❌ 읽음 처리 실패:", err);
+      console.error("❌ 읽음 처리 API 실패:", err);
     });
   }, [selectedUser, username]);
 

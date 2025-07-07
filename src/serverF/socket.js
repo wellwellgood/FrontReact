@@ -42,11 +42,14 @@ const initializeSocket = (server) => {
             msg.file_size || null,
           ]
         );
-
+    
         msg.id = result.rows[0].id;
         msg.read = false;
-
+    
+        // ✅ 수신자에게 실시간 메시지 전달
+        io.to(msg.receiver_username).emit("message", msg);
         console.log("📤 메시지 저장 및 전송:", msg);
+    
       } catch (err) {
         console.error("❌ 메시지 저장 오류:", err);
       }

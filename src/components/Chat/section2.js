@@ -197,7 +197,6 @@ const handleSend = async () => {
       fileSize = selectedFile.size;
     }
 
-    // 1. 서버에 저장
     const res = await axios.post(`${API}/api/messages`, {
       sender_username: username,
       receiver_username: selectedUser.username,
@@ -211,21 +210,18 @@ const handleSend = async () => {
 
     const savedMessage = res.data;
 
-    // 2. ✅ 내 화면에도 즉시 반영
-    setMessages((prev) => [...prev, savedMessage]);
+    setMessages((prev) => [...prev, savedMessage]); // 내 화면 반영
 
-    // 3. ✅ 소켓으로 상대방에게 전송
-    socket?.emit("sendMessage", savedMessage);
+    socket?.emit("sendMessage", savedMessage);      // 상대방에게 전달 ✅
 
-    // 초기화
     setInput("");
     setSelectedFile(null);
     fileInputRef.current.value = "";
-
   } catch (err) {
     console.error(err);
   }
 };
+
   
 
   const handleKeyPress = (e) => {

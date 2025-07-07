@@ -93,26 +93,46 @@ const Section2 = () => {
         id: msg.id || `socket_${Date.now()}`,
       };
     
-      // ✅ 중복 체크 후 messages에 무조건 추가
       setMessages((prev) => {
         const isDuplicate = prev.some((m) => m.id === safeMsg.id);
         return isDuplicate ? prev : [...prev, safeMsg];
       });
     
-      // ✅ 읽음 상태 갱신 안된 상태면 알림용으로 표시
       const isMine = msg.sender_username === username;
       const isCurrentChat =
         selectedUser &&
         (msg.sender_username === selectedUser.username ||
-        msg.receiver_username === selectedUser.username);
+         msg.receiver_username === selectedUser.username);
     
-      // 현재 채팅 중이 아니고, 내가 받은 메시지면
       if (!isCurrentChat && !isMine) {
-        // 알림 표시용 로직이 필요하면 여기에 작성
-        // 예: 뱃지 증가, 토스트 알림, 사운드 등
         console.log("🔔 새 메시지 도착 from:", msg.sender_username);
       }
-    }, []);
+    
+      // ✅ 실시간 읽음 처리: 현재 채팅창에 있고 내가 받은 메시지면 즉시 처리
+      if (
+        isCurrentChat &&
+        !isMine &&
+        msg.receiver_username === username &&
+        !msg.read
+      ) {
+        console.log("👁‍🗨 실시간 읽음 처리 진행 중:", msg);
+    
+        axios.post(`${API}/api/messages/read`, {
+          sender_username: selectedUser.username,
+          receiver_username: username,
+        })
+        .then(() => {
+          console.log("✅ 읽음 처리 완료 → emit");
+          socket?.emit("messageRead", {
+            sender_username: username,
+            receiver_username: selectedUser.username,
+          });
+        })
+        .catch((err) => {
+          console.error("❌ 읽음 처리 실패:", err);
+        });
+      }
+    });
     
   
     // ✅ 읽음 처리

@@ -111,6 +111,7 @@ const Section2 = () => {
         // 알림 표시용 로직이 필요하면 여기에 작성
         // 예: 뱃지 증가, 토스트 알림, 사운드 등
         console.log("🔔 새 메시지 도착 from:", msg.sender_username);
+        console.log("메세지 읽음", msg.read);
       }
     }, []);
     

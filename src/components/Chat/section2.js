@@ -117,6 +117,8 @@ const Section2 = () => {
   
     // ✅ 읽음 처리
     s.on("messageRead", ({ messageId }) => {
+      console.log("✅ 메시지 읽음 처리됨! messageId:", messageId);
+
       setReadMessages((prev) => new Set([...prev, messageId]));
       setMessages((prev) =>
         prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))

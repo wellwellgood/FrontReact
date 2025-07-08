@@ -278,11 +278,6 @@ const handleSend = async () => {
   }
 };
 
-setMessages((prev) => {
-  const isDuplicate = prev.some((m) => m.id === safeMsg.id);
-  return isDuplicate ? prev : [...prev, safeMsg];
-});
-
   
 
   const handleKeyPress = (e) => {

@@ -145,7 +145,25 @@ const Section2 = () => {
     return () => {
       s.disconnect(); // ✅ 클린업 필수
     };
-  }, [username, selectedUser]);
+  }, [username]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(`${API}/users`, {
+          params: { exclude: username },
+        });
+        console.log("🧾 받은 유저 목록:", res.data); // ← 이거 추가했는지 확인
+        setUsers(res.data || []);
+      } catch (err) {
+        console.error("❌ 유저 목록 불러오기 실패:", err);
+        setUserListError("유저 목록을 불러오는 데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUsers();
+  }, [username]);
 
   useEffect(() => {
     if (!username || !selectedUser || messages.length === 0) return;
@@ -259,6 +277,11 @@ const handleSend = async () => {
     console.error(err);
   }
 };
+
+setMessages((prev) => {
+  const isDuplicate = prev.some((m) => m.id === safeMsg.id);
+  return isDuplicate ? prev : [...prev, safeMsg];
+});
 
   
 

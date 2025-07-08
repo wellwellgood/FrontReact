@@ -378,6 +378,12 @@ const handleSend = async () => {
     return () => observer.disconnect();
   }, []);
 
+  const scrollToBottom = () => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  };
+
   // const DownIcon = () => (
   //   <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
   // );

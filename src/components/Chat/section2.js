@@ -73,18 +73,15 @@ const Section2 = () => {
       withCredentials: true,
     });
   
+    setSocket(s);
+  
     s.on("connect", () => {
       s.emit("join", username);
     });
-    console.log("내 username:", username);
   
-    setSocket(s);
-  
-    // ✅ 메시지 수신 (중복 메시지 방지)
-    s.off("message");
     s.on("message", (msg) => {
       console.log("📥 수신된 메시지:", msg);
-    
+  
       const safeMsg = {
         ...msg,
         time: msg.time || new Date().toISOString(),
@@ -92,23 +89,22 @@ const Section2 = () => {
         content: msg.content || '',
         id: msg.id || `socket_${Date.now()}`,
       };
-    
+  
       setMessages((prev) => {
         const isDuplicate = prev.some((m) => m.id === safeMsg.id);
         return isDuplicate ? prev : [...prev, safeMsg];
       });
-    
+  
       const isMine = msg.sender_username === username;
       const isCurrentChat =
-      selectedUser &&
-      (msg.sender_username === selectedUser.username ||
-        msg.receiver_username === selectedUser.username);
-    
+        selectedUser &&
+        (msg.sender_username === selectedUser.username ||
+          msg.receiver_username === selectedUser.username);
+  
       if (!isCurrentChat && !isMine) {
         console.log("🔔 새 메시지 도착 from:", msg.sender_username);
       }
-    
-      // ✅ 실시간 읽음 처리: 현재 채팅창에 있고 내가 받은 메시지면 즉시 처리
+  
       if (
         isCurrentChat &&
         !isMine &&
@@ -116,14 +112,13 @@ const Section2 = () => {
         !msg.read
       ) {
         console.log("👁‍🗨 실시간 읽음 처리 진행 중:", msg);
-    
         axios.post(`${API}/api/messages/read`, {
           sender_username: selectedUser.username,
           receiver_username: username,
         })
         .then(() => {
           console.log("✅ 읽음 처리 완료 → emit");
-          socket?.emit("messageRead", {
+          s.emit("messageRead", {
             sender_username: username,
             receiver_username: selectedUser.username,
           });
@@ -133,39 +128,24 @@ const Section2 = () => {
         });
       }
     });
-    
   
-    // ✅ 읽음 처리
-    s.on("messageRead", ({ messageId }) => {
-      console.log("✅ 메시지 읽음 처리됨! messageId:", messageId);
-
-      setReadMessages((prev) => new Set([...prev, messageId]));
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
+    s.on("messageRead", ({ sender_username, receiver_username }) => {
+      console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.sender_username === username &&
+          msg.receiver_username === sender_username &&
+          !msg.read
+            ? { ...msg, read: true }
+            : msg
+        )
       );
     });
-
-    const fetchUsers = async () => {
-      try {
-        const res = await axios.get(`${API}/users`, {
-          params: { exclude: username },
-        });
-        setUsers(res.data || []);
-      } catch (err) {
-        console.error("❌ 유저 목록 불러오기 실패:", err);
-        setUserListError("유저 목록을 불러오는 데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    setIsLoading(true);
-    fetchUsers();
   
     return () => {
-      s.disconnect();
+      s.disconnect(); // ✅ 클린업 필수
     };
-  }, [username]); // ✅ selectedUser 제거됨
+  }, [username, selectedUser]);
 
   useEffect(() => {
     if (!username || !selectedUser || messages.length === 0) return;
@@ -279,6 +259,11 @@ const handleSend = async () => {
     console.error(err);
   }
 };
+
+setMessages((prev) => {
+  const isDuplicate = prev.some((m) => m.id === safeMsg.id);
+  return isDuplicate ? prev : [...prev, safeMsg];
+});
 
   
 

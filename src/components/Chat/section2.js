@@ -150,9 +150,7 @@ const Section2 = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get(`${API}/users`, {
-          params: { exclude: username },
-        });
+        const res = await axios.get(`${API}/users`);
         console.log("🧾 받은 유저 목록:", res.data); // ← 이거 추가했는지 확인
         setUsers(res.data || []);
       } catch (err) {

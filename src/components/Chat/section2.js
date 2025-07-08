@@ -499,11 +499,6 @@ const handleSend = async () => {
         {/* 채팅 박스 */}
         <div className={styles.chatBox}>
           <div className={styles.chatHeaderContainer} ref={chatBoxRef}>
-          {messages.map((msg) => (
-          <div key={msg.id}>
-            <strong>{msg.sender_username}</strong>: {msg.content} {msg.read && "✓"}
-          </div>
-        ))}
             <div className={styles.chatHeader}>
               {selectedUser ? `${selectedUser.name}님과 채팅중...` : "채팅할 유저를 선택하세요"}
             </div>

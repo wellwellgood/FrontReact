@@ -100,9 +100,9 @@ const Section2 = () => {
     
       const isMine = msg.sender_username === username;
       const isCurrentChat =
-        selectedUser &&
-        (msg.sender_username === selectedUser.username ||
-         msg.receiver_username === selectedUser.username);
+      selectedUser &&
+      (msg.sender_username === selectedUser.username ||
+        msg.receiver_username === selectedUser.username);
     
       if (!isCurrentChat && !isMine) {
         console.log("🔔 새 메시지 도착 from:", msg.sender_username);
@@ -224,6 +224,20 @@ useEffect(() => {
   })
   .catch((err) => {
     console.error(err);
+  });
+  socket.on("messageRead", ({ sender_username, receiver_username }) => {
+    console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
+  
+    // 내가 보낸 메시지 중에서 읽힌 것들 read: true로 바꾸기
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) =>
+        msg.sender_username === username &&
+        msg.receiver_username === sender_username &&
+        !msg.read
+          ? { ...msg, read: true }
+          : msg
+      )
+    );
   });
 }, [selectedUser, username]);
 
@@ -351,9 +365,18 @@ const handleSend = async () => {
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  //스크롤 최 하단 고정
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      chatBoxRef.current?.scrollTo({ top: chatBoxRef.current.scrollHeight });
+    });
+
+    if (chatBoxRef.current) {
+      observer.observe(chatBoxRef.current, { childList: true, subtree: true });
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   // const DownIcon = () => (
   //   <Icon style={{ width: 16, height: 16, color: "black", marginLeft: "5px" }} />
@@ -470,6 +493,11 @@ const handleSend = async () => {
         {/* 채팅 박스 */}
         <div className={styles.chatBox}>
           <div className={styles.chatHeaderContainer} ref={chatBoxRef}>
+          {messages.map((msg) => (
+          <div key={msg.id}>
+            <strong>{msg.sender_username}</strong>: {msg.content} {msg.read && "✓"}
+          </div>
+        ))}
             <div className={styles.chatHeader}>
               {selectedUser ? `${selectedUser.name}님과 채팅중...` : "채팅할 유저를 선택하세요"}
             </div>

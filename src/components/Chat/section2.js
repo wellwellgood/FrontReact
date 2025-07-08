@@ -278,7 +278,10 @@ const handleSend = async () => {
   }
 };
 
-  
+const sortedUsers = [
+  ...users.filter((u) => u.username === username), // 나 먼저
+  ...users.filter((u) => u.username !== username), // 그 외 나머지
+];
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -424,75 +427,65 @@ const handleSend = async () => {
       <div className={styles.chatscreen}>
         {/* 사용자 목록 */}
         <div className={styles.userList}>
-          <h3>유저 목록 {users.length > 0 && `(${users.length}명)`}</h3>
-          
-          {isLoading && <div className={styles.loading}>로딩 중...</div>}
-          
-          {userListError && (
-            <div className={styles.error}>
-              <div>{userListError}</div>
-              <button 
-                onClick={() => window.location.reload()}
-                style={{ marginTop: '5px', padding: '5px 10px' }}
-              >
-                새로고침
-              </button>
-              <button 
-                onClick={() => {
-                  setUserListError("");
-                  setIsLoading(true);
-                  // 수동으로 다시 로드
-                  window.location.reload();
-                }}
-                style={{ marginTop: '5px', marginLeft: '5px', padding: '5px 10px' }}
-              >
-                다시 시도
-              </button>
-            </div>
-          )}
-          
-          {!isLoading && !userListError && users.length === 0 && (
-            <div className={styles.noUsers}>
-              <div>등록된 다른 사용자가 없습니다.</div>
-              <button 
-                onClick={() => {
-                  console.log("🔄 수동 새로고침 시도");
-                  window.location.reload();
-                }}
-                style={{ marginTop: '10px', padding: '5px 10px', fontSize: '12px' }}
-              >
-                새로고침
-              </button>
-            </div>
-          )}
-          
-          {users.map((user) => {
-            // 각 유저와의 안읽은 메시지 수 계산
-            const unreadCount = messages.filter(msg => 
-              msg.sender_username === user.username && 
-              msg.receiver_username === username && 
-              !msg.read
-            ).length;
+  <h3>유저 목록 {users.length > 0 && `(${users.length}명)`}</h3>
 
-            return (
-              <div
-                key={user.username}
-                className={`${styles.userItem} ${selectedUser?.username === user.username ? styles.selected : ""}`}
-                onClick={() => {
-                  setSelectedUser(user);
-                }}
-              >
-                <span>
-                {onlineUsers.includes(user.username) && <span className={styles.onlineDot}>●</span>}
-                  {user.name} ({user.username})
-                  {unreadCount > 0 && (
-                    <span className={styles.unreadBadge}>{unreadCount}</span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+  {isLoading && <div className={styles.loading}>로딩 중...</div>}
+
+  {userListError && (
+    <div className={styles.error}>
+      <div>{userListError}</div>
+      <button onClick={() => window.location.reload()}>새로고침</button>
+      <button
+        onClick={() => {
+          setUserListError("");
+          setIsLoading(true);
+          window.location.reload();
+        }}
+      >
+        다시 시도
+      </button>
+    </div>
+  )}
+
+  {!isLoading && !userListError && users.length === 0 && (
+    <div className={styles.noUsers}>
+      <div>등록된 다른 사용자가 없습니다.</div>
+      <button onClick={() => window.location.reload()}>새로고침</button>
+    </div>
+  )}
+
+  {[
+    ...users.filter((u) => u.username === username),
+    ...users.filter((u) => u.username !== username),
+  ].map((user) => {
+    const unreadCount = messages.filter(
+      (msg) =>
+        msg.sender_username === user.username &&
+        msg.receiver_username === username &&
+        !msg.read
+    ).length;
+
+    return (
+      <div
+        key={user.username}
+        className={`${styles.userItem} ${
+          selectedUser?.username === user.username ? styles.selected : ""
+        }`}
+        onClick={() => setSelectedUser(user)}
+      >
+        <span>
+          {onlineUsers.includes(user.username) && (
+            <span className={styles.onlineDot}>●</span>
+          )}
+          {user.name} ({user.username})
+          {unreadCount > 0 && (
+            <span className={styles.unreadBadge}>{unreadCount}</span>
+          )}
+        </span>
+      </div>
+    );
+  })}
+</div>
 
         {/* 채팅 박스 */}
         <div className={styles.chatBox}>

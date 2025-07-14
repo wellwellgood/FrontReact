@@ -27,11 +27,13 @@ nav{
   background: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end));
 }
 .logo1{
+  display: flex;
+  align-items: center;
   background: url(image/logo.png) no-repeat center center;
+  background-size: cover;
   width: 50px;
   height: 50px;
   display: flex;
-  align-items: center;
   justify-content: center;
   flex-direction: column;
 }

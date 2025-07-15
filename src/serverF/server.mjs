@@ -77,24 +77,6 @@ app.options('*', (req, res) => {
   res.sendStatus(200);
 });
 
-app.get('/health', (req, res) => {
-  const healthCheck = {
-    uptime: process.uptime(),
-    message: 'OK',
-    timestamp: new Date().toISOString(),
-    status: 'healthy',
-    version: '1.0.0'
-  };
-  
-  try {
-    res.status(200).json(healthCheck);
-  } catch (error) {
-    healthCheck.message = error.message;
-    healthCheck.status = 'error';
-    res.status(503).json(healthCheck);
-  }
-});
-
 
 
 console.log("DATABASE_URL:", process.env.NODE_ENV);

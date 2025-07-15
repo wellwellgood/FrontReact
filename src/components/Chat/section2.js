@@ -66,43 +66,43 @@ const Section2 = () => {
   }, [messages]);
 
 
-  useEffect(() => {
-    if (!username) return;
-  
-    const s = io(API, {
-      transports: ["websocket"],
-      withCredentials: true,
+useEffect(() => {
+  if (!username) return;
+
+  const s = io(API, {
+    transports: ["websocket"],
+    withCredentials: true,
+  });
+
+  setSocket(s);
+
+  s.on("connect", () => {
+    s.emit("join", username);
+  });
+
+  s.on("message", (msg) => {
+    console.log("📥 수신된 메시지:", msg);
+    setMessages((prev) => {
+      const isDuplicate = prev.some((m) => m.id === msg.id);
+      return isDuplicate ? prev : [...prev, msg];
     });
-  
-    setSocket(s);
-  
-    s.on("connect", () => {
-      s.emit("join", username);
-    });
-  
-    s.on("message", (msg) => {
-      console.log("📥 수신된 메시지:", msg);
-      setMessages((prev) => {
-        const isDuplicate = prev.some((m) => m.id === msg.id);
-        return isDuplicate ? prev : [...prev, msg];
-      });
-    });
-  
-    s.on("messageRead", ({ sender_username, receiver_username }) => {
-      console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.sender_username === username &&
-          msg.receiver_username === sender_username &&
-          !msg.read
-            ? { ...msg, read: true }
-            : msg
-        )
-      );
-    });
-  
-    return () => s.disconnect();
-  }, [username]);
+  });
+
+  s.on("messageRead", ({ sender_username, receiver_username }) => {
+    console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.sender_username === username &&
+        msg.receiver_username === sender_username &&
+        !msg.read
+          ? { ...msg, read: true }
+          : msg
+      )
+    );
+  });
+
+  return () => s.disconnect();
+}, [username]);
 
   useEffect(() => {
     if (!username || !selectedUser || messages.length === 0) return;

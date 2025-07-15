@@ -154,7 +154,7 @@ nav {
 .userItem {
   padding: 10px 12px;
   margin-top: 10px;
-  margin-right: 5px;
+  margin-left: 5px;
   background-color: var(--card-bg);
   border-radius: 12px;
   border: 1px solid var(--accent-color);

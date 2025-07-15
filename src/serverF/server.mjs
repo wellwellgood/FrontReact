@@ -7,6 +7,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./DB.mjs";
 import initDB from "./initDB.js";
+import messageRoute from "./routes/message.js";
 
 // 기본 설정만 먼저 테스트
 try {
@@ -50,6 +51,9 @@ try {
   
   const healthCheck = await import("./routes/Health.js");
   app.use("/api/health", healthCheck.default);
+
+  const messageRoutes = await import("./routes/message.js");
+  app.use("/api/messages", messageRoutes.default);
   
 } catch (error) {
   console.error("❌ 라우트 로드 실패:", error);

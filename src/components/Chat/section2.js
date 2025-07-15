@@ -142,6 +142,7 @@ const Section2 = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [showSettings, setShowSettings] = useState(false);
   const [isSending, setIsSending] = useState(false); // 전송 중 상태 추가
+  // const {checkServerHealth , setChecjServerHealth} = useState(false);
 
   useEffect(() => {
     const cleanup = monitorConnectionStatus((status) => {
@@ -197,7 +198,6 @@ const Section2 = () => {
     setSocket(s);
   
     s.on("connect", () => {
-      console.log("🔗 소켓 연결 성공");
       s.emit("join", username);
     });
   
@@ -235,7 +235,6 @@ const Section2 = () => {
       try {
         setIsLoading(true);
         const res = await axios.get(`${API}/users`);
-        console.log("👥 받은 유저 목록:", res.data);
         setUsers(res.data || []);
         setUserListError("");
       } catch (err) {
@@ -480,6 +479,7 @@ const Section2 = () => {
 
     return () => observer.disconnect();
   }, []);
+
 
   return (
     <div className={styles.container}>

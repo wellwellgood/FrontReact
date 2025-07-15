@@ -1,46 +1,53 @@
-app.get('/health', (req, res) => {
-    const healthCheck = {
-      uptime: process.uptime(),
-      message: 'OK',
-      timestamp: new Date().toISOString(),
-      status: 'healthy'
-    };
-    
-    try {
-      res.status(200).json(healthCheck);
-    } catch (error) {
-      healthCheck.message = error.message;
-      healthCheck.status = 'error';
-      res.status(503).json(healthCheck);
-    }
-  });
+const express = require('express');
+const router = express.Router();
+
+// 기본 헬스 체크
+router.get('/', (req, res) => {
+  const healthCheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: new Date().toISOString(),
+    status: 'healthy',
+    version: '1.0.0'
+  };
   
-  // 더 상세한 헬스 체크 (선택사항)
-  app.get('/health/detailed', async (req, res) => {
-    const healthCheck = {
-      uptime: process.uptime(),
-      message: 'OK',
-      timestamp: new Date().toISOString(),
-      status: 'healthy',
-      checks: {
-        database: 'OK',
-        memory: process.memoryUsage(),
-        cpu: process.cpuUsage()
-      }
-    };
-    
-    try {
-      // 데이터베이스 연결 확인 (예시)
-      // await db.query('SELECT 1');
-      
-      res.status(200).json(healthCheck);
-    } catch (error) {
-      healthCheck.message = error.message;
-      healthCheck.status = 'error';
-      healthCheck.checks.database = 'ERROR';
-      res.status(503).json(healthCheck);
+  try {
+    res.status(200).json(healthCheck);
+  } catch (error) {
+    healthCheck.message = error.message;
+    healthCheck.status = 'error';
+    res.status(503).json(healthCheck);
+  }
+});
+
+// 상세 헬스 체크
+router.get('/detailed', async (req, res) => {
+  const healthCheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: new Date().toISOString(),
+    status: 'healthy',
+    checks: {
+      database: 'OK',
+      memory: process.memoryUsage(),
+      cpu: process.cpuUsage(),
+      env: process.env.NODE_ENV || 'development'
     }
-  });
+  };
   
-  // 백엔드 서버가 시작될 때 로그
-  console.log('🏥 헬스 체크 엔드포인트 활성화: /health');
+  try {
+    // 데이터베이스 연결 확인 (실제 DB 쿼리로 교체)
+    // if (db) {
+    //   await db.query('SELECT 1');
+    // }
+    
+    res.status(200).json(healthCheck);
+  } catch (error) {
+    healthCheck.message = error.message;
+    healthCheck.status = 'error';
+    healthCheck.checks.database = 'ERROR';
+    res.status(503).json(healthCheck);
+  }
+});
+
+module.exports = router;

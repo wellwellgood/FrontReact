@@ -222,7 +222,6 @@ const sendMessage = async (messageData) => {
 // 개선된 사용자 목록 가져오기
 const fetchUsers = async (setUsers, setIsLoading, setUserListError) => {
   try {
-    console.log("👥 사용자 목록 로드 시작");
     setIsLoading(true);
     
     const users = await apiRequestWithRetry(`${API}/users`);

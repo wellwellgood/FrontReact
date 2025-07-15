@@ -82,58 +82,16 @@ const Section2 = () => {
   
     s.on("message", (msg) => {
       console.log("📥 수신된 메시지:", msg);
-  
-      const safeMsg = {
-        ...msg,
-        time: msg.time || new Date().toISOString(),
-        read: msg.read ?? false,
-        content: msg.content || '',
-        id: msg.id || `socket_${Date.now()}`,
-      };
-  
       setMessages((prev) => {
-        const isDuplicate = prev.some((m) => m.id === safeMsg.id);
-        return isDuplicate ? prev : [...prev, safeMsg];
+        const isDuplicate = prev.some((m) => m.id === msg.id);
+        return isDuplicate ? prev : [...prev, msg];
       });
-  
-      const isMine = msg.sender_username === username;
-      const isCurrentChat =
-        selectedUser &&
-        (msg.sender_username === selectedUser.username ||
-          msg.receiver_username === selectedUser.username);
-  
-      if (!isCurrentChat && !isMine) {
-        console.log("🔔 새 메시지 도착 from:", msg.sender_username);
-      }
-  
-      if (
-        isCurrentChat &&
-        !isMine &&
-        msg.receiver_username === username &&
-        !msg.read
-      ) {
-        console.log("👁‍🗨 실시간 읽음 처리 진행 중:", msg);
-        axios.post(`${API}/api/messages/read`, {
-          sender_username: selectedUser.username,
-          receiver_username: username,
-        })
-        .then(() => {
-          console.log("✅ 읽음 처리 완료 → emit");
-          s.emit("messageRead", {
-            sender_username: username,
-            receiver_username: selectedUser.username,
-          });
-        })
-        .catch((err) => {
-          console.error("❌ 읽음 처리 실패:", err);
-        });
-      }
     });
   
     s.on("messageRead", ({ sender_username, receiver_username }) => {
       console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) =>
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg.sender_username === username &&
           msg.receiver_username === sender_username &&
           !msg.read
@@ -143,9 +101,7 @@ const Section2 = () => {
       );
     });
   
-    return () => {
-      s.disconnect(); // ✅ 클린업 필수
-    };
+    return () => s.disconnect();
   }, [username]);
 
   useEffect(() => {
@@ -264,8 +220,6 @@ const handleSend = async () => {
     });
 
     const savedMessage = res.data;
-
-    setMessages((prev) => [...prev, savedMessage]); // 내 화면 반영
 
     socket?.emit("sendMessage", savedMessage);      // 상대방에게 전달 ✅
 

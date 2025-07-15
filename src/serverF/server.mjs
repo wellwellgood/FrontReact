@@ -16,7 +16,7 @@ import messageRoutes from "./routes/message.js";
 import fileRoutes from "./routes/uploadRouter.js";
 import initDB from "./initDB.js"; // DB 연결 함수
 import { connectDB } from "./DB.mjs";
-import HealthRouter from "./routes/Health.js";
+import healthCheck from "./routes/Health.js";
 await connectDB();
 
 const app = express();
@@ -46,6 +46,7 @@ app.use("/api", messageRoutes);
 app.use("/api/upload", fileRoutes);
 app.use("/users", userRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/health", healthCheck);
 
 // 서버 실행
 const PORT = process.env.PORT || 10000;
@@ -94,29 +95,6 @@ app.get('/health', (req, res) => {
   }
 });
 
-// 상세 헬스 체크
-app.get('/health/detailed', async (req, res) => {
-  const healthCheck = {
-    uptime: process.uptime(),
-    message: 'OK',
-    timestamp: new Date().toISOString(),
-    status: 'healthy',
-    checks: {
-      database: 'OK',
-      memory: process.memoryUsage(),
-      cpu: process.cpuUsage(),
-      env: process.env.NODE_ENV || 'development'
-    }
-  };
-  
-  try {
-    res.status(200).json(healthCheck);
-  } catch (error) {
-    healthCheck.message = error.message;
-    healthCheck.status = 'error';
-    healthCheck.checks.database = 'ERROR';
-    res.status(503).json(healthCheck);
-  }
-});
+
 
 console.log("DATABASE_URL:", process.env.NODE_ENV);

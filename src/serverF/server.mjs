@@ -39,6 +39,17 @@ app.use(
   })
 );
 
+// 🔥 CORS 관련 미들웨어를 라우트 등록 전에 이동
+app.use("/*", (req, res, next) => {
+  res.header("Access-Control-Max-Age", "86400");
+  res.header("Vary", "Origin");
+  next();
+});
+
+app.options("/*", (req, res) => {
+  res.sendStatus(200);
+});
+
 const koreaTime = new Date().toLocaleString("ko-KR", {
   timeZone: "Asia/Seoul",
 });
@@ -105,16 +116,6 @@ server.listen(PORT, async () => {
     console.error("❌ 서버 시작 실패:", err.message);
     process.exit(1);
   }
-});
-
-app.use("/*", (req, res, next) => {
-  res.header("Access-Control-Max-Age", "86400");
-  res.header("Vary", "Origin");
-  next();
-});
-
-app.options("/*", (req, res) => {
-  res.sendStatus(200);
 });
 
 console.log("DATABASE_URL:", process.env.NODE_ENV);

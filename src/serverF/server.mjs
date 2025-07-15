@@ -46,7 +46,6 @@ app.use("/api", messageRoutes);
 app.use("/api/upload", fileRoutes);
 app.use("/users", userRoutes);
 app.use("/api/search", searchRoutes);
-app.use("/health", HealthRouter);
 
 // 서버 실행
 const PORT = process.env.PORT || 10000;

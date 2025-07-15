@@ -277,42 +277,17 @@ const Section2 = () => {
   useEffect(() => {
     if (!username || !selectedUser) return;
   
-    const loadMessages = async () => {
+    const loadMessagesWithErrorHandling = async () => {
       try {
-        // 읽음 처리 먼저 실행
-        await axios.post(`${API}/api/messages/read`, {
-          sender_username: selectedUser.username,
-          receiver_username: username,
-        });
-        
-        // 메시지 가져오기
-        const res = await axios.get(`${API}/api/messages`, {
-          params: { username, target: selectedUser.username },
-        });
-        
-        const rawMessages = Array.isArray(res.data) ? res.data : [];
-        
-        // 중복 제거 후 시간순 정렬
-        const uniqueMessages = removeDuplicateMessagesAdvanced(rawMessages)
-          .sort((a, b) => new Date(a.time) - new Date(b.time));
-        
-        setMessages(uniqueMessages);
-        
-        // 읽음 상태 전송
-        socket?.emit("messageRead", {
-          sender_username: username,
-          receiver_username: selectedUser.username,
-        });
-        
-        console.log(`📝 메시지 로드 완료: ${uniqueMessages.length}개`);
-        
-      } catch (err) {
-        console.error("❌ 메시지 로드 실패:", err);
-        setMessages([]);
+        await loadMessages(username, selectedUser.username, socket, setMessages);
+      } catch (error) {
+        console.error('메시지 로드 실패:', error);
+        // 사용자에게 친화적인 에러 메시지 표시
+        setUserListError(`메시지 로드 실패: ${error.message}`);
       }
     };
-    
-    loadMessages();
+  
+    loadMessagesWithErrorHandling();
   }, [selectedUser, username, socket]);
 
   // 메시지 전송 처리 (개선된 버전)

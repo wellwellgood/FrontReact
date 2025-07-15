@@ -63,9 +63,16 @@ server.listen(PORT, async () => {
   }
 });
 
-app.use((req, res, next) => {
-  console.log("🔥 요청 도착:", req.method, req.url);
+app.use('/api', (req, res, next) => {
+  // 추가 헤더 설정
+  res.header('Access-Control-Max-Age', '86400');
+  res.header('Vary', 'Origin');
   next();
+});
+
+// 옵션 요청 처리
+app.options('*', (req, res) => {
+  res.sendStatus(200);
 });
 
 console.log("DATABASE_URL:", process.env.NODE_ENV);

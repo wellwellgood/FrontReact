@@ -8,6 +8,7 @@ import { FaPaperclip } from "react-icons/fa";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase/firebase.js";
 import AccountSetting from '../../AccountSetting.js';
+import Logo from "../../image/logo.png";
 // import { ReactComponent as Icon } from '../../image/download-svgrepo-com.svg';
 
 const API = "https://react-server-wmqa.onrender.com";
@@ -393,14 +394,12 @@ const sortedUsers = [
       {/* 네비게이션 바 */}
       <nav>
         <div className={styles.nav}>
-          <div className={styles.logo1}>
-            <h2>Logo</h2>
-          </div>
+          <div className={styles.logo1}><img src={Logo} className={styles.logo}></img></div>
           <ul className={styles.navmenu}>
-            <li><button onClick={() => handleNavigation("/main")}>Home</button></li>
-            <li><button onClick={() => handleNavigation("/ChatApp")}>Chat</button></li>
-            <li><button onClick={() => handleNavigation("/file")}>File</button></li>
-            <li><button onClick={() => handleNavigation("/sendEmail")}>Email</button></li>
+            <li className={styles.homebtn}><button className={styles.button} onClick={() => navigate("/main")}>Home</button></li>
+            <li className={styles.infobtn}><button className={styles.button} onClick={() => navigate("/ChatApp")}>Chat</button></li>
+            <li className={styles.filebtn}><button className={styles.button} onClick={() => navigate("/file")}>File</button></li>
+            <li className={styles.emailbtn}><button onClick={() => navigate("/sendEmail")}>Email</button></li>
           </ul>
         </div>
       </nav>

@@ -10,6 +10,7 @@ import { initializeApp } from "firebase/app";
 import styles from "./AA/email.js/SendEmail.module.css"
 import AccountSetting from '../../AccountSetting.js';
 import axios from "axios";
+import Logo from "../../image/logo.png";
 
 // 🔧 Firebase 설정
 const firebaseConfig = {
@@ -134,7 +135,7 @@ const FirebaseEmailForm = () => {
       <div className={styles.body}>
         <nav>
           <div className={styles.nav}>
-            <div className={styles.logo1}><h2>Logo</h2><span></span></div>
+          <div className={styles.logo1}><img src={Logo} className={styles.logo}></img></div>
             <ul className={styles.navmenu}>
               <li className={styles.homebtn}><button className={styles.button} onClick={() => navigate("/main")}>Home</button></li>
               <li className={styles.infobtn}><button className={styles.button} onClick={() => navigate("/ChatApp")}>Chat</button></li>

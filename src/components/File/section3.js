@@ -4,6 +4,7 @@ import axios from "axios";
 import styles from "./section3.module.css";
 import Search from "../../search.js";
 import AccountSetting from '../../AccountSetting.js';
+import Logo from "../../image/logo.png";
 
 // ✅ 환경에 따라 API 주소 자동 선택
 const API = process.env.REACT_APP_API || "http://localhost:4000";
@@ -104,10 +105,7 @@ export default function FileUploadPage() {
     <div className={styles.body}>
       <nav>
         <div className={styles.nav}>
-          <div className={styles.logo1}>
-            <h2>Logo</h2>
-            <span></span>
-          </div>
+        <div className={styles.logo1}><img src={Logo} className={styles.logo}></img></div>
           <ul>
             <li><button className={styles.button} onClick={gotoHome}>Home</button></li>
             <li><button className={styles.button} onClick={gotoLink1}>Chat</button></li>

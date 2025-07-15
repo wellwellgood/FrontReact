@@ -148,7 +148,7 @@ body {
 .pw:focus {
   border-color: var(--accent-color);
   background-color: var(--card-bg);
-  box-shadow: 0 0 0 2px var(--focus-shadow);
+  box-shadow: 0 0 0 8px var(--focus-shadow);
   outline: none;
 }
 
@@ -216,4 +216,9 @@ body {
 .findbtn:hover {
   background-color: var(--accent-color);
   color: var(--accent-text);
+}
+
+button h2 {
+  caret-color: transparent;
+  user-select: none;
 }

@@ -5,6 +5,7 @@ import styles from "./main.module.css";
 import Search from "./search.js";
 import axios from "axios";
 import AccountSetting from './AccountSetting.js';
+import Logo from "./image/logo.png";
 
 function Main() {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ function Main() {
     <div className={styles.body}>
       <nav>
         <div className={styles.nav}>
-          <div className={styles.logo1}><span></span></div>
+          <div className={styles.logo1}><img src={Logo} className={styles.logo}></img></div>
           <ul className={styles.navmenu}>
             <li className={styles.homebtn}><button className={styles.button} onClick={() => navigate("/main")}>Home</button></li>
             <li className={styles.infobtn}><button className={styles.button} onClick={() => navigate("/ChatApp")}>Chat</button></li>

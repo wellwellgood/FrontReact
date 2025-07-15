@@ -45,9 +45,9 @@ try {
   // app.use("/users", userRoutes.default);
   // console.log("✅ user 라우트 로드 성공");
   
-  // const fileRoutes = await import("./routes/uploadRouter.js");
-  // app.use("/api/upload", fileRoutes.default);
-  // console.log("✅ upload 라우트 로드 성공");
+  const fileRoutes = await import("./routes/uploadRouter.js");
+  app.use("/api/upload", fileRoutes.default);
+  console.log("✅ upload 라우트 로드 성공");
   
   const searchRoutes = await import("./routes/searchRoute.js");
   app.use("/api/search", searchRoutes.default);

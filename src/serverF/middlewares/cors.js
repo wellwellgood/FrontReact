@@ -164,7 +164,6 @@ const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
       })
     });
     
-    console.log("✅ 읽음 처리 완료");
     
     // 소켓으로 읽음 상태 전송
     if (socket && socket.connected) {
@@ -195,13 +194,11 @@ const loadMessages = async (username, targetUsername, socket, setMessages) => {
     );
     
     const rawMessages = Array.isArray(messages) ? messages : [];
-    console.log(`📋 원본 메시지 수: ${rawMessages.length}`);
     
     // 중복 제거 후 시간순 정렬
     const uniqueMessages = removeDuplicateMessagesAdvanced(rawMessages)
       .sort((a, b) => new Date(a.time) - new Date(b.time));
     
-    console.log(`✅ 최종 메시지 수: ${uniqueMessages.length}`);
     setMessages(uniqueMessages);
     
   } catch (error) {

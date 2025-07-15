@@ -105,22 +105,6 @@ const Section2 = () => {
   }, [username]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await axios.get(`${API}/users`);
-        console.log("🧾 받은 유저 목록:", res.data); // ← 이거 추가했는지 확인
-        setUsers(res.data || []);
-      } catch (err) {
-        console.error("❌ 유저 목록 불러오기 실패:", err);
-        setUserListError("유저 목록을 불러오는 데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUsers();
-  }, [username]);
-
-  useEffect(() => {
     if (!username || !selectedUser || messages.length === 0) return;
   
     const timeout = setTimeout(() => {
@@ -156,43 +140,27 @@ const Section2 = () => {
     return () => clearTimeout(timeout);
   }, [messages, selectedUser, username]);
 
-useEffect(() => {
-  if (!username || !selectedUser) return;
-
-  axios.post(`${API}/api/messages/read`, {
-    sender_username: selectedUser.username,
-    receiver_username: username,
-  })
-  .then(() => axios.get(`${API}/api/messages`, {
-    params: { username, target: selectedUser.username },
-  }))
-  .then((res) => {
-    setMessages(Array.isArray(res.data) ? res.data : []);
-
-    // ✅ 추가: 읽음 완료 후 서버에 socket으로 알림
-    socket?.emit("messageRead", {
-      sender_username: username,
-      receiver_username: selectedUser.username,
-    });
-  })
-  .catch((err) => {
-    console.error(err);
-  });
-  socket.on("messageRead", ({ sender_username, receiver_username }) => {
-    console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
+  useEffect(() => {
+    if (!username || !selectedUser) return;
   
-    // 내가 보낸 메시지 중에서 읽힌 것들 read: true로 바꾸기
-    setMessages((prevMessages) =>
-      prevMessages.map((msg) =>
-        msg.sender_username === username &&
-        msg.receiver_username === sender_username &&
-        !msg.read
-          ? { ...msg, read: true }
-          : msg
-      )
-    );
-  });
-}, [selectedUser, username]);
+    axios.post(`${API}/api/messages/read`, {
+      sender_username: selectedUser.username,
+      receiver_username: username,
+    })
+      .then(() => axios.get(`${API}/api/messages`, {
+        params: { username, target: selectedUser.username },
+      }))
+      .then((res) => {
+        setMessages(Array.isArray(res.data) ? res.data : []);
+        socket?.emit("messageRead", {
+          sender_username: username,
+          receiver_username: selectedUser.username,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [selectedUser, username]);
 
 const handleSend = async () => {
   if (!input.trim() && !selectedFile) return;

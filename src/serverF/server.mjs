@@ -37,9 +37,9 @@ app.use(
 try {
   console.log("⏸️ 모든 라우트 임시 비활성화 - 기본 서버만 실행");
   
-  // const authRoutes = await import("./routes/auth.js");
-  // app.use("/api/auth", authRoutes.default);
-  // console.log("✅ auth 라우트 로드 성공");
+  const authRoutes = await import("./routes/auth.js");
+  app.use("/api/auth", authRoutes.default);
+  console.log("✅ auth 라우트 로드 성공");
   
   const userRoutes = await import("./routes/user.js");
   app.use("/users", userRoutes.default);

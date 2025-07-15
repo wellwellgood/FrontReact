@@ -160,6 +160,15 @@ const Section2 = () => {
     loadMessagesWithErrorHandling();
   }, [selectedUser, username, socket]);
 
+  useEffect(() => {
+    if (socket && username && selectedUser) {
+      socket.emit("enterChat", {
+        myUsername: username,
+        withUser: selectedUser.username,
+      });
+    }
+  }, [selectedUser, socket, username]);
+
   // 메시지 전송 처리 (개선된 버전)
   const handleSend = async () => {
     if (!input.trim() && !selectedFile) return;

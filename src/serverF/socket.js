@@ -75,6 +75,24 @@ const initializeSocket = (server) => {
         io.to(receiver_username).emit("messageRead", { messageId: id });
       });
     });
+
+    socket.on("enterChat", async ({ myUsername, withUser }) => {
+      const unreadMessages = await pool.query(
+        `SELECT id FROM messages WHERE sender_username = $1 AND receiver_username = $2 AND read = false`,
+        [withUser, myUsername]
+      );
+    
+      if (unreadMessages.rows.length > 0) {
+        await pool.query(
+          `UPDATE messages SET read = true WHERE sender_username = $1 AND receiver_username = $2`,
+          [withUser, myUsername]
+        );
+    
+        unreadMessages.rows.forEach(({ id }) => {
+          io.to(withUser).emit("messageRead", { messageId: id });
+        });
+      }
+    });
     
 
     // ✅ DB에서도 읽음 업데이트 처리

@@ -48,7 +48,6 @@ const Section2 = () => {
   // 연결 상태 모니터링
   useEffect(() => {
     const cleanup = monitorConnectionStatus((status) => {
-      console.log('🔗 연결 상태 변경:', status);
       setConnectionStatus(status);
     });
     

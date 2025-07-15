@@ -66,43 +66,59 @@ const Section2 = () => {
   }, [messages]);
 
 
-useEffect(() => {
-  if (!username) return;
-
-  const s = io(API, {
-    transports: ["websocket"],
-    withCredentials: true,
-  });
-
-  setSocket(s);
-
-  s.on("connect", () => {
-    s.emit("join", username);
-  });
-
-  s.on("message", (msg) => {
-    console.log("📥 수신된 메시지:", msg);
-    setMessages((prev) => {
-      const isDuplicate = prev.some((m) => m.id === msg.id);
-      return isDuplicate ? prev : [...prev, msg];
+  useEffect(() => {
+    if (!username) return;
+  
+    const s = io(API, {
+      transports: ["websocket"],
+      withCredentials: true,
     });
-  });
+  
+    setSocket(s);
+  
+    s.on("connect", () => {
+      s.emit("join", username);
+    });
+  
+    s.on("message", (msg) => {
+      console.log("📥 수신된 메시지:", msg);
+      setMessages((prev) => {
+        const isDuplicate = prev.some((m) => m.id === msg.id);
+        return isDuplicate ? prev : [...prev, msg];
+      });
+    });
+  
+    s.on("messageRead", ({ sender_username, receiver_username }) => {
+      console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.sender_username === username &&
+          msg.receiver_username === sender_username &&
+          !msg.read
+            ? { ...msg, read: true }
+            : msg
+        )
+      );
+    });
+  
+    return () => s.disconnect();
+  }, [username]);
 
-  s.on("messageRead", ({ sender_username, receiver_username }) => {
-    console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.sender_username === username &&
-        msg.receiver_username === sender_username &&
-        !msg.read
-          ? { ...msg, read: true }
-          : msg
-      )
-    );
-  });
-
-  return () => s.disconnect();
-}, [username]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(`${API}/users`);
+        console.log("🧾 받은 유저 목록:", res.data); // ← 이거 추가했는지 확인
+        setUsers(res.data || []);
+      } catch (err) {
+        console.error("❌ 유저 목록 불러오기 실패:", err);
+        setUserListError("유저 목록을 불러오는 데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUsers();
+  }, [username]);
 
   useEffect(() => {
     if (!username || !selectedUser || messages.length === 0) return;

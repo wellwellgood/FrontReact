@@ -59,13 +59,13 @@ server.listen(PORT, async () => {
   }
 });
 
-app.use('/api', (req, res, next) => {
-  res.header('Access-Control-Max-Age', '86400');
-  res.header('Vary', 'Origin');
+app.use("/*", (req, res, next) => {
+  res.header("Access-Control-Max-Age", "86400");
+  res.header("Vary", "Origin");
   next();
 });
 
-app.options('/*', (req, res) => {
+app.options("/*", (req, res) => {
   res.sendStatus(200);
 });
 

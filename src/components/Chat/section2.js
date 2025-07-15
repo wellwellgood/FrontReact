@@ -109,13 +109,10 @@ const Section2 = () => {
       setMessages(prev => addMessageWithDeduplication(prev, msg));
     });
   
-    s.on("messageRead", ({ sender_username, receiver_username }) => {
-      console.log("👁‍🗨 읽음 확인 이벤트 수신:", sender_username, "→", receiver_username);
+    s.on("messageRead", ({ messageId }) => {
       setMessages(prev =>
         prev.map(msg =>
-          msg.sender_username === username &&
-          msg.receiver_username === sender_username &&
-          !msg.read
+          msg.id === messageId
             ? { ...msg, read: true }
             : msg
         )

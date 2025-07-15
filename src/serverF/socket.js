@@ -57,30 +57,22 @@ const initializeSocket = (server) => {
 
     // ✅ 읽음 처리 (서버 → 상대 유저에게 전달)
     socket.on("messageRead", async ({ sender_username, receiver_username }) => {
-      console.log("📨 읽음 처리 요청 받음:", sender_username, receiver_username);
-    
       const unreadResult = await pool.query(
-        `SELECT id FROM messages 
-         WHERE sender_username = $1 AND receiver_username = $2 AND read = false`,
+        `SELECT id FROM messages WHERE sender_username = $1 AND receiver_username = $2 AND read = false`,
         [sender_username, receiver_username]
       );
     
       const unreadMessages = unreadResult.rows;
     
-      if (unreadMessages.length === 0) {
-        console.log("✅ 읽을 메시지 없음");
-        return;
-      }
+      if (unreadMessages.length === 0) return;
     
       await pool.query(
-        `UPDATE messages SET read = true 
-         WHERE sender_username = $1 AND receiver_username = $2`,
+        `UPDATE messages SET read = true WHERE sender_username = $1 AND receiver_username = $2`,
         [sender_username, receiver_username]
       );
     
       unreadMessages.forEach(({ id }) => {
         io.to(receiver_username).emit("messageRead", { messageId: id });
-        console.log("📤 읽음 알림 전송 →", receiver_username, id);
       });
     });
     

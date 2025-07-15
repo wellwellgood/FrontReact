@@ -47,6 +47,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: none;
+  caret-color: transparent;
 }
 
 body {
@@ -102,6 +104,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  user-select: none;
+  caret-color: transparent;
 }
 
 .logo {
@@ -114,6 +118,8 @@ body {
   border-radius: 50%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
+  user-select: none;
+  caret-color: transparent;
 }
 
 .text {
@@ -124,6 +130,8 @@ body {
   padding-bottom: 10px;
   width: 100%;
   text-align: center;
+  user-select: none;
+  caret-color: transparent;
 }
 
 .loginbox {

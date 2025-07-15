@@ -1,9 +1,9 @@
-// middlewares/cors.js (완성된 버전)
+// middlewares/cors.js (수정된 버전)
 import cors from "cors";
 
 const allowedOrigins = [
-  "https://kivdashboard.netlify.app",  // 수정: kiv로 변경
-  "https://kkydashboard.netlify.app",  // 기존 유지
+  "https://kivdashboard.netlify.app",
+  "https://kkydashboard.netlify.app", 
   "http://localhost:3000",
   "http://localhost:10000",
   "https://react-server-wmqa.onrender.com"
@@ -13,7 +13,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     console.log("🛰️ 요청 origin:", origin);
     
-    // origin이 없는 경우 (같은 도메인, 모바일 앱 등)
+    // origin이 없는 경우 (같은 도메인, 모바일 앱, Postman 등)
     if (!origin) {
       console.log("✅ Origin이 없음 - 허용");
       callback(null, true);
@@ -25,11 +25,8 @@ const corsOptions = {
     
     // 허용된 origin인지 확인
     if (allowedOrigins.includes(cleanOrigin)) {
-      console.log("✅ 허용된 origin:", cleanOrigin);
       callback(null, true);
     } else {
-      console.log("❌ 차단된 origin:", cleanOrigin);
-      console.log("📋 허용된 origins:", allowedOrigins);
       callback(new Error(`Not allowed by CORS: ${cleanOrigin}`));
     }
   },
@@ -49,13 +46,7 @@ const corsOptions = {
 
 const corsMiddleware = cors(corsOptions);
 
-export default corsMiddleware;
-
-// ===============================
-// 클라이언트 측 개선 사항
-// ===============================
-
-// section2.js에서 사용할 개선된 API 요청 함수들
+// API 기본 URL
 const API = "https://react-server-wmqa.onrender.com";
 
 // 메시지 중복 제거 함수 (고급 버전)
@@ -82,7 +73,7 @@ const removeDuplicateMessagesAdvanced = (messages) => {
   return Array.from(uniqueMessages.values());
 };
 
-// 안전한 API 요청 함수
+// 안전한 API 요청 함수 (개선된 버전)
 const safeApiRequest = async (url, options = {}) => {
   const defaultOptions = {
     method: 'GET',
@@ -90,12 +81,21 @@ const safeApiRequest = async (url, options = {}) => {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    credentials: 'include', // 쿠키 포함
+    credentials: 'include',
+    timeout: 10000, // 10초 타임아웃
     ...options
   };
 
   try {
-    const response = await fetch(url, defaultOptions);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), defaultOptions.timeout);
+    
+    const response = await fetch(url, {
+      ...defaultOptions,
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
     
     // 응답 상태 확인
     if (!response.ok) {
@@ -109,6 +109,11 @@ const safeApiRequest = async (url, options = {}) => {
     
   } catch (error) {
     console.error(`❌ API 요청 실패: ${url}`, error);
+    
+    // 타임아웃 에러 처리
+    if (error.name === 'AbortError') {
+      throw new Error('요청 시간이 초과되었습니다. 네트워크 연결을 확인해주세요.');
+    }
     
     // 네트워크 에러 처리
     if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
@@ -150,7 +155,6 @@ const apiRequestWithRetry = async (url, options = {}, maxRetries = 3) => {
 // 개선된 읽음 처리 함수
 const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
   try {
-    
     await apiRequestWithRetry(`${API}/api/messages/read`, {
       method: 'POST',
       body: JSON.stringify({
@@ -159,14 +163,12 @@ const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
       })
     });
     
-    
     // 소켓으로 읽음 상태 전송
     if (socket && socket.connected) {
       socket.emit("messageRead", {
         sender_username: receiverUsername,
         receiver_username: senderUsername,
       });
-      console.log("📡 소켓 읽음 상태 전송 완료");
     }
     
   } catch (error) {
@@ -178,7 +180,6 @@ const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
 // 개선된 메시지 로드 함수
 const loadMessages = async (username, targetUsername, socket, setMessages) => {
   try {
-    
     // 읽음 처리 먼저 실행 (에러 무시)
     await markMessagesAsRead(targetUsername, username, socket);
     
@@ -198,14 +199,13 @@ const loadMessages = async (username, targetUsername, socket, setMessages) => {
   } catch (error) {
     console.error("❌ 메시지 로드 실패:", error);
     setMessages([]);
-    throw error; // 메시지 로드 실패는 사용자에게 알려야 함
+    throw error;
   }
 };
 
 // 개선된 메시지 전송 함수
 const sendMessage = async (messageData) => {
   try {
-    
     const savedMessage = await apiRequestWithRetry(`${API}/api/messages`, {
       method: 'POST',
       body: JSON.stringify(messageData)
@@ -226,7 +226,6 @@ const fetchUsers = async (setUsers, setIsLoading, setUserListError) => {
     
     const users = await apiRequestWithRetry(`${API}/users`);
     
-    console.log("✅ 사용자 목록 로드 완료:", users?.length || 0);
     setUsers(users || []);
     setUserListError("");
     
@@ -247,15 +246,17 @@ const checkNetworkStatus = () => {
   return true;
 };
 
-// 서버 상태 확인
+// 서버 상태 확인 (수정된 버전)
 const checkServerHealth = async () => {
   try {
-    const response = await fetch(`${API}/health`, {
+    // /health 엔드포인트 대신 기본 API 엔드포인트 사용
+    const response = await fetch(`${API}/users`, {
       method: 'GET',
       timeout: 5000
     });
     return response.ok;
-  } catch {
+  } catch (error) {
+    console.warn("🔴 서버 상태 확인 실패:", error.message);
     return false;
   }
 };
@@ -290,7 +291,38 @@ const monitorConnectionStatus = (callback) => {
   };
 };
 
-// 내보내기 (export) - 필요한 함수들
+// 실시간 메시지 추가 시 중복 방지
+const addMessageWithDeduplication = (currentMessages, newMessage) => {
+  // ID 기반 체크
+  const existsById = currentMessages.some(msg => msg.id === newMessage.id);
+  
+  if (existsById) {
+    console.log('🚫 ID 기반 중복 차단:', newMessage.id);
+    return currentMessages;
+  }
+  
+  // 내용 기반 체크 (추가 보안)
+  const existsByContent = currentMessages.some(msg => 
+    msg.time === newMessage.time &&
+    msg.content === newMessage.content &&
+    msg.sender_username === newMessage.sender_username &&
+    msg.receiver_username === newMessage.receiver_username
+  );
+  
+  if (existsByContent) {
+    console.log('🚫 내용 기반 중복 차단:', {
+      time: newMessage.time,
+      content: newMessage.content?.substring(0, 20) + '...'
+    });
+    return currentMessages;
+  }
+  
+  // 중복이 아니면 추가
+
+  return [...currentMessages, newMessage];
+};
+
+// 내보내기 (export)
 export {
   corsMiddleware,
   removeDuplicateMessagesAdvanced,
@@ -303,44 +335,8 @@ export {
   checkNetworkStatus,
   checkServerHealth,
   monitorConnectionStatus,
+  addMessageWithDeduplication,
   API
 };
 
-// 사용 예시 (section2.js에서 import하여 사용)
-/*
-// section2.js에서
-import { 
-  loadMessages, 
-  sendMessage, 
-  fetchUsers, 
-  monitorConnectionStatus 
-} from './middlewares/cors.js';
-
-// 컴포넌트 내부에서 사용
-useEffect(() => {
-  const cleanup = monitorConnectionStatus((status) => {
-    console.log('연결 상태:', status);
-    // UI 업데이트 로직
-  });
-  
-  return cleanup;
-}, []);
-
-// 메시지 로드 시 사용
-useEffect(() => {
-  if (!username || !selectedUser) return;
-  
-  loadMessages(username, selectedUser.username, socket, setMessages)
-    .catch(error => {
-      console.error('메시지 로드 실패:', error);
-      // 사용자에게 에러 표시
-    });
-}, [selectedUser, username, socket]);
-
-// 사용자 목록 로드 시 사용
-useEffect(() => {
-  if (username) {
-    fetchUsers(setUsers, setIsLoading, setUserListError);
-  }
-}, [username]);
-*/
+export default corsMiddleware;

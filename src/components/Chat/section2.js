@@ -13,110 +13,10 @@ import {
   loadMessages, 
   sendMessage, 
   fetchUsers, 
-  monitorConnectionStatus 
+  monitorConnectionStatus,
+  addMessageWithDeduplication,
+  API
 } from '../../serverF/middlewares/cors.js';
-
-const API = "https://react-server-wmqa.onrender.com";
-
-// ========================================
-// 메시지 중복 제거 유틸리티 함수들
-// ========================================
-
-// ID 기반 중복 제거
-const removeDuplicateMessagesById = (messages) => {
-  const seen = new Set();
-  return messages.filter(msg => {
-    if (seen.has(msg.id)) {
-      console.log('🚫 중복 메시지 제거 (ID):', msg.id);
-      return false;
-    }
-    seen.add(msg.id);
-    return true;
-  });
-};
-
-// 강력한 다중 조건 중복 제거
-const removeDuplicateMessagesAdvanced = (messages) => {
-  const seen = new Set();
-  
-  return messages.filter(msg => {
-    // 고유 식별자를 여러 조건으로 생성
-    const uniqueKey = `${msg.id}-${msg.time}-${msg.sender_username}-${msg.receiver_username}-${msg.content}`;
-    
-    if (seen.has(uniqueKey)) {
-      console.log('🚫 중복 메시지 제거 (다중조건):', {
-        id: msg.id,
-        time: msg.time,
-        content: msg.content?.substring(0, 20) + '...'
-      });
-      return false;
-    }
-    
-    seen.add(uniqueKey);
-    return true;
-  });
-};
-
-// 실시간 메시지 추가 시 중복 방지
-const addMessageWithDeduplication = (currentMessages, newMessage) => {
-  // ID 기반 체크
-  const existsById = currentMessages.some(msg => msg.id === newMessage.id);
-  
-  if (existsById) {
-    console.log('🚫 ID 기반 중복 차단:', newMessage.id);
-    return currentMessages;
-  }
-  
-  // 내용 기반 체크 (추가 보안)
-  const existsByContent = currentMessages.some(msg => 
-    msg.time === newMessage.time &&
-    msg.content === newMessage.content &&
-    msg.sender_username === newMessage.sender_username &&
-    msg.receiver_username === newMessage.receiver_username
-  );
-  
-  if (existsByContent) {
-    console.log('🚫 내용 기반 중복 차단:', {
-      time: newMessage.time,
-      content: newMessage.content?.substring(0, 20) + '...'
-    });
-    return currentMessages;
-  }
-  
-  // 중복이 아니면 추가
-  console.log('✅ 새 메시지 추가:', newMessage.id);
-  return [...currentMessages, newMessage];
-};
-
-// 디버깅을 위한 메시지 분석
-const analyzeDuplicateMessages = (messages) => {
-  const idCount = {};
-  const timeContentCount = {};
-  
-  messages.forEach(msg => {
-    idCount[msg.id] = (idCount[msg.id] || 0) + 1;
-    
-    const timeContentKey = `${msg.time}-${msg.content}`;
-    timeContentCount[timeContentKey] = (timeContentCount[timeContentKey] || 0) + 1;
-  });
-  
-  const idDuplicates = Object.values(idCount).filter(count => count > 1).length;
-  const contentDuplicates = Object.values(timeContentCount).filter(count => count > 1).length;
-  
-  if (idDuplicates > 0 || contentDuplicates > 0) {
-    console.log('🔍 중복 메시지 분석:', {
-      전체메시지수: messages.length,
-      ID중복개수: idDuplicates,
-      내용중복개수: contentDuplicates
-    });
-  }
-  
-  return { totalMessages: messages.length, idDuplicates, contentDuplicates };
-};
-
-// ========================================
-// 메인 컴포넌트
-// ========================================
 
 const Section2 = () => {
   const navigate = useNavigate();
@@ -124,6 +24,7 @@ const Section2 = () => {
   const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
+  // 상태 관리
   const [socket, setSocket] = useState(null);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -141,13 +42,14 @@ const Section2 = () => {
   const [userListError, setUserListError] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [showSettings, setShowSettings] = useState(false);
-  const [isSending, setIsSending] = useState(false); // 전송 중 상태 추가
-  // const {checkServerHealth , setChecjServerHealth} = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState({ status: 'disconnected' });
 
+  // 연결 상태 모니터링
   useEffect(() => {
     const cleanup = monitorConnectionStatus((status) => {
-      console.log('연결 상태:', status);
-      // UI 업데이트 로직
+      console.log('🔗 연결 상태 변경:', status);
+      setConnectionStatus(status);
     });
     
     return cleanup;
@@ -157,8 +59,9 @@ const Section2 = () => {
   useEffect(() => {
     const u = sessionStorage.getItem("username");
     const n = sessionStorage.getItem("name");
-    if (!u || !n) navigate("/login");
-    else {
+    if (!u || !n) {
+      navigate("/login");
+    } else {
       setUsername(u);
       setName(n);
     }
@@ -170,7 +73,7 @@ const Section2 = () => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // 스크롤 및 마지막 메시지 저장
+  // 메시지 스크롤 처리
   useEffect(() => {
     scrollToBottom();
   
@@ -180,9 +83,6 @@ const Section2 = () => {
         const key = `${selectedUser.username}_lastMessageId`;
         localStorage.setItem(key, lastMsg.id);
       }
-      
-      // 디버깅: 메시지 상태 분석
-      analyzeDuplicateMessages(messages);
     }
   }, [messages, selectedUser]);
 
@@ -193,11 +93,15 @@ const Section2 = () => {
     const s = io(API, {
       transports: ["websocket"],
       withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
   
     setSocket(s);
   
     s.on("connect", () => {
+      console.log("🔌 소켓 연결됨");
       s.emit("join", username);
     });
   
@@ -222,6 +126,14 @@ const Section2 = () => {
     s.on("disconnect", () => {
       console.log("🔌 소켓 연결 해제");
     });
+
+    s.on("reconnect", () => {
+      console.log("🔄 소켓 재연결됨");
+    });
+
+    s.on("connect_error", (error) => {
+      console.error("❌ 소켓 연결 오류:", error);
+    });
   
     return () => {
       console.log("🧹 소켓 정리");
@@ -230,37 +142,6 @@ const Section2 = () => {
   }, [username]);
 
   // 사용자 목록 가져오기
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setIsLoading(true);
-        const res = await axios.get(`${API}/users`);
-        setUsers(res.data || []);
-        setUserListError("");
-      } catch (err) {
-        console.error("❌ 유저 목록 불러오기 실패:", err);
-        setUserListError("유저 목록을 불러오는 데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    if (username) {
-      fetchUsers();
-    }
-  }, [username]);
-
-  // 읽음 처리
-  useEffect(() => {
-    if (!username || !selectedUser) return;
-    
-    loadMessages(username, selectedUser.username, socket, setMessages)
-      .catch(error => {
-        console.error('메시지 로드 실패:', error);
-        // 사용자에게 에러 표시
-      });
-  }, [selectedUser, username, socket]);
-  
   useEffect(() => {
     if (username) {
       fetchUsers(setUsers, setIsLoading, setUserListError);
@@ -276,7 +157,6 @@ const Section2 = () => {
         await loadMessages(username, selectedUser.username, socket, setMessages);
       } catch (error) {
         console.error('메시지 로드 실패:', error);
-        // 사용자에게 친화적인 에러 메시지 표시
         setUserListError(`메시지 로드 실패: ${error.message}`);
       }
     };
@@ -288,7 +168,7 @@ const Section2 = () => {
   const handleSend = async () => {
     if (!input.trim() && !selectedFile) return;
     if (!selectedUser) return;
-    if (isSending) return; // 중복 전송 방지
+    if (isSending) return;
 
     setIsSending(true);
 
@@ -317,9 +197,8 @@ const Section2 = () => {
         read: false,
       };
 
-      // 서버에 메시지 저장
-      const res = await axios.post(`${API}/api/messages`, messageData);
-      const savedMessage = res.data;
+      // cors.js의 sendMessage 함수 사용
+      const savedMessage = await sendMessage(messageData);
 
       // 로컬 state에 즉시 추가 (중복 방지)
       setMessages(prev => addMessageWithDeduplication(prev, savedMessage));
@@ -335,7 +214,7 @@ const Section2 = () => {
 
     } catch (err) {
       console.error("❌ 메시지 전송 실패:", err);
-      alert("메시지 전송에 실패했습니다. 다시 시도해주세요.");
+      alert(`메시지 전송에 실패했습니다: ${err.message}`);
     } finally {
       setIsSending(false);
     }
@@ -437,11 +316,6 @@ const Section2 = () => {
     setSelectedUser(null);
     setReadMessages(new Set());
     navigate("/login");
-  };
-
-  // 네비게이션 처리
-  const handleNavigation = (path) => {
-    navigate?.(path) || (window.location.href = path);
   };
 
   // 검색 데이터 가져오기

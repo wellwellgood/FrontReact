@@ -9,6 +9,12 @@ import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage
 import { storage } from "../../firebase/firebase.js";
 import AccountSetting from '../../AccountSetting.js';
 import Logo from "../../image/logo.png";
+import { 
+  loadMessages, 
+  sendMessage, 
+  fetchUsers, 
+  monitorConnectionStatus 
+} from '../../serverF/middlewares/cors.js';
 
 const API = "https://react-server-wmqa.onrender.com";
 
@@ -137,6 +143,15 @@ const Section2 = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [isSending, setIsSending] = useState(false); // 전송 중 상태 추가
 
+  useEffect(() => {
+    const cleanup = monitorConnectionStatus((status) => {
+      console.log('연결 상태:', status);
+      // UI 업데이트 로직
+    });
+    
+    return cleanup;
+  }, []);
+
   // 사용자 인증 확인
   useEffect(() => {
     const u = sessionStorage.getItem("username");
@@ -238,40 +253,20 @@ const Section2 = () => {
 
   // 읽음 처리
   useEffect(() => {
-    if (!username || !selectedUser || messages.length === 0) return;
+    if (!username || !selectedUser) return;
+    
+    loadMessages(username, selectedUser.username, socket, setMessages)
+      .catch(error => {
+        console.error('메시지 로드 실패:', error);
+        // 사용자에게 에러 표시
+      });
+  }, [selectedUser, username, socket]);
   
-    const timeout = setTimeout(() => {
-      const hasUnread = messages.some(
-        msg =>
-          msg.sender_username === selectedUser.username &&
-          msg.receiver_username === username &&
-          !msg.read
-      );
-  
-      if (!hasUnread) {
-        console.log("✅ 모든 메시지 이미 읽음");
-        return;
-      }
-  
-      axios
-        .post(`${API}/api/messages/read`, {
-          sender_username: selectedUser.username,
-          receiver_username: username,
-        })
-        .then(() => {
-          console.log("✅ 읽음 처리 완료");
-          socket?.emit("messageRead", {
-            sender_username: username,
-            receiver_username: selectedUser.username,
-          });
-        })
-        .catch(err => {
-          console.error("❌ 읽음 처리 실패:", err);
-        });
-    }, 100);
-  
-    return () => clearTimeout(timeout);
-  }, [messages, selectedUser, username, socket]);
+  useEffect(() => {
+    if (username) {
+      fetchUsers(setUsers, setIsLoading, setUserListError);
+    }
+  }, [username]);
 
   // 사용자 선택 시 메시지 로드
   useEffect(() => {

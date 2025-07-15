@@ -1,4 +1,4 @@
-// middlewares/cors.js (수정된 버전)
+// middlewares/cors.js (완성된 버전)
 import cors from "cors";
 
 const allowedOrigins = [
@@ -57,6 +57,30 @@ export default corsMiddleware;
 
 // section2.js에서 사용할 개선된 API 요청 함수들
 const API = "https://react-server-wmqa.onrender.com";
+
+// 메시지 중복 제거 함수 (고급 버전)
+const removeDuplicateMessagesAdvanced = (messages) => {
+  if (!Array.isArray(messages)) return [];
+  
+  const uniqueMessages = new Map();
+  
+  messages.forEach(message => {
+    // 고유 키 생성: sender + receiver + content + time
+    const key = `${message.sender_username}_${message.receiver_username}_${message.content}_${message.time}`;
+    
+    if (!uniqueMessages.has(key)) {
+      uniqueMessages.set(key, message);
+    } else {
+      // 같은 내용이지만 더 최신 id가 있다면 교체
+      const existing = uniqueMessages.get(key);
+      if (message.id > existing.id) {
+        uniqueMessages.set(key, message);
+      }
+    }
+  });
+  
+  return Array.from(uniqueMessages.values());
+};
 
 // 안전한 API 요청 함수
 const safeApiRequest = async (url, options = {}) => {
@@ -278,8 +302,32 @@ const monitorConnectionStatus = (callback) => {
   };
 };
 
-// 사용 예시 (section2.js에서)
+// 내보내기 (export) - 필요한 함수들
+export {
+  corsMiddleware,
+  removeDuplicateMessagesAdvanced,
+  safeApiRequest,
+  apiRequestWithRetry,
+  markMessagesAsRead,
+  loadMessages,
+  sendMessage,
+  fetchUsers,
+  checkNetworkStatus,
+  checkServerHealth,
+  monitorConnectionStatus,
+  API
+};
+
+// 사용 예시 (section2.js에서 import하여 사용)
 /*
+// section2.js에서
+import { 
+  loadMessages, 
+  sendMessage, 
+  fetchUsers, 
+  monitorConnectionStatus 
+} from './middlewares/cors.js';
+
 // 컴포넌트 내부에서 사용
 useEffect(() => {
   const cleanup = monitorConnectionStatus((status) => {

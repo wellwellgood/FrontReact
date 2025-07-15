@@ -94,9 +94,6 @@ const safeApiRequest = async (url, options = {}) => {
     ...options
   };
 
-  // 요청 로그
-  console.log(`🔄 API 요청: ${options.method || 'GET'} ${url}`);
-
   try {
     const response = await fetch(url, defaultOptions);
     
@@ -108,7 +105,6 @@ const safeApiRequest = async (url, options = {}) => {
     }
     
     const data = await response.json();
-    console.log(`✅ API 응답 성공: ${url}`);
     return data;
     
   } catch (error) {
@@ -154,7 +150,6 @@ const apiRequestWithRetry = async (url, options = {}, maxRetries = 3) => {
 // 개선된 읽음 처리 함수
 const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
   try {
-    console.log(`📖 읽음 처리 시작: ${senderUsername} → ${receiverUsername}`);
     
     await apiRequestWithRetry(`${API}/api/messages/read`, {
       method: 'POST',
@@ -183,7 +178,6 @@ const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
 // 개선된 메시지 로드 함수
 const loadMessages = async (username, targetUsername, socket, setMessages) => {
   try {
-    console.log(`📥 메시지 로드 시작: ${username} ↔ ${targetUsername}`);
     
     // 읽음 처리 먼저 실행 (에러 무시)
     await markMessagesAsRead(targetUsername, username, socket);
@@ -211,14 +205,12 @@ const loadMessages = async (username, targetUsername, socket, setMessages) => {
 // 개선된 메시지 전송 함수
 const sendMessage = async (messageData) => {
   try {
-    console.log("📤 메시지 전송 시작:", messageData.content?.substring(0, 20) + '...');
     
     const savedMessage = await apiRequestWithRetry(`${API}/api/messages`, {
       method: 'POST',
       body: JSON.stringify(messageData)
     });
     
-    console.log("✅ 메시지 전송 완료:", savedMessage.id);
     return savedMessage;
     
   } catch (error) {

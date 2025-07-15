@@ -65,7 +65,7 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-app.options('*', (req, res) => {
+app.options('/*', (req, res) => {
   res.sendStatus(200);
 });
 

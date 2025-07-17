@@ -55,6 +55,7 @@
     font-size: 14px;
     color: #1f2937;
     transition: 0.3s ease;
+    text-align: center;
   }
 
   .phoneGroup input:focus{

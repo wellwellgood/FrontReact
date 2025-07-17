@@ -29,7 +29,7 @@ function AppContent() {
     sessionStorage.setItem('theme', theme);
   }, [theme]);
 
-  const hideSearch = location.pathname === "/" || location.pathname === "/login";
+  const hideSearch = ["/", "/login", "/membership", "/id", "/password"].includes(location.pathname.toLowerCase());
 
   return (
     <div>

@@ -12,7 +12,7 @@ export default function Password() {
   const [timer, setTimer] = useState(0);
   const [isVerified, setIsVerified] = useState(false);
   const [result, setResult] = useState("");
-  const auto = getFirebaseAuth();
+  // const auto = getFirebaseAuth();
 
   useEffect(() => {
     if (timer > 0) {

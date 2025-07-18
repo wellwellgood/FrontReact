@@ -1,3 +1,0 @@
-resolve: {
-  fallback: {}
-}

@@ -76,9 +76,9 @@ FIREBASE_CLIENT_EMAIL=...<br>
 - cd kkydashboard
 
 # 2. 클라이언트 실행
-cd client
-npm install
-npm start
+- cd client
+- npm install
+- npm start
 
 # 3. 서버 실행
 - cd ../serverF<br>

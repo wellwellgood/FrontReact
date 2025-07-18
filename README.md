@@ -42,17 +42,17 @@ React + Node.js + Firebase 기반의 **실시간 채팅 및 파일 공유 대시
 ## 📁 프로젝트 구조
 
 \`\`\`
-📦 root
-├─ client/             # React 프론트엔드
-│  ├─ src/
-│  │  ├─ components/
-│  │  ├─ pages/
-│  │  └─ App.jsx
-├─ serverF/            # 백엔드(Node.js + Express)
-│  ├─ routes/
-│  ├─ middlewares/
-│  ├─ server.mjs
-│  └─ DB.js
+📦 root<br>
+├─ client/             # React 프론트엔드<br>
+│  ├─ src/<br>
+│  │  ├─ components/<br>
+│  │  ├─ pages/<br>
+│  │  └─ App.jsx<br>
+├─ serverF/            # 백엔드(Node.js + Express)<br>
+│  ├─ routes/<br>
+│  ├─ middlewares/<br>
+│  ├─ server.mjs<br>
+│  └─ DB.js<br>
 \`\`\`
 
 ## ⚙️ 로컬 실행 방법
@@ -61,19 +61,19 @@ React + Node.js + Firebase 기반의 **실시간 채팅 및 파일 공유 대시
 
 `.env` 파일 생성 (serverF 폴더에):
 
-\`\`\`env
-DATABASE_URL=your_postgresql_url
-FIREBASE_PROJECT_ID=...
-FIREBASE_PRIVATE_KEY=...
-FIREBASE_CLIENT_EMAIL=...
+\`\`\`env<br>
+DATABASE_URL=your_postgresql_url<br>
+FIREBASE_PROJECT_ID=...<br>
+FIREBASE_PRIVATE_KEY=...<br>
+FIREBASE_CLIENT_EMAIL=...<br>
 \`\`\`
 
 ### ▶ 실행 절차
 
 \`\`\`bash
 # 1. 저장소 클론
-git clone https://github.com/yourname/kkydashboard.git
-cd kkydashboard
+- git clone https://github.com/wellwellgood/FrontReact?tab=readme-ov-file
+- cd kkydashboard
 
 # 2. 클라이언트 실행
 cd client
@@ -81,9 +81,9 @@ npm install
 npm start
 
 # 3. 서버 실행
-cd ../serverF
-프론트 실행 : npm install
-사바 실행 : (cd src/serverF) node server.mjs
+- cd ../serverF<br>
+- 프론트 실행 : npm install<br>
+- 사바 실행 : (cd src/serverF) node server.mjs<br>
 \`\`\`
 
 ## 🧑‍💻 개발자

@@ -33,7 +33,7 @@ const Membership = () => {
 
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE}/api/auth/register`,
+        `${process.env.REACT_APP_API}/api/auth/register`,
         {
           username: formData.username,
           name: formData.name,

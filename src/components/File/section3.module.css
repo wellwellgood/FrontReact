@@ -164,6 +164,7 @@ nav {
     background-color: #f0fdf4;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
+    color: #000;
   }
   
   .upload button {
@@ -190,7 +191,7 @@ nav {
 
   .list{
     position: relative;
-    border: 1px solid #000;
+    border: 1px solid var(--calendar-highlight);
     width: 97%;
     border-radius: 8px;
     margin:20px 20px;
@@ -199,6 +200,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: linear-gradient(to right bottom, rgba(44, 148, 126, 0.3), rgba(44, 148, 126, 0.7));
   }
   .list .listHeader span{
     width: 150px;

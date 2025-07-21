@@ -22,14 +22,20 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowOrigin =
-  process.env.NODE_ENV === "production"
-    ? "https://kkydashboard.netlify.app"
-    : "http://localhost:3000";
+const allowOrigins = [
+  "http://localhost:3000",
+  "https://kkydashboard.netlify.app",
+];
 
 app.use(
   cors({
-    origin: allowOrigin,
+    origin: function (origin, callback) {
+      if (!origin || allowOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );

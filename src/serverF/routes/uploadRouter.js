@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
       cb(null, uploadDir);
     }
   },
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
+  filename: (req, file, cb) => cb(null, file.originalname),
 });
 const upload = multer({ storage });
 
@@ -45,26 +45,43 @@ router.post("/", upload.single("file"), (req, res) => {
 // ✅ 파일 목록 불러오기
 router.get("/", (req, res) => {
   try {
-    const imageFiles = fs.readdirSync(imagesDir).map(file => ({
-      type: "images",
-      name: file,
-      file_name: (() => {
-        const idx = file.indexOf("-");
-        return idx !== -1 ? file.slice(idx + 1) : file;
-      })()
-    }));
-    const docFiles = fs.readdirSync(docsDir).map(file => ({
-      type: "docs",
-      name: file,
-      file_name: file.split(/-(.+)/)[1] || file
-    }));
+    const imageFiles = fs.readdirSync(imagesDir).map(file => {
+      const fullPath = path.join(imagesDir, file);
+      const stat = fs.statSync(fullPath);
+      return {
+        type: "images",
+        name: file,
+        file_name: (() => {
+          const idx = file.indexOf("-");
+          return idx !== -1 ? file.slice(idx + 1) : file;
+        })(),
+        uploadedAt: stat.birthtime // ✅ 추가
+      };
+    });
+    
+    const docFiles = fs.readdirSync(docsDir).map(file => {
+      const fullPath = path.join(docsDir, file);
+      const stat = fs.statSync(fullPath);
+      return {
+        type: "docs",
+        name: file,
+        file_name: file.split(/-(.+)/)[1] || file,
+        uploadedAt: stat.birthtime // ✅ 추가
+      };
+    });
+    
     const rootFiles = fs.readdirSync(uploadDir)
       .filter(file => file !== "images" && file !== "docs")
-      .map(file => ({
-        type: "others",
-        name: file,
-        file_name: file.split(/-(.+)/)[1] || file
-      }));
+      .map(file => {
+        const fullPath = path.join(uploadDir, file);
+        const stat = fs.statSync(fullPath);
+        return {
+          type: "others",
+          name: file,
+          file_name: file.split(/-(.+)/)[1] || file,
+          uploadedAt: stat.birthtime // ✅ 추가
+        };
+      });
 
     const allFiles = [...imageFiles, ...docFiles, ...rootFiles];
     res.status(200).json({ success: true, files: allFiles });

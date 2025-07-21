@@ -82,7 +82,7 @@ FIREBASE_CLIENT_EMAIL=...<br>
 
 # 3. 서버 실행
 - cd ../serverF<br>
-- 프론트 실행 : npm install<br>
+- 프론트 실행 : npm start<br>
 - 사바 실행 : (cd src/serverF) node server.mjs<br>
 \`\`\`
 

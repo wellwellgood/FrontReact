@@ -145,15 +145,6 @@ export default function FileUploadPage() {
         </div>
 
         <h3>업로드된 파일 목록</h3>
-        <div className={styles.list}>
-          <div className={styles.listHeader}>
-            <span>파일 이름</span>
-            <div className={styles.downarea}>
-              <span>업로드 시간</span>
-              <span>다운로드</span>
-            </div>
-        </div>
-        </div>
         <div className={styles.fileList}>
           {uploadedFiles.length === 0 ? (
             <p>업로드된 파일이 없습니다.</p>
@@ -169,10 +160,10 @@ export default function FileUploadPage() {
                 ) : (
                   <span>{file.file_name}</span>
                 )}
-                <div className={styles.fileInfo}>
-                <p>{new Date(file.uploadedAt).toLocaleString()}</p>
+                {uploadTime && (
+                  <p>{uploadTime.toLocaleString()}</p>
+                )}
                 <button onClick={() => handleDownload(file)}>다운로드</button>
-                </div>
               </div>
             ))
           )}

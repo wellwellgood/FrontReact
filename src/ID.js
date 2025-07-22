@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./serverF/chatServer/css/ID.module.css";
+import api from "./utill/api"
 
 export default function ID() {
   const [verificationCode, setVerificationCode] = useState("");
@@ -39,7 +40,7 @@ export default function ID() {
     const phone = `${phone1}-${phone2}-${phone3}`;
 
     try {
-      const res = await axios.post("${process.env.REACT_APP_API}/api/auth/send-code", { phone });
+      const res = await api.post("/api/auth/send-code", { phone });
       if (res.data.success) {
         alert("인증번호가 전송되었습니다.");
         setGeneratedCode(res.data.code); // ⚠️ 테스트용. 운영에선 서버 저장.
@@ -69,7 +70,7 @@ export default function ID() {
     const phone = `${phone1}-${phone2}-${phone3}`;
   
     try {
-      const res = await axios.post("${process.env.REACT_APP_API}/api/auth/find-id", { phone }); // 경로 수정됨
+      const res = await api.post("/api/auth/find-id", { phone }); // 경로 수정됨
       setFoundID(res.data.username);
     } catch (err) {
       console.error("❌ 아이디 찾기 실패:", err);

@@ -36,6 +36,7 @@ router.post("/register", async (req, res) => {
     console.error("❌ 회원가입 오류:", err);
     res.status(500).json({ message: "서버 오류" });
   }
+});
 
   // 중복 아이디 체크
   router.get("/check-username", async (req, res) => {
@@ -48,7 +49,6 @@ router.post("/register", async (req, res) => {
     }
     return res.json({ available: true });
   });
-});
 
 // ✅ 로그인
 router.post("/login", async (req, res) => {

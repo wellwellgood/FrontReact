@@ -36,6 +36,18 @@ router.post("/register", async (req, res) => {
     console.error("❌ 회원가입 오류:", err);
     res.status(500).json({ message: "서버 오류" });
   }
+
+  // 중복 아이디 체크
+  router.get("/check-username", async (req, res) => {
+    const { username } = req.query;
+  
+    const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+  
+    if (user.rows.length > 0) {
+      return res.json({ available: false });
+    }
+    return res.json({ available: true });
+  });
 });
 
 // ✅ 로그인

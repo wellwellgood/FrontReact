@@ -14,6 +14,29 @@ const Membership = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [username, setUsername] = useState("");
+  const [isAvailable, setIsAvailable] = useState(null);
+  const [checkMessage, setCheckMessage] = useState("");
+
+  const UserIDcheck = async () => {
+    try {
+      const res = await axios.post(
+        '${process.env.REACT_APP_APi}/api/auth/check-username',
+        { params : { username }}
+      );
+      if (res.data.available) {
+        setIsAvailable(true);
+        setCheckMessage("사용 가능한 아이디 입니다.");
+      } else {
+        setIsAvailable(false);
+        setCheckMessage("이미 사용중인 아이디 입니다.");
+      }
+    } catch (err) {
+      console.error("❌ 아이디 중복 확인 오류:", err);
+      setIsAvailable(false);
+      setCheckMessage("오류 발생");
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +77,7 @@ const Membership = () => {
       if (res.data?.message === "회원가입 성공") {
         alert("🎉 회원가입이 완료되었습니다!");
         window.location.href = "/";
+        navigate("/main");
       } else {
         setErrorMessage(res.data?.message || "회원가입 실패");
       }
@@ -67,7 +91,6 @@ const Membership = () => {
       });
       setErrorMessage("서버 오류: " + (error?.response?.data?.message || error.message));
     } finally {
-      console.log("🔥 finally 도착함");
       setIsLoading(false);
     }
   };
@@ -79,10 +102,25 @@ const Membership = () => {
           <h1>회원가입</h1>
           {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
 
-          <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="아이디" className={styles.name} required />
+          <div className={styles.IDGroup}>
+            <input 
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setIsAvailable(null); // 다시 초기화
+            }}
+            placeholder="아이디"
+            className={styles.IDname}
+            required 
+            />
+            <button onClick={UserIDcheck} type="button" className={styles.checkID}>아이디 체크</button>
+          </div>
+          {checkMessage && <p>{checkMessage}</p>}
           <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="이름" className={styles.name} required />
-          <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="비밀번호" className={styles.name} required />
-          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="비밀번호 확인" className={styles.name} required />
+          <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="비밀번호                              (영문 대소문자 및 특수문자 포함한 8자 이상)" className={styles.name} required />
+          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="비밀번호 확인                       (영문 대소문자 및 특수문자 포함한 8자 이상)" className={styles.name} required />
 
           <div className={styles.phoneGroup}>
             <input type="text" name="phone1" value={formData.phone1} onChange={handleChange} maxLength="3" placeholder="010" className={styles.phoneInput} required />

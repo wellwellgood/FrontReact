@@ -48,10 +48,44 @@
 .IDarea {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  /* ✅ 내부 요소가 넘치지 않도록 최대폭 제한 */
+  width: 100%;
+}
+
+.IDGroup{
+  display: flex;
   align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  width: 100%;
+  gap: 5%;
+}
+.checkID{
+  width: 15%;
+  height: 45px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  font-size: 10px;
+  background-color: #2196f3;
+  color: var(--accent-text);
+}
+
+.IDarea .IDname{
+  width: 80%;
+  height: 45px;
+  margin-bottom: 15px;
+  padding: 0 15px;
+  border: 2px solid var(--accent-color);
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-color);
 }
 
 h1 {
+  width: 100%;
+  text-align: center;
   margin-bottom: 30px;
   font-size: 26px;
   color: var(--text-color);
@@ -68,6 +102,13 @@ h1 {
   border-radius: 8px;
   font-size: 14px;
   color: var(--text-color);
+}
+
+.name,
+.verifyCode::placeholder{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .name:focus,
@@ -143,14 +184,6 @@ h1 {
   overflow: hidden;
 }
 
-.IDarea {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  /* ✅ 내부 요소가 넘치지 않도록 최대폭 제한 */
-  width: 100%;
-}
 h9{
   color: red;
   padding: 10px;

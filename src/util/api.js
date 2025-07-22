@@ -1,12 +1,9 @@
 import axios from "axios";
 
-let BASE_URL = process.env.REACT_APP_API || "http://localhost:10000";
-
-if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-  BASE_URL = "http://localhost:10000/api";
-} else {
-  BASE_URL = "https://react-server-wmqa.onrender.com/api"; // ✅ 🔥 /api 붙임
-}
+const BASE_URL =
+  typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:10000/api"     // ✅ 개발
+    : "https://react-server-wmqa.onrender.com/api"; // ✅ 배포
 
 console.log("✅ 최종 BASE_URL:", BASE_URL);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./utill/api"; // 📦 baseURL 포함된 axios 인스턴스
 import styles from "./serverF/chatServer/css/ID.module.css";
 
 export default function ID() {
@@ -10,6 +10,7 @@ export default function ID() {
   const [timer, setTimer] = useState(0);
 
   const [formData, setFormData] = useState({
+    name: "",      // ✅ name 추가
     phone1: "",
     phone2: "",
     phone3: "",
@@ -39,10 +40,10 @@ export default function ID() {
     const phone = `${phone1}-${phone2}-${phone3}`;
 
     try {
-      const res = await axios.post("/api/auth/send-code", { phone });
+      const res = await api.post("/auth/send-code", { phone });
       if (res.data.success) {
         alert("인증번호가 전송되었습니다.");
-        setGeneratedCode(res.data.code); // ⚠️ 테스트용. 운영에선 서버 저장.
+        setGeneratedCode(res.data.code); // ⚠️ 테스트용. 실제에선 안 보냄
         setTimer(180);
       } else {
         alert("전송 실패");
@@ -64,12 +65,16 @@ export default function ID() {
 
   const handleFindID = async () => {
     if (!isVerified) return alert("전화번호 인증을 먼저 해주세요.");
-  
-    const { phone1, phone2, phone3 } = formData;
-    const phone = `${phone1}-${phone2}-${phone3}`;
-  
+
+    const { name, phone1, phone2, phone3 } = formData;
+
     try {
-      const res = await axios.get("/api/auth/find-id", { phone }); // 경로 수정됨
+      const res = await api.post("/auth/find-id", {
+        name,
+        phone1,
+        phone2,
+        phone3,
+      });
       setFoundID(res.data.username);
     } catch (err) {
       console.error("❌ 아이디 찾기 실패:", err);
@@ -82,14 +87,57 @@ export default function ID() {
       <div className={styles.IDform}>
         <div className={styles.IDarea}>
           <h1>아이디 찾기</h1>
+
+          {/* ✅ 이름 입력 필드 추가 */}
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="이름"
+            className={styles.nameInput}
+            required
+          />
+
           <div className={styles.phoneGroup}>
-            <input type="text" name="phone1" value={formData.phone1} onChange={handleChange} maxLength="3" placeholder="010" className={styles.phoneInput} required />
+            <input
+              type="text"
+              name="phone1"
+              value={formData.phone1}
+              onChange={handleChange}
+              maxLength="3"
+              placeholder="010"
+              className={styles.phoneInput}
+              required
+            />
             <span>-</span>
-            <input type="text" name="phone2" value={formData.phone2} onChange={handleChange} maxLength="4" placeholder="1234" className={styles.phoneInput} required />
+            <input
+              type="text"
+              name="phone2"
+              value={formData.phone2}
+              onChange={handleChange}
+              maxLength="4"
+              placeholder="1234"
+              className={styles.phoneInput}
+              required
+            />
             <span>-</span>
-            <input type="text" name="phone3" value={formData.phone3} onChange={handleChange} maxLength="4" placeholder="5678" className={styles.phoneInput} required />
+            <input
+              type="text"
+              name="phone3"
+              value={formData.phone3}
+              onChange={handleChange}
+              maxLength="4"
+              placeholder="5678"
+              className={styles.phoneInput}
+              required
+            />
           </div>
-          <button className={styles.sendBtn} onClick={handleSendCode}>인증번호 받기</button>
+
+          <button className={styles.sendBtn} onClick={handleSendCode}>
+            인증번호 받기
+          </button>
+
           {timer > 0 && <p>남은 시간: {timer}s</p>}
 
           <input
@@ -99,9 +147,14 @@ export default function ID() {
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
           />
-          <button className={styles.verifyBtn} onClick={handleVerify}>인증 확인</button>
 
-          <button className={styles.findBtn} onClick={handleFindID}>아이디 찾기</button>
+          <button className={styles.verifyBtn} onClick={handleVerify}>
+            인증 확인
+          </button>
+
+          <button className={styles.findBtn} onClick={handleFindID}>
+            아이디 찾기
+          </button>
 
           {foundID && (
             <div className={styles.result}>

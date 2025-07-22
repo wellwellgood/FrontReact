@@ -39,7 +39,7 @@ export default function ID() {
     const phone = `${phone1}-${phone2}-${phone3}`;
 
     try {
-      const res = await axios.post("/api/auth/send-code", { phone });
+      const res = await axios.post("/api/send-code", { phone });
       if (res.data.success) {
         alert("인증번호가 전송되었습니다.");
         setGeneratedCode(res.data.code); // ⚠️ 테스트용. 운영에선 서버 저장.
@@ -69,7 +69,7 @@ export default function ID() {
     const phone = `${phone1}-${phone2}-${phone3}`;
   
     try {
-      const res = await axios.post("/api/auth/find-id", { phone }); // 경로 수정됨
+      const res = await axios.post("/api/find-id", { phone }); // 경로 수정됨
       setFoundID(res.data.username);
     } catch (err) {
       console.error("❌ 아이디 찾기 실패:", err);

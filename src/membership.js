@@ -1,4 +1,3 @@
-// ✅ React 회원가입 컴포넌트 (수정 완료)
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./membership.module.css";

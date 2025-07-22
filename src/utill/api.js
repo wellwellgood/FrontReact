@@ -12,7 +12,7 @@ if (!BASE_URL) {
 console.log("✅ 최종 BASE_URL:", BASE_URL);
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: import.meta.env.VITE_API_URL || "https://react-server-wmqa.onrender.com/api",
   withCredentials: true,
 });
 

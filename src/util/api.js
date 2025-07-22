@@ -6,7 +6,7 @@ if (!BASE_URL) {
   BASE_URL =
     process.env.NODE_ENV === "development"
       ? "http://localhost:10000"
-      : "https://react-server-wmqa.onrender.com";
+      : "https://react-server-wmqa.onrender.com/api";
 }
 
 console.log("✅ 최종 BASE_URL:", BASE_URL);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./serverF/chatServer/css/ID.module.css";
-import api from "./utill/api"
+import api from "./utill/api.js;"
 
 export default function ID() {
   const [verificationCode, setVerificationCode] = useState("");

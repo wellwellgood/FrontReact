@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "./util/api"; // 📦 baseURL 포함된 axios 인스턴스
+import api from "./util/api.js"; // 📦 baseURL 포함된 axios 인스턴스
 import styles from "./serverF/chatServer/css/ID.module.css";
 
 export default function ID() {

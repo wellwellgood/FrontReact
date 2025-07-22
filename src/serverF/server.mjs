@@ -24,23 +24,6 @@ app.use(corsMiddleware);
 app.use(express.json());
 app.use(cookieParser());
 
-const allowOrigins = [
-  "http://localhost:3000",
-  "https://kkydashboard.netlify.app",
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
 
 try {
   console.log("⏸️ 모든 라우트 임시 비활성화 - 기본 서버만 실행");

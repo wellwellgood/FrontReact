@@ -37,9 +37,11 @@ const Membership = () => {
 
   const UserIDcheck = async () => {
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API}/api/auth/check-username`,
-        { username: formData.username }
+      const res = await axios.get(
+        `${process.env.REACT_APP_API}/api/auth/check-username`,{
+          params: { username: formData.username }
+        }
+        
       );
       if (res.data.available) {
         setIsAvailable(true);

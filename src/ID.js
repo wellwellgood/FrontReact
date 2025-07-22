@@ -69,7 +69,7 @@ export default function ID() {
     const phone = `${phone1}-${phone2}-${phone3}`;
   
     try {
-      const res = await axios.post("/api/auth/find-id", { phone }); // 경로 수정됨
+      const res = await axios.get("/api/auth/find-id", { phone }); // 경로 수정됨
       setFoundID(res.data.username);
     } catch (err) {
       console.error("❌ 아이디 찾기 실패:", err);

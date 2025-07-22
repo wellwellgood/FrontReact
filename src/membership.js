@@ -21,8 +21,8 @@ const Membership = () => {
   const UserIDcheck = async () => {
     try {
       const res = await axios.post(
-        '${process.env.REACT_APP_APi}/api/auth/check-username',
-        { params : { username }}
+        `${process.env.REACT_APP_API}/api/auth/check-username`,
+        { username }
       );
       if (res.data.available) {
         setIsAvailable(true);
@@ -36,7 +36,7 @@ const Membership = () => {
       setIsAvailable(false);
       setCheckMessage("오류 발생");
     }
-  }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;

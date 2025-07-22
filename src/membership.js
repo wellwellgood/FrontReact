@@ -134,7 +134,11 @@ const Membership = () => {
               아이디 체크
             </button>
           </div>
-          {checkMessage && <p>{checkMessage}</p>}
+          {checkMessage && (
+            <div className={`${styles.message} ${isAvailable ? styles.success : styles.error}`}>
+              {checkMessage}
+            </div>
+          )}
 
           <input
             type="text"
@@ -145,6 +149,7 @@ const Membership = () => {
             className={styles.name}
             required
           />
+          <div className={styles.helper}>※ 영문 대소문자, 특수문자 포함 8자 이상</div>
 
           <input
             type="password"
@@ -155,7 +160,7 @@ const Membership = () => {
             className={styles.name}
             required
           />
-          <div className={styles.helper}>※ 영문 대소문자, 특수문자 포함 8자 이상</div>
+          <div className={styles.helper}>※ 동일한 비밀번호를 입력해주세요</div>
 
           <input
             type="password"
@@ -166,7 +171,6 @@ const Membership = () => {
             className={styles.name}
             required
           />
-          <div className={styles.helper}>※ 동일한 비밀번호를 입력해주세요</div>
 
           <div className={styles.phoneGroup}>
             <input

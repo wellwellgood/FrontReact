@@ -1,15 +1,20 @@
-// ✅ React 회원가입 컴포넌트 (membership.js)
-import React, { useState } from "react";
+// ✅ React 회원가입 컴포넌트 (수정 완료)
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./membership.module.css";
+import { useNavigate } from "react-router-dom";
 
 const Membership = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     name: "",
     password: "",
     confirmPassword: "",
-    phone: ""
+    phone1: "",
+    phone2: "",
+    phone3: ""
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -18,18 +23,30 @@ const Membership = () => {
   const [isAvailable, setIsAvailable] = useState(null);
   const [checkMessage, setCheckMessage] = useState("");
 
+  const showMessage = (message) => {
+    console.error(message);
+    setErrorMessage(message);
+  };
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => setErrorMessage(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
   const UserIDcheck = async () => {
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_API}/api/auth/check-username`,
-        { username }
+        { username: formData.username }
       );
       if (res.data.available) {
         setIsAvailable(true);
-        setCheckMessage("사용 가능한 아이디 입니다.");
+        setCheckMessage("사용 가능한 아이디입니다.");
       } else {
         setIsAvailable(false);
-        setCheckMessage("이미 사용중인 아이디 입니다.");
+        setCheckMessage("이미 사용중인 아이디입니다.");
       }
     } catch (err) {
       console.error("❌ 아이디 중복 확인 오류:", err);
@@ -37,11 +54,6 @@ const Membership = () => {
       setCheckMessage("오류 발생");
     }
   };
-
-  const showmesage = (message) => {
-    console.log(message);
-    setErrorMessage(message);
-  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,8 +64,7 @@ const Membership = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setErrorMessage("비밀번호가 일치하지 않습니다.");
-      return;
+      return showMessage("비밀번호가 일치하지 않습니다.");
     }
 
     setIsLoading(true);
@@ -67,7 +78,7 @@ const Membership = () => {
           name: formData.name,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
-          phone: `${formData.phone1}-${formData.phone2}-${formData.phone3}`,
+          phone: `${formData.phone1}-${formData.phone2}-${formData.phone3}`
         },
         {
           headers: {
@@ -81,20 +92,13 @@ const Membership = () => {
 
       if (res.data?.message === "회원가입 성공") {
         alert("🎉 회원가입이 완료되었습니다!");
-        window.location.href = "/";
         navigate("/main");
       } else {
-        setErrorMessage(res.data?.message || "회원가입 실패");
+        showMessage(res.data?.message || "회원가입 실패");
       }
     } catch (error) {
-      console.error("❌ 회원가입 오류:", {
-        status: error?.response?.status,
-        statusText: error?.response?.statusText,
-        data: error?.response?.data,
-        message: error?.message,
-        fullError: error
-      });
-      setErrorMessage("서버 오류: " + (error?.response?.data?.message || error.message));
+      console.error("❌ 회원가입 오류:", error);
+      showMessage("서버 오류: " + (error?.response?.data?.message || error.message));
     } finally {
       setIsLoading(false);
     }
@@ -105,37 +109,98 @@ const Membership = () => {
       <form className={styles.IDform} onSubmit={handleSubmit}>
         <div className={styles.IDarea}>
           <h1>회원가입</h1>
-          {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-
-          <div className={styles.IDGroup}>
           {errorMessage && (
             <div className={styles.errorMsg}>{errorMessage}</div>
           )}
-          <input 
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={(e) => {
-              setFormData((prev) => ({ ...prev, username: e.target.value }));
-              setIsAvailable(null);
-            }}
-            placeholder="아이디"
-            className={styles.IDname}
-            required 
-          />
-            <button onClick={UserIDcheck} type="button" className={styles.checkID}>아이디 체크</button>
+
+          <div className={styles.IDGroup}>
+            <input 
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={(e) => {
+                setFormData((prev) => ({ ...prev, username: e.target.value }));
+                setIsAvailable(null);
+              }}
+              placeholder="아이디"
+              className={styles.IDname}
+              required 
+            />
+            <button
+              onClick={UserIDcheck}
+              type="button"
+              className={styles.checkID}
+            >
+              아이디 체크
+            </button>
           </div>
           {checkMessage && <p>{checkMessage}</p>}
-          <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="이름" className={styles.name} required />
-          <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="비밀번호                              (영문 대소문자 및 특수문자 포함한 8자 이상)" className={styles.name} required />
-          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="비밀번호 확인                       (영문 대소문자 및 특수문자 포함한 8자 이상)" className={styles.name} required />
+
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="이름"
+            className={styles.name}
+            required
+          />
+
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="비밀번호"
+            className={styles.name}
+            required
+          />
+          <div className={styles.helper}>※ 영문 대소문자, 특수문자 포함 8자 이상</div>
+
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="비밀번호 확인"
+            className={styles.name}
+            required
+          />
+          <div className={styles.helper}>※ 동일한 비밀번호를 입력해주세요</div>
 
           <div className={styles.phoneGroup}>
-            <input type="text" name="phone1" value={formData.phone1} onChange={handleChange} maxLength="3" placeholder="010" className={styles.phoneInput} required />
+            <input
+              type="text"
+              name="phone1"
+              value={formData.phone1}
+              onChange={handleChange}
+              maxLength="3"
+              placeholder="010"
+              className={styles.phoneInput}
+              required
+            />
             <span>-</span>
-            <input type="text" name="phone2" value={formData.phone2} onChange={handleChange} maxLength="4" placeholder="1234" className={styles.phoneInput} required />
+            <input
+              type="text"
+              name="phone2"
+              value={formData.phone2}
+              onChange={handleChange}
+              maxLength="4"
+              placeholder="1234"
+              className={styles.phoneInput}
+              required
+            />
             <span>-</span>
-            <input type="text" name="phone3" value={formData.phone3} onChange={handleChange} maxLength="4" placeholder="5678" className={styles.phoneInput} required />
+            <input
+              type="text"
+              name="phone3"
+              value={formData.phone3}
+              onChange={handleChange}
+              maxLength="4"
+              placeholder="5678"
+              className={styles.phoneInput}
+              required
+            />
           </div>
 
           <button

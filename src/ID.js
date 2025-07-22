@@ -64,12 +64,12 @@ export default function ID() {
 
   const handleFindID = async () => {
     if (!isVerified) return alert("전화번호 인증을 먼저 해주세요.");
-
+  
     const { phone1, phone2, phone3 } = formData;
     const phone = `${phone1}-${phone2}-${phone3}`;
-
+  
     try {
-      const res = await axios.post("/api/find-id", { phone });
+      const res = await axios.post("/api/auth/find-id", { phone }); // 경로 수정됨
       setFoundID(res.data.username);
     } catch (err) {
       console.error("❌ 아이디 찾기 실패:", err);

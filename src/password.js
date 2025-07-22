@@ -6,6 +6,7 @@ import styles from "./serverF/chatServer/css/password.module.css";
 
 export default function Password() {
   const [userId, setUserId] = useState("");
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [confirmation, setConfirmation] = useState(null);
@@ -76,6 +77,13 @@ export default function Password() {
             placeholder="아이디 입력"
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
+          />
+          <input
+            className={styles.name}
+            type="text"
+            placeholder="이름"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
           <input
             className={styles.number}

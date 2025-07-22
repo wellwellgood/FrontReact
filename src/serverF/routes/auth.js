@@ -38,6 +38,26 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// ✅ 인증번호 전송 (mock)
+router.post("/send-code", async (req, res) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ message: "전화번호 누락" });
+
+  try {
+    // 실제 문자 전송 로직 대신 임시 코드 생성 (예: 6자리 숫자)
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 실제 사용 시 문자 API 연동 필요
+    console.log(`📨 인증번호(${code})가 ${phone} 으로 전송됨 (mock)`);
+
+    // 클라이언트에 인증번호 전달 (운영에선 X)
+    res.status(200).json({ success: true, code });
+  } catch (err) {
+    console.error("❌ 인증번호 전송 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
   // 중복 아이디 체크
   router.get("/check-username", async (req, res) => {
     const { username } = req.query;

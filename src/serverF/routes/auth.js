@@ -58,6 +58,24 @@ router.post("/send-code", async (req, res) => {
   }
 });
 
+//인증번호 박스
+router.post("/verify-code", async (req, res) => {
+  const { phone, code } = req.body;
+
+  // 예: 메모리 또는 DB에서 확인
+  const savedCode = verificationStore[phone]; // 예시
+
+  if (!savedCode) {
+    return res.status(404).json({ message: "코드 없음" });
+  }
+
+  if (savedCode === code) {
+    return res.status(200).json({ message: "✅ 인증 성공" });
+  } else {
+    return res.status(400).json({ message: "❌ 인증 실패" });
+  }
+});
+
   // 중복 아이디 체크
   router.get("/check-username", async (req, res) => {
     const { username } = req.query;

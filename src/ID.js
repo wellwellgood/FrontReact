@@ -8,6 +8,9 @@ export default function ID() {
   const [isVerified, setIsVerified] = useState(false);
   const [foundID, setFoundID] = useState("");
   const [timer, setTimer] = useState(0);
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("")
 
   const [formData, setFormData] = useState({
     name: "",      // ✅ name 추가
@@ -60,6 +63,20 @@ export default function ID() {
       alert("✅ 인증 성공");
     } else {
       alert("❌ 인증 실패: 코드가 일치하지 않습니다.");
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      const res = await api.post("/auth/verify-code", {
+        phone,
+        code,
+      });
+  
+      alert("✅ 인증 성공: " + res.data.message); // 🟢 성공 시
+    } catch (err) {
+      console.error("❌ 인증 실패:", err);
+      alert("❌ 인증 실패: " + (err.response?.data?.message || "오류 발생")); // 🔴 실패 시
     }
   };
 
@@ -147,6 +164,19 @@ export default function ID() {
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
           />
+
+{isCodeSent && (
+        <>
+          <input
+            type="text"
+            placeholder="인증번호 입력"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            style={{ display: "block", marginTop: "1rem", marginBottom: "1rem" }}
+          />
+          <button onClick={handleVerifyCode}>인증번호 확인</button>
+        </>
+      )}
 
           <button className={styles.verifyBtn} onClick={handleVerify}>
             인증 확인

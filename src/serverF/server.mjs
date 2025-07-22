@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./DB.mjs";
 import initDB from "./initDB.js";
 import messageRoute from "./routes/message.js";
+import corsMiddleware from "./middlewares/cors.js"
 
 // 기본 설정만 먼저 테스트
 try {
@@ -19,6 +20,7 @@ try {
 
 const app = express();
 
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(cookieParser());
 

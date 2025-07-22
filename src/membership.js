@@ -38,6 +38,11 @@ const Membership = () => {
     }
   };
 
+  const showmesage = (message) => {
+    console.log(message);
+    setErrorMessage(message);
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -103,18 +108,21 @@ const Membership = () => {
           {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
 
           <div className={styles.IDGroup}>
-            <input 
+          {errorMessage && (
+            <div className={styles.errorMsg}>{errorMessage}</div>
+          )}
+          <input 
             type="text"
             name="username"
             value={formData.username}
             onChange={(e) => {
-              setUsername(e.target.value);
-              setIsAvailable(null); // 다시 초기화
+              setFormData((prev) => ({ ...prev, username: e.target.value }));
+              setIsAvailable(null);
             }}
             placeholder="아이디"
             className={styles.IDname}
             required 
-            />
+          />
             <button onClick={UserIDcheck} type="button" className={styles.checkID}>아이디 체크</button>
           </div>
           {checkMessage && <p>{checkMessage}</p>}

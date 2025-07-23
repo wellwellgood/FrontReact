@@ -8,6 +8,7 @@ import  pool  from "../DB.mjs";
 
 const router = express.Router();
 const verificationStore = {};
+const phoneVerificationStore = new Map();
 
 const generateAccessToken = (user) =>
   jwt.sign(
@@ -18,6 +19,10 @@ const generateAccessToken = (user) =>
 
 const generateRefreshToken = (user) =>
   jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+
+function generateRandomCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 // ✅ 회원가입
 router.post("/register", async (req, res) => {
@@ -42,39 +47,39 @@ router.post("/register", async (req, res) => {
 // ✅ 인증번호 전송 (mock)
 router.post("/send-code", async (req, res) => {
   const { phone } = req.body;
-  if (!phone) return res.status(400).json({ message: "전화번호 누락" });
+  const code = generateRandomCode();
+  const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3분간 유효
 
-  try {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+  phoneVerificationStore.set(phone, { code, expiresAt });
 
-    // ✅ 이거 추가해줘야 함!
-    verificationStore[phone] = code;
+  console.log(`📨 인증번호 (${phone}): ${code}`); // 콘솔에 찍힘
 
-    console.log(`📨 인증번호(${code})가 ${phone} 으로 전송됨 (mock)`);
-
-    res.status(200).json({ success: true, code }); // ← 실제 배포에선 code 빼야 함
-  } catch (err) {
-    console.error("❌ 인증번호 전송 오류:", err);
-    res.status(500).json({ message: "서버 오류" });
-  }
+  // 테스트용: 인증번호도 프론트에 보내줌
+  res.json({
+    message: "인증번호가 전송되었습니다.",
+    code, // ⚠️ 테스트용. 실서비스에서는 삭제해야 함!
+  });
 });
 
-//인증번호 박스
-router.post("/verify-code", async (req, res) => {
+router.post("/verify-code", (req, res) => {
   const { phone, code } = req.body;
+  const stored = phoneVerificationStore.get(phone);
 
-  // 예: 메모리 또는 DB에서 확인
-  const savedCode = verificationStore[phone]; // 예시
-
-  if (!savedCode) {
-    return res.status(404).json({ message: "코드 없음" });
+  if (!stored) {
+    return res.status(404).json({ message: "인증 요청 없음" });
   }
 
-  if (savedCode === code) {
-    return res.status(200).json({ message: "✅ 인증 성공" });
-  } else {
-    return res.status(400).json({ message: "❌ 인증 실패" });
+  if (stored.code !== code) {
+    return res.status(401).json({ message: "코드 불일치" });
   }
+
+  if (stored.expiresAt < new Date()) {
+    return res.status(410).json({ message: "인증번호 만료됨" });
+  }
+
+  // ✅ 인증 성공 → 메모리 삭제
+  phoneVerificationStore.delete(phone);
+  return res.json({ message: "인증 성공" });
 });
 
   // 중복 아이디 체크

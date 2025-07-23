@@ -26,7 +26,7 @@ export default function Password() {
   const handleSendCode = async () => {
     if (!phone) return alert("전화번호를 입력해주세요.");
     try {
-      const res = await axios.post("/api/auth/send-code", { phone });
+      const res = await axios.post("/auth/send-code", { phone });
       setTimer(180);
       console.log(`인증번호가 전송되었습니다. (테스트용: ${res.data.code})`);
     } catch (err) {
@@ -38,7 +38,7 @@ export default function Password() {
   const handleVerify = async () => {
     if (!verificationCode) return alert("인증번호를 입력해주세요.");
     try {
-      const res = await axios.post("/api/auth/verify-code", { phone, code: verificationCode });
+      const res = await axios.post("/auth/verify-code", { phone, code: verificationCode });
       setIsVerified(true);
       alert("✅ 인증 성공");
     } catch (err) {
@@ -51,7 +51,7 @@ export default function Password() {
     if (!isVerified) return alert("전화번호 인증이 필요합니다.");
     try {
       const phoneParts = phone.split("-");
-      const res = await axios.post("/api/auth/find-password", {
+      const res = await axios.post("/auth/find-password", {
         username: userId,
         name,
         phone1: phoneParts[0],
@@ -69,7 +69,7 @@ export default function Password() {
   const handleResetPassword = async () => {
     if (!newPassword || !resetToken) return alert("새 비밀번호를 입력해주세요.");
     try {
-      const res = await axios.post("/api/reset-password", {
+      const res = await axios.post("/reset-password", {
         token: resetToken,
         newPassword
       });

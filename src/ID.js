@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
-import api from "./util/api.js"; // 📦 baseURL 포함된 axios 인스턴스
+import api from "./util/api.js";
 import styles from "./serverF/chatServer/css/ID.module.css";
 
 export default function ID() {
   const [verificationCode, setVerificationCode] = useState("");
-  const [generatedCode, setGeneratedCode] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [foundID, setFoundID] = useState("");
   const [timer, setTimer] = useState(0);
   const [isCodeSent, setIsCodeSent] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("")
 
   const [formData, setFormData] = useState({
-    name: "",      // ✅ name 추가
+    name: "",
     phone1: "",
     phone2: "",
     phone3: "",
@@ -33,20 +30,24 @@ export default function ID() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const makePhoneNumber = () => {
+    const { phone1, phone2, phone3 } = formData;
+    return `${phone1}-${phone2}-${phone3}`;
+  };
+
   const handleSendCode = async () => {
     const { phone1, phone2, phone3 } = formData;
-
     if (!phone1 || !phone2 || !phone3) {
       return alert("전화번호를 모두 입력해주세요.");
     }
 
-    const phone = `${phone1}-${phone2}-${phone3}`;
+    const phone = makePhoneNumber();
 
     try {
       const res = await api.post("/auth/send-code", { phone });
       if (res.data.success) {
         alert("인증번호가 전송되었습니다.");
-        setGeneratedCode(res.data.code); // ⚠️ 테스트용. 실제에선 안 보냄
+        setIsCodeSent(true);
         setTimer(180);
       } else {
         alert("전송 실패");
@@ -57,32 +58,25 @@ export default function ID() {
     }
   };
 
-  const handleVerify = () => {
-    if (verificationCode === generatedCode) {
-      setIsVerified(true);
-      alert("✅ 인증 성공");
-    } else {
-      alert("❌ 인증 실패: 코드가 일치하지 않습니다.");
-    }
-  };
-
   const handleVerifyCode = async () => {
+    const phone = makePhoneNumber();
+
     try {
       const res = await api.post("/auth/verify-code", {
         phone,
-        code,
+        code: verificationCode,
       });
-  
-      alert("✅ 인증 성공: " + res.data.message); // 🟢 성공 시
+
+      alert("✅ 인증 성공: " + res.data.message);
+      setIsVerified(true);
     } catch (err) {
       console.error("❌ 인증 실패:", err);
-      alert("❌ 인증 실패: " + (err.response?.data?.message || "오류 발생")); // 🔴 실패 시
+      alert("❌ 인증 실패: " + (err.response?.data?.message || "오류 발생"));
     }
   };
 
   const handleFindID = async () => {
     if (!isVerified) return alert("전화번호 인증을 먼저 해주세요.");
-
     const { name, phone1, phone2, phone3 } = formData;
 
     try {
@@ -105,7 +99,6 @@ export default function ID() {
         <div className={styles.IDarea}>
           <h1>아이디 찾기</h1>
 
-          {/* ✅ 이름 입력 필드 추가 */}
           <input
             type="text"
             name="name"
@@ -157,30 +150,18 @@ export default function ID() {
 
           {timer > 0 && <p>남은 시간: {timer}s</p>}
 
-          <input
-            className={styles.verifyCode}
-            type="text"
-            placeholder="인증번호 입력"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-          />
-
-{isCodeSent && (
-        <>
-          <input
-            type="text"
-            placeholder="인증번호 입력"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            style={{ display: "block", marginTop: "1rem", marginBottom: "1rem" }}
-          />
-          <button onClick={handleVerifyCode}>인증번호 확인</button>
-        </>
-      )}
-
-          <button className={styles.verifyBtn} onClick={handleVerify}>
-            인증 확인
-          </button>
+          {isCodeSent && (
+            <>
+              <input
+                type="text"
+                placeholder="인증번호 입력"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                className={styles.verifyCode}
+              />
+              <button onClick={handleVerifyCode}>인증번호 확인</button>
+            </>
+          )}
 
           <button className={styles.findBtn} onClick={handleFindID}>
             아이디 찾기

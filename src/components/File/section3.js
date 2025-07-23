@@ -1,187 +1,85 @@
-import React, { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import styles from "./section3.module.css";
-import Search from "../../search.js";
-import AccountSetting from '../../AccountSetting.js';
-import Logo from "../../image/logo.png";
+import express from "express";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { db } from "../../firebase.js"; // Firebase 초기화 모듈
+import { collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
 
-// ✅ 환경에 따라 API 주소 자동 선택
-const API = process.env.REACT_APP_API || "http://localhost:4000";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export default function FileUploadPage() {
-  const [text, setText] = useState("");
-  const [file, setFile] = useState(null);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const inputRef = useRef(null);
-  const navigate = useNavigate();
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [showResults, setShowResults] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [uploadTime , setUploadTime] = useState(null);
+const router = express.Router();
 
-  const gotoHome = () => navigate("/main");
-  const gotoLink1 = () => navigate("/ChatApp");
-  const gotoLink2 = () => navigate("/file");
-  const gotoLink3 = () => navigate("/sendEmail");
+const uploadDir = path.join(__dirname, "../uploads");
+const imagesDir = path.join(uploadDir, "images");
+const docsDir = path.join(uploadDir, "docs");
 
-  const fetchSearchData = () => {};
+[uploadDir, imagesDir, docsDir].forEach((dir) => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
 
-  const handleLogout = () => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userId");
-    alert("로그아웃 되었습니다.");
-    navigate("/");
-  };
-
-
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
-  const handleUpload = async () => {
-    if (!file) return alert("파일을 선택하세요.");
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const response = await axios.post(`${API}/api/upload`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      if (response.data.success) {
-        alert("파일 업로드 완료!");
-        setFile(null);
-        inputRef.current.value = "";
-        fetchFiles();
-        setUploadTime(new Date());
-      } else {
-        alert("업로드 실패");
-      }
-    } catch (error) {
-      console.error("업로드 실패:", error);
-      alert("업로드 중 오류 발생");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if ([".jpg", ".jpeg", ".png", ".gif", ".bmp"].includes(ext)) {
+      cb(null, imagesDir);
+    } else if ([".pdf", ".docx", ".doc", ".hwp", ".txt"].includes(ext)) {
+      cb(null, docsDir);
+    } else {
+      cb(null, uploadDir);
     }
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext);
+    cb(null, `${timestamp}-${base}${ext}`);
+  },
+});
+const upload = multer({ storage });
 
-  };
+const getFileType = (ext) => {
+  if ([".jpg", ".jpeg", ".png", ".gif", ".bmp"].includes(ext)) return "images";
+  if ([".pdf", ".docx", ".doc", ".hwp", ".txt"].includes(ext)) return "docs";
+  return "others";
+};
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+// 📤 업로드
+router.post("/", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false });
 
-  const fetchFiles = async () => {
-    try {
-      const response = await axios.get(`${API}/api/upload`);
-      if (response.data.success) {
-        setUploadedFiles(response.data.files);
-      }
-    } catch (error) {
-      console.error("파일 목록 불러오기 실패:", error);
-    }
-  };
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    const uploadedAt = new Date();
 
-  const handleDownload = async (file) => {
-    try {
-      const response = await axios.get(`${API}/api/upload/download/${file.type}/${file.file_name}`, {
-        responseType: "blob",
-      });
+    const meta = {
+      type: getFileType(ext),
+      file_name: req.file.filename.split(/-(.+)/)[1] || req.file.filename,
+      name: req.file.filename,
+      uploadedAt: uploadedAt.toISOString(),
+    };
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", file.file_name);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("다운로드 실패:", error);
-      alert("다운로드 중 오류 발생");
-    }
-  };
+    await addDoc(collection(db, "uploadedFiles"), meta);
 
-  const handleChange = (e) => setText(e.target.value);
+    res.status(200).json({ success: true, fileName: req.file.filename });
+  } catch (err) {
+    console.error("🔥 업로드 실패:", err);
+    res.status(500).json({ success: false });
+  }
+});
 
-  useEffect(() => {
-    fetchFiles();
-  }, []);
-  
+// 📄 파일 목록 (Firebase에서 가져옴)
+router.get("/", async (req, res) => {
+  try {
+    const q = query(collection(db, "uploadedFiles"), orderBy("uploadedAt", "desc"));
+    const snapshot = await getDocs(q);
+    const files = snapshot.docs.map((doc) => doc.data());
+    res.status(200).json({ success: true, files });
+  } catch (err) {
+    console.error("🔥 목록 조회 실패:", err);
+    res.status(500).json({ success: false });
+  }
+});
 
-  return (
-    <div className={styles.body}>
-      <nav>
-        <div className={styles.nav}>
-        <div className={styles.logo1}><img src={Logo} className={styles.logo}></img></div>
-          <ul>
-            <li><button className={styles.button} onClick={gotoHome}>Home</button></li>
-            <li><button className={styles.button} onClick={gotoLink1}>Chat</button></li>
-            <li><button className={styles.button} onClick={gotoLink2}>File</button></li>
-            <li><button className={styles.button} onClick={gotoLink3}>Email</button></li>
-          </ul>
-        </div>
-      </nav>
-
-      <Search
-        setTheme={setTheme}
-        fetchSearchData={fetchSearchData}
-        searchResults={searchResults}
-        isLoading={isLoading}
-        setSearchText={setSearchText}
-        searchText={searchText}
-        showResults={showResults}
-        setShowResults={setShowResults}
-        handleLogout={handleLogout}
-        setShowSettings={setShowSettings}
-      />
-
-      <div className={styles.fileUpload}>
-        <h2>파일 업로드 및 다운로드</h2>
-        <div className={styles.upload}>
-          <input 
-            type="file"
-            ref={inputRef}
-            onChange={handleFileChange}
-            className={styles.fileInput}
-          />
-          <button onClick={handleUpload}>업로드</button>
-        </div>
-
-        <h3>업로드된 파일 목록</h3>
-        <div className={styles.list}>
-          <div className={styles.listHeader}>
-            <span>파일 이름</span>
-            <div className={styles.downarea}>
-              <span>업로드 시간</span>
-              <span>다운로드</span>
-            </div>
-        </div>
-        </div>
-        <div className={styles.fileList}>
-          {uploadedFiles.length === 0 ? (
-            <p>업로드된 파일이 없습니다.</p>
-          ) : (
-            uploadedFiles.map((file, index) => (
-              <div key={index} className={styles.fileItem}>
-                {file.type === "images" ? (
-                  <img
-                    src={`${API}/uploads/images/${file.file_name}`}
-                    alt={file.file_name}
-                    className={styles.previewImage}
-                  />
-                ) : (
-                  <span>{file.file_name}</span>
-                )}
-                <div className={styles.fileInfo}>
-                <p>{new Date(file.uploadedAt).toLocaleString()}</p>
-                <button onClick={() => handleDownload(file)}>다운로드</button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-      {showSettings && (
-        <AccountSetting onClose={() => setShowSettings(false)} />
-      )}
-    </div>
-  );
-}
+export default router;

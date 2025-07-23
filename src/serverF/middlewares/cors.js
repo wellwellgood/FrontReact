@@ -44,7 +44,14 @@ const corsOptions = {
   maxAge: 86400 // 24시간 프리플라이트 캐시
 };
 
-const corsMiddleware = cors(corsOptions);
+const corsMiddleware = cors({
+  origin: [
+    "http://localhost:3000",
+    "https://kkydashboard.netlify.app"
+  ],
+  credentials: true,
+});
+
 
 // API 기본 URL
 const API = "https://react-server-wmqa.onrender.com";

@@ -70,7 +70,7 @@ export default function Password() {
   const handleResetPassword = async () => {
     if (!newPassword || !resetToken) return alert("새 비밀번호를 입력해주세요.");
     try {
-      const res = await api.post("/reset-password", {
+      const res = await api.post("/auth/reset-password", {
         token: resetToken,
         newPassword
       });

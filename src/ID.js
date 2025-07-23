@@ -40,6 +40,7 @@ export default function ID() {
 
     try {
       const res = await api.post("/auth/send-code", { phone });
+      alert("인증번호는 개발자도구에서 console로 확인이 가능합니다.")
       console.log("✅ 인증번호가 전송되었습니다: " + res.data.code); // 테스트용
       setTimer(180); // 3분
       setIsCodeSent(true);

@@ -165,6 +165,32 @@ router.post("/find-password", async (req, res) => {
   }
 });
 
+// ✅ 비밀번호 재설정
+router.post("/reset-password", async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ message: "입력 누락" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    await pool.query(
+      "UPDATE users SET password = $1 WHERE id = $2",
+      [hashed, userId]
+    );
+
+    res.status(200).json({ message: "비밀번호가 성공적으로 변경되었습니다." });
+  } catch (err) {
+    console.error("❌ 비밀번호 재설정 오류:", err);
+    res.status(400).json({ message: "유효하지 않은 토큰이거나 만료됨" });
+  }
+});
+
 // ✅ 토큰 재발급
 router.post("/token", async (req, res) => {
   const refreshToken = req.cookies.refreshToken;

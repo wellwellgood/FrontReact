@@ -71,11 +71,6 @@ const AccountSetting = ({ onClose }) => {
               </div>
 
               <div className={styles.sectionStyle}>
-                <label className={styles.labelStyle}>비밀번호 변경</label><br />
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className={styles.inputStyle} />
-              </div>
-
-              <div className={styles.sectionStyle}>
                 <label className={styles.labelStyle}>이메일</label><br />
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} className={styles.inputStyle} />
               </div>

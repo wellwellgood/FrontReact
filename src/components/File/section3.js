@@ -1,85 +1,53 @@
-import express from "express";
-import multer from "multer";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { db } from "../../firebase.js"; // Firebase 초기화 모듈
-import { collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from '../../firebase.js';
+import styles from "./section3.module.css";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const Section3 = () => {
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const router = express.Router();
-
-const uploadDir = path.join(__dirname, "../uploads");
-const imagesDir = path.join(uploadDir, "images");
-const docsDir = path.join(uploadDir, "docs");
-
-[uploadDir, imagesDir, docsDir].forEach((dir) => {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-});
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if ([".jpg", ".jpeg", ".png", ".gif", ".bmp"].includes(ext)) {
-      cb(null, imagesDir);
-    } else if ([".pdf", ".docx", ".doc", ".hwp", ".txt"].includes(ext)) {
-      cb(null, docsDir);
-    } else {
-      cb(null, uploadDir);
-    }
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext);
-    cb(null, `${timestamp}-${base}${ext}`);
-  },
-});
-const upload = multer({ storage });
-
-const getFileType = (ext) => {
-  if ([".jpg", ".jpeg", ".png", ".gif", ".bmp"].includes(ext)) return "images";
-  if ([".pdf", ".docx", ".doc", ".hwp", ".txt"].includes(ext)) return "docs";
-  return "others";
-};
-
-// 📤 업로드
-router.post("/", upload.single("file"), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ success: false });
-
-    const ext = path.extname(req.file.originalname).toLowerCase();
-    const uploadedAt = new Date();
-
-    const meta = {
-      type: getFileType(ext),
-      file_name: req.file.filename.split(/-(.+)/)[1] || req.file.filename,
-      name: req.file.filename,
-      uploadedAt: uploadedAt.toISOString(),
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const q = query(collection(db, "files"), orderBy("uploadedAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const fetchedFiles = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setFiles(fetchedFiles);
+      } catch (error) {
+        console.error("파일 목록 불러오기 실패:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    await addDoc(collection(db, "uploadedFiles"), meta);
+    fetchFiles();
+  }, []);
 
-    res.status(200).json({ success: true, fileName: req.file.filename });
-  } catch (err) {
-    console.error("🔥 업로드 실패:", err);
-    res.status(500).json({ success: false });
-  }
-});
+  return (
+    <div className={styles.section3Container}>
+      <h2>📂 업로드된 파일 목록</h2>
+      {loading ? (
+        <p>불러오는 중...</p>
+      ) : files.length === 0 ? (
+        <p>업로드된 파일이 없습니다.</p>
+      ) : (
+        <ul className={styles.fileList}>
+          {files.map((file) => (
+            <li key={file.id} className={styles.fileItem}>
+              <span>📝 {file.originalname || file.name}</span>
+              <span className={styles.uploadTime}>
+                {file.uploadedAt?.toDate?.().toLocaleString?.() || "시간 없음"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
-// 📄 파일 목록 (Firebase에서 가져옴)
-router.get("/", async (req, res) => {
-  try {
-    const q = query(collection(db, "uploadedFiles"), orderBy("uploadedAt", "desc"));
-    const snapshot = await getDocs(q);
-    const files = snapshot.docs.map((doc) => doc.data());
-    res.status(200).json({ success: true, files });
-  } catch (err) {
-    console.error("🔥 목록 조회 실패:", err);
-    res.status(500).json({ success: false });
-  }
-});
-
-export default router;
+export default Section3;

@@ -159,7 +159,7 @@ export default function ID() {
                 onChange={(e) => setVerificationCode(e.target.value)}
                 className={styles.verifyCode}
               />
-              <button onClick={handleVerifyCode}>인증번호 확인</button>
+              <button onClick={handleVerifyCode} className={styles.verifyBtn}>인증번호 확인</button>
             </>
           )}
 

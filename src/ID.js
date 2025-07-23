@@ -35,18 +35,19 @@ export default function ID() {
     return `${phone1}-${phone2}-${phone3}`;
   };
 
-  router.post("/send-code", async (req, res) => {
-    const { phone } = req.body;
-    const code = generateRandomCode();
-    const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3분 유효
-  
-    phoneVerificationStore.set(phone, { code, expiresAt });
-  
-    // ✅ 콘솔 출력 추가 (이 부분만 있으면 됨)
-    console.log(`📨 [Render 콘솔] ${phone} 인증번호: ${code}`);
-  
-    res.json({ message: "인증번호 전송됨", code }); // 테스트용
-  });
+  const handleSendCode = async () => {
+    const phone = makePhoneNumber();
+
+    try {
+      const res = await api.post("/auth/send-code", { phone });
+      alert("✅ 인증번호가 전송되었습니다: " + res.data.code); // 테스트용
+      setTimer(180); // 3분
+      setIsCodeSent(true);
+    } catch (err) {
+      console.error("❌ 인증번호 요청 실패:", err);
+      alert(err.response?.data?.message || "오류 발생");
+    }
+  };
 
   const handleVerifyCode = async () => {
     const phone = makePhoneNumber();

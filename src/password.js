@@ -29,6 +29,7 @@ export default function Password() {
     try {
       const res = await api.post("/auth/send-code", { phone });
       setTimer(180);
+      alert("인증번호는 개발자도구에서 console로 확인이 가능합니다.");
       console.log(`인증번호가 전송되었습니다. (${res.data.code})`);
     } catch (err) {
       console.error("❌ 인증번호 전송 실패:", err);

@@ -105,6 +105,24 @@ export default function FileUploadPage() {
     fetchFiles();
   }, []);
 
+  router.post('/api/upload', upload.single('file'), async (req, res) => {
+    const file = req.file;
+  
+    // 업로드 시간 생성
+    const uploadedAt = new Date();
+  
+    const fileInfo = {
+      file_name: file.filename,
+      type: 'images',
+      uploadedAt: uploadedAt, // ✅ 여기!
+    };
+  
+    // DB에 저장 (MongoDB 예시)
+    await FileModel.create(fileInfo);
+  
+    res.json({ success: true });
+  });
+
   return (
     <div className={styles.body}>
       <nav>

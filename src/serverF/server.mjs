@@ -29,7 +29,7 @@ app.use(cookieParser());
 try {
   console.log("⏸️ 모든 라우트 임시 비활성화 - 기본 서버만 실행");
   
-  // const authRouter = await import("./routes/auth.js");
+  
   app.use("/api/auth", authRouter);
   
   const userRoutes = await import("./routes/user.js");

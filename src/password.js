@@ -29,7 +29,7 @@ export default function Password() {
     try {
       const res = await api.post("/auth/send-code", { phone });
       setTimer(180);
-      console.log(`인증번호가 전송되었습니다. (테스트용: ${res.data.code})`);
+      console.log(`인증번호가 전송되었습니다. (${res.data.code})`);
     } catch (err) {
       console.error("❌ 인증번호 전송 실패:", err);
       alert("인증번호 발송 실패");

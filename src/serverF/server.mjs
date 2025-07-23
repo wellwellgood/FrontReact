@@ -9,6 +9,7 @@ import { connectDB } from "./DB.mjs";
 import initDB from "./initDB.js";
 import messageRoute from "./routes/message.js";
 import corsMiddleware from "./middlewares/cors.js"
+import authRouter from "./routes/auth.js";
 
 // 기본 설정만 먼저 테스트
 try {
@@ -28,7 +29,7 @@ app.use(cookieParser());
 try {
   console.log("⏸️ 모든 라우트 임시 비활성화 - 기본 서버만 실행");
   
-  const authRouter = await import("./routes/auth.js");
+  // const authRouter = await import("./routes/auth.js");
   app.use("/api/auth", authRouter);
   
   const userRoutes = await import("./routes/user.js");

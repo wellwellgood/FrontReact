@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import  pool  from "../DB.mjs";
 
 const router = express.Router();
+const verificationStore = {};
 
 const generateAccessToken = (user) =>
   jwt.sign(

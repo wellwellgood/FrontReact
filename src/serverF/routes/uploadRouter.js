@@ -1,78 +1,79 @@
-import express from 'express';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { db } from '../firebaseConfig.js';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+// uploadRouter.js
 import { Router } from "express";
-import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "firebase/storage";
-import { storage } from "../../firebase.js";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { storage } from "../firebase.js";
+import { ref, uploadBytes, getDownloadURL, listAll, getMetadata } from "firebase/storage";
 
-const router = express.Router();
+const router = Router();
+const uploadDir = "./uploads";
 
-const uploadDir = './uploads';
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-
+// 로컬 저장 (Firebase로 업로드 전에 저장)
 const diskStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
+  destination: (req, file, cb) => {
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+    cb(null, uploadDir);
+  },
   filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext);
-    cb(null, `${timestamp}-${base}${ext}`);
+    const unique = Date.now() + "-" + file.originalname;
+    cb(null, unique);
   }
 });
-const upload = multer({ diskStorage  });
 
-router.post('/', upload.single('file'), async (req, res) => {
+const upload = multer({ storage: diskStorage });
+
+// ✅ 파일 업로드
+router.post("/", upload.single("file"), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ success: false });
+    const file = req.file;
+    const storageRef = ref(storage, `files/${file.filename}`);
+    const buffer = fs.readFileSync(file.path);
 
-    const fileData = {
-      file_name: req.file.filename.split(/-(.+)/)[1] || req.file.filename,
-      name: req.file.filename,
-      type: 'uploaded',
-      uploadedAt: new Date().toISOString(),
-    };
+    await uploadBytes(storageRef, buffer, { contentType: file.mimetype });
+    fs.unlinkSync(file.path); // 로컬 파일 삭제
 
-    await addDoc(collection(db, 'uploadedFiles'), fileData);
-    res.json({ success: true });
+    const url = await getDownloadURL(storageRef);
+    const metadata = await getMetadata(storageRef);
+
+    res.json({
+      success: true,
+      message: "업로드 완료",
+      fileUrl: url,
+      metadata
+    });
   } catch (err) {
-    console.error('❌ 업로드 실패:', err);
-    res.status(500).json({ success: false });
+    console.error("❌ 업로드 실패:", err);
+    res.status(500).json({ success: false, error: "파일 업로드 실패" });
   }
 });
 
+// ✅ 파일 목록 조회
 router.get("/", async (req, res) => {
   try {
     const listRef = ref(storage, "files");
-    const response = await listAll(listRef);
+    const items = await listAll(listRef);
 
     const files = await Promise.all(
-      response.items.map(async (itemRef) => {
+      items.items.map(async (itemRef) => {
         const url = await getDownloadURL(itemRef);
         const meta = await getMetadata(itemRef);
         return {
           file_name: itemRef.name,
           url,
           uploadedAt: meta.timeCreated,
-          type: meta.contentType,
+          type: meta.contentType
         };
       })
     );
 
-    // 최신순 정렬
     const sorted = files.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
 
-    res.json({
-      success: true,
-      files: sorted,
-    });
-  } catch (error) {
-    console.error("❌ Firebase 파일 목록 오류:", error);
-    res.status(500).json({ success: false, error: "파일 목록 가져오기 실패" });
+    res.json({ success: true, files: sorted });
+  } catch (err) {
+    console.error("❌ 목록 가져오기 실패:", err);
+    res.status(500).json({ success: false, error: "파일 목록 실패" });
   }
 });
-
 
 export default router;

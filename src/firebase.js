@@ -6,7 +6,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyCoRBViUbD7MSGC_2jxged-fBjGkOQC1So",
   authDomain: "filefolder-54946.firebaseapp.com",
   projectId: "filefolder-54946",
-  storageBucket: "filefolder-54946.appspot.com", // ❗ 잘못된 도메인 수정됨
+  storageBucket: "filefolder-54946.appspot.com",
   messagingSenderId: "1016654651914",
   appId: "1:1016654651914:web:552cc88f977c5470d9b5f3"
 };

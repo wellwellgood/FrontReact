@@ -3,7 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { storage } from "../firebase.js";
+import { storage } from "../../firebase.js";
 import { ref, uploadBytes, getDownloadURL, listAll, getMetadata } from "firebase/storage";
 
 const router = Router();

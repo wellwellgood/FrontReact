@@ -6,7 +6,7 @@ import Search from "../../search.js";
 import AccountSetting from '../../AccountSetting.js';
 import Logo from "../../image/logo.png";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from '../../serverF/firebase.js';
+import { db } from '../../firebase.js';
 import api from '../../util/api.js';
 
 // const API = process.env.REACT_APP_API || "http://localhost:4000";

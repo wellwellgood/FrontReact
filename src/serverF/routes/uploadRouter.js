@@ -6,7 +6,7 @@ import { db } from '../firebaseConfig.js';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { Router } from "express";
 import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "firebase/storage";
-import { storage } from "../fileBaseConfig.js";
+import { storage } from "../../firebase.js";
 
 const router = express.Router();
 

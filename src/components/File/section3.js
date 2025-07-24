@@ -9,7 +9,7 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from '../../firebase.js';
 import api from '../../util/api.js';
 
-const API = process.env.REACT_APP_API || "http://localhost:4000";
+// const API = process.env.REACT_APP_API || "http://localhost:4000";
 
 export default function FileUploadPage() {
   const [text, setText] = useState("");
@@ -73,7 +73,7 @@ export default function FileUploadPage() {
 
   const fetchFiles = async () => {
     try {
-      const response = await api.get(`${API}/upload`);
+      const response = await api.get(`/upload`);
       if (response.data.success) {
         const sorted = [...response.data.files].sort((a, b) => {
           return new Date(b.uploadedAt) - new Date(a.uploadedAt);
@@ -87,7 +87,7 @@ export default function FileUploadPage() {
 
   const handleDownload = async (file) => {
     try {
-      const response = await axios.get(`${API}/api/upload/download/${file.type}/${file.file_name}`, {
+      const response = await api.get(`/upload/download/${file.type}/${file.file_name}`, {
         responseType: "blob",
       });
 

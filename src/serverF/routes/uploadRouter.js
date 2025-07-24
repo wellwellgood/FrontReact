@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { storage } from "../../firebase.js";
+import { bucket } from "../../firebase.js"; // ✅ 변경
 
 const router = Router();
 const uploadDir = "./uploads";
@@ -20,14 +20,14 @@ const diskStorage = multer.diskStorage({
 
 const upload = multer({ storage: diskStorage });
 
-// ✅ Firebase 파일 목록 조회
+// ✅ Firebase 파일 목록 조회 (Admin SDK 방식)
 router.get("/", async (req, res) => {
   try {
-    const [files] = await storage.getFiles({ prefix: "files/" });
+    const [files] = await bucket.getFiles({ prefix: "files/" });
 
     const fileList = files.map((file) => ({
       file_name: file.name.replace("files/", ""),
-      url: `https://storage.googleapis.com/${storage.name}/${file.name}`,
+      url: `https://storage.googleapis.com/${bucket.name}/${file.name}`,
       uploadedAt: file.metadata.timeCreated,
     }));
 

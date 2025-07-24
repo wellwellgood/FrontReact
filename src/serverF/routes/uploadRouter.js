@@ -6,7 +6,7 @@ import { db } from '../firebaseConfig.js';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { Router } from "express";
 import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "firebase/storage";
-import { storage } from "../firebaseConfig.js";
+import { storage } from "../fileBaseConfig.js";
 
 const router = express.Router();
 
@@ -64,10 +64,13 @@ router.get("/", async (req, res) => {
     // 최신순 정렬
     const sorted = files.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
 
-    res.json(sorted);
+    res.json({
+      success: true,
+      files: sorted,
+    });
   } catch (error) {
     console.error("❌ Firebase 파일 목록 오류:", error);
-    res.status(500).json({ error: "파일 목록 가져오기 실패" });
+    res.status(500).json({ success: false, error: "파일 목록 가져오기 실패" });
   }
 });
 

@@ -166,8 +166,7 @@ export default function FileUploadPage() {
             uploadedFiles.map((file, index) => (
               <div key={index} className={styles.fileItem}>
                 {file.type === "images" ? (
-                  <img
-                    src={`${API}/uploads/images/${file.file_name}`}
+                  <img src={file.url}
                     alt={file.file_name}
                     className={styles.previewImage}
                   />

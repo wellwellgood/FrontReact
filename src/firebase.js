@@ -1,18 +1,20 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getStorage } from "firebase/storage";
+import admin from "firebase-admin";
+import { readFileSync } from "fs";
+import path from "path";
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyCoRBViUbD7MSGC_2jxged-fBjGkOQC1So",
-  authDomain: "filefolder-54946.firebaseapp.com",
-  projectId: "filefolder-54946",
-  storageBucket: "filefolder-54946.appspot.com",
-  messagingSenderId: "1016654651914",
-  appId: "1:1016654651914:web:552cc88f977c5470d9b5f3"
-};
+const serviceAccount = JSON.parse(
+  readFileSync(
+    path.resolve("src/serverF/firebaseServiceKey.json"), // 🔑 네 서비스 계정 json 경로
+    "utf-8"
+  )
+);
 
-// Initialize Firebase once
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const storage = getStorage(app);
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: "filefolder-54946.appspot.com",
+  });
+}
 
-export { storage };
+const bucket = admin.storage().bucket();
+export { bucket };

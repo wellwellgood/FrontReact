@@ -24,34 +24,17 @@ const diskStorage = multer.diskStorage({
 const upload = multer({ storage: diskStorage });
 
 // ✅ 파일 업로드
-router.post("/", upload.single("file"), async (req, res) => {
-
-  if (!req.file) {
-    return res.status(400).json({ error: "파일이 없습니다" });
-  }
-
+router.get("/upload", async (req, res) => {
   try {
-    const file = req.file;
-    const storageRef = ref(storage, `files/${file.filename}`);
-    const buffer = fs.readFileSync(file.path);
-
-    console.log("🔥 업로드 요청 파일:", req.file);
-
-    await uploadBytes(storageRef, buffer, { contentType: file.mimetype });
-    fs.unlinkSync(file.path); // 로컬 파일 삭제
-
-    const url = await getDownloadURL(storageRef);
-    const metadata = await getMetadata(storageRef);
-
-    res.json({
-      success: true,
-      message: "업로드 완료",
-      fileUrl: url,
-      metadata
-    });
+    const [files] = await bucket.getFiles({ prefix: "files/" });
+    const fileUrls = files.map((file) => ({
+      name: file.name.replace("files/", ""),
+      url: `https://storage.googleapis.com/${bucket.name}/${file.name}`,
+    }));
+    res.json(fileUrls);
   } catch (err) {
-    console.error("❌ 업로드 실패:", err);
-    res.status(500).json({ success: false, error: "파일 업로드 실패" });
+    console.error("🔥 서버 에러:", err.message);
+    res.status(500).json({ error: "🔥 목록 불러오기 실패" });
   }
 });
 

@@ -7,6 +7,7 @@ import AccountSetting from '../../AccountSetting.js';
 import Logo from "../../image/logo.png";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from '../../firebase.js';
+import api from '../../util/api.js';
 
 const API = process.env.REACT_APP_API || "http://localhost:4000";
 
@@ -47,7 +48,7 @@ export default function FileUploadPage() {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const response = await axios.post(`${API}/upload`, formData, {
+      const response = await api.post(`${API}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (response.data.success) {
@@ -72,7 +73,7 @@ export default function FileUploadPage() {
 
   const fetchFiles = async () => {
     try {
-      const response = await axios.get(`${API}/upload`);
+      const response = await api.get(`${API}/upload`);
       if (response.data.success) {
         const sorted = [...response.data.files].sort((a, b) => {
           return new Date(b.uploadedAt) - new Date(a.uploadedAt);

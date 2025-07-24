@@ -13,7 +13,7 @@ const router = express.Router();
 const uploadDir = './uploads';
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
-const storage = multer.diskStorage({
+const diskStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
     const timestamp = Date.now();
@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
     cb(null, `${timestamp}-${base}${ext}`);
   }
 });
-const upload = multer({ storage });
+const upload = multer({ diskStorage  });
 
 router.post('/', upload.single('file'), async (req, res) => {
   try {

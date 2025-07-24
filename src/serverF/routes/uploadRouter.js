@@ -4,6 +4,9 @@ import path from 'path';
 import fs from 'fs';
 import { db } from '../firebaseConfig.js';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { Router } from "express";
+import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "firebase/storage";
+import { storage } from "../firebaseConfig.js";
 
 const router = express.Router();
 
@@ -40,10 +43,33 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
-  const snapshot = await getDocs(collection(db, 'uploadedFiles'));
-  const files = snapshot.docs.map(doc => doc.data());
-  res.json({ success: true, files });
+router.get("/", async (req, res) => {
+  try {
+    const listRef = ref(storage, "files");
+    const response = await listAll(listRef);
+
+    const files = await Promise.all(
+      response.items.map(async (itemRef) => {
+        const url = await getDownloadURL(itemRef);
+        const meta = await getMetadata(itemRef);
+        return {
+          file_name: itemRef.name,
+          url,
+          uploadedAt: meta.timeCreated,
+          type: meta.contentType,
+        };
+      })
+    );
+
+    // 최신순 정렬
+    const sorted = files.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+
+    res.json(sorted);
+  } catch (error) {
+    console.error("❌ Firebase 파일 목록 오류:", error);
+    res.status(500).json({ error: "파일 목록 가져오기 실패" });
+  }
 });
+
 
 export default router;

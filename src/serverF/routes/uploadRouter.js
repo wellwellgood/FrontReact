@@ -25,10 +25,17 @@ const upload = multer({ storage: diskStorage });
 
 // ✅ 파일 업로드
 router.post("/", upload.single("file"), async (req, res) => {
+
+  if (!req.file) {
+    return res.status(400).json({ error: "파일이 없습니다" });
+  }
+
   try {
     const file = req.file;
     const storageRef = ref(storage, `files/${file.filename}`);
     const buffer = fs.readFileSync(file.path);
+
+    console.log("🔥 업로드 요청 파일:", req.file);
 
     await uploadBytes(storageRef, buffer, { contentType: file.mimetype });
     fs.unlinkSync(file.path); // 로컬 파일 삭제
@@ -52,27 +59,23 @@ router.post("/", upload.single("file"), async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const listRef = ref(storage, "files");
-    const items = await listAll(listRef);
+    const result = await listAll(listRef);
 
-    const files = await Promise.all(
-      items.items.map(async (itemRef) => {
+    const fileList = await Promise.all(
+      result.items.map(async (itemRef) => {
         const url = await getDownloadURL(itemRef);
-        const meta = await getMetadata(itemRef);
         return {
           file_name: itemRef.name,
           url,
-          uploadedAt: meta.timeCreated,
-          type: meta.contentType
+          uploadedAt: new Date().toISOString(),
         };
       })
     );
 
-    const sorted = files.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-
-    res.json({ success: true, files: sorted });
+    res.status(200).json({ files: fileList });
   } catch (err) {
-    console.error("❌ 목록 가져오기 실패:", err);
-    res.status(500).json({ success: false, error: "파일 목록 실패" });
+    console.error("🔥 파일 목록 불러오기 실패:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 

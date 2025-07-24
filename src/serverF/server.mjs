@@ -46,9 +46,6 @@ try {
 
   const messageRoute = await import("./routes/message.js");
   app.use("/api/messages", messageRoute.default);
-
-  const uploadRoutes = await import("./routes/uploadRouter.js");
-  app.use("/api/upload", uploadRoutes);
   
 } catch (error) {
   console.error("❌ 라우트 로드 실패:", error);

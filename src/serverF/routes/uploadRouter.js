@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { bucket } from "../../firebase.js";
+import { bucket } from "../firebase.js";
 
 const router = Router();
 const uploadDir = "./uploads";

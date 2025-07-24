@@ -47,7 +47,7 @@ export default function FileUploadPage() {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const response = await axios.post(`${API}/api/upload`, formData, {
+      const response = await axios.post(`${API}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (response.data.success) {
@@ -72,7 +72,7 @@ export default function FileUploadPage() {
 
   const fetchFiles = async () => {
     try {
-      const response = await axios.get(`${API}/api/upload`);
+      const response = await axios.get(`${API}/upload`);
       if (response.data.success) {
         const sorted = [...response.data.files].sort((a, b) => {
           return new Date(b.uploadedAt) - new Date(a.uploadedAt);

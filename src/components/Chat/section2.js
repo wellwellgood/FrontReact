@@ -182,10 +182,14 @@ const Section2 = () => {
       
       // 파일 업로드 처리
       if (selectedFile) {
-        const uniqueName = `${Date.now()}-${selectedFile.name}`;
-        const fileRef = storageRef(storage, `chat/${uniqueName}`);
-        await uploadBytes(fileRef, selectedFile);
-        fileUrl = await getDownloadURL(fileRef);
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+  
+        const res = await axios.post(`${API}/api/upload`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+  
+        fileUrl = res.data.url;       // 서버에서 반환한 URL
         fileName = selectedFile.name;
         fileSize = selectedFile.size;
       }

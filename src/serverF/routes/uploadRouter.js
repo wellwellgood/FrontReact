@@ -50,6 +50,8 @@ router.get("/upload", async (req, res) => {
 
 router.post("/", upload.single("file"), async (req, res) => {
   try {
+    console.log("🔥 업로드 요청 수신:", req.file);
+
     const localFile = req.file.path;
     const destFile = `files/${req.file.filename}`;
 
@@ -58,10 +60,10 @@ router.post("/", upload.single("file"), async (req, res) => {
       metadata: { contentType: req.file.mimetype }
     });
 
-    res.status(200).json({ message: "✅ 업로드 성공", file: destFile });
+    res.status(200).json({ success: true, message: "✅ 업로드 성공", file: destFile });
   } catch (err) {
-    console.error("🔥 업로드 실패:", err);
-    res.status(500).json({ error: err.message, stack: err.stack });
+    console.error("🔥 업로드 실패:", err.message , err_stack);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

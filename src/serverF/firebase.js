@@ -13,7 +13,7 @@ let app;
 if (!getApps().length) {
   app = initializeApp({
     credential: cert(firebaseConfig),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "filefolder-54946.firebasestorage.app", // ✅ 기본값 추가
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "filefolder-54946.firebasestorage.app", // ✅ 기본값도 변경
   });
 } else {
   app = getApps()[0];

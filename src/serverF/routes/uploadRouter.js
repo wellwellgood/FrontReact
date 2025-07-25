@@ -48,4 +48,20 @@ router.get("/upload", async (req, res) => {
   }
 });
 
+router.post("/upload", upload.single("file"), async (req, res) => {
+  try {
+    const localFile = req.file.path;
+    const destFile = `files/${req.file.filename}`;
+
+    await bucket.upload(localFile, {
+      destination: destFile,
+      metadata: { contentType: req.file.mimetype }
+    });
+
+    res.status(200).json({ message: "✅ 업로드 성공", file: destFile });
+  } catch (err) {
+    console.error("🔥 업로드 실패:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 export default router;

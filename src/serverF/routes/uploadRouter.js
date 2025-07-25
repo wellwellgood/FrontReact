@@ -48,7 +48,7 @@ router.get("/upload", async (req, res) => {
   }
 });
 
-router.post("/upload", upload.single("file"), async (req, res) => {
+router.post("/", upload.single("file"), async (req, res) => {
   try {
     const localFile = req.file.path;
     const destFile = `files/${req.file.filename}`;
@@ -64,4 +64,5 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 export default router;

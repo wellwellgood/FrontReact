@@ -25,4 +25,4 @@ Thumbs.db
 
 .env
 firebaseServiceKey.json
-src/serverF/firebase.js
+# src/serverF/firebase.js

@@ -44,19 +44,22 @@ router.post("/", upload.single("file"), async (req, res) => {
   }
 });
 
-/* ✅ 파일 목록 조회 */
+/* ✅ 파일 목록 조회 (앞 숫자 제거) */
 router.get("/", async (req, res) => {
   try {
     const [files] = await bucket.getFiles({ prefix: "files/" });
 
     const fileList = files
       .filter(file => file.name !== "files/") // 빈 prefix 제외
-      .map(file => ({
-        file_name: file.name.replace("files/", ""),
-        url: `https://storage.googleapis.com/${bucket.name}/${file.name}`,
-        uploadedAt: file.metadata.timeCreated,
-        type: file.metadata.contentType?.startsWith("image") ? "images" : "other"
-      }));
+      .map(file => {
+        const originalName = file.name.replace("files/", "").replace(/^\d+-/, ""); 
+        return {
+          file_name: originalName,
+          url: `https://storage.googleapis.com/${bucket.name}/${file.name}`,
+          uploadedAt: file.metadata.timeCreated,
+          type: file.metadata.contentType?.startsWith("image") ? "images" : "other"
+        };
+      });
 
     console.log("📂 Firebase 파일 목록:", fileList);
     res.status(200).json({ success: true, files: fileList });

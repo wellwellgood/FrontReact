@@ -171,7 +171,7 @@ export default function FileUploadPage() {
                     className={styles.previewImage}
                   />
                 ) : (
-                  <span>{file_name}</span>
+                  <span>{file.file_name}</span>
                 )}
                 <div className={styles.fileInfo}>
                 <p>{new Date(file.uploadedAt).toLocaleString()}</p>

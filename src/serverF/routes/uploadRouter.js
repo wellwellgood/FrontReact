@@ -61,7 +61,7 @@ router.post("/", upload.single("file"), async (req, res) => {
     res.status(200).json({ message: "✅ 업로드 성공", file: destFile });
   } catch (err) {
     console.error("🔥 업로드 실패:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 });
 

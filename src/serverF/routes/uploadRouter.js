@@ -38,4 +38,14 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/upload", async (req, res) => {
+  try {
+    const [files] = await bucket.getFiles({ prefix: "files/" });
+    res.json(files.map(file => file.name));
+  } catch (err) {
+    console.error("🔥 파일 목록 불러오기 실패:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 export default router;

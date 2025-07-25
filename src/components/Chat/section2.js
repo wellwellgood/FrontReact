@@ -252,6 +252,7 @@ const Section2 = () => {
 
   // 필터링된 메시지 가져오기
   const getFilteredMessages = () => {
+    console.log("📂 메시지 데이터:", messages);
     if (!selectedUser) return [];
     
     const filtered = messages.filter(msg =>

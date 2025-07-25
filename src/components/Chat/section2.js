@@ -292,16 +292,25 @@ const Section2 = () => {
   // 파일 강제 다운로드
   const forceDownload = async (url, filename) => {
     try {
-      const res = await fetch(url);
+      const absoluteUrl = url.startsWith("http")
+        ? url
+        : `${API}${url.startsWith("/") ? url : "/" + url}`;
+  
+      const res = await fetch(absoluteUrl, { mode: 'cors' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const blob = await res.blob();
+  
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobUrl;
       a.download = filename;
+      document.body.appendChild(a);
       a.click();
+      a.remove();
       URL.revokeObjectURL(blobUrl);
     } catch (e) {
       console.error("❌ 파일 다운로드 실패:", e);
+      alert("파일을 다운로드할 수 없습니다.");
     }
   };
 

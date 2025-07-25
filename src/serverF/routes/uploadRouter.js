@@ -23,18 +23,19 @@ const upload = multer({ storage: diskStorage });
 // ✅ Firebase 파일 목록 조회 (Admin SDK 방식)
 router.get("/", async (req, res) => {
   try {
-    const [files] = await bucket.getFiles({ prefix: "files/" });
+    const [files] = await bucket.getFiles(); // ✅ prefix 제거하고 전체 보기
+    console.log("🔥 Firebase 전체 파일 목록:", files.map(f => f.name));
 
-    const fileList = files.map((file) => ({
-      file_name: file.name.replace("files/", ""),
+    const fileList = files.map(file => ({
+      file_name: file.name,
       url: `https://storage.googleapis.com/${bucket.name}/${file.name}`,
       uploadedAt: file.metadata.timeCreated,
     }));
 
-    res.status(200).json({ files: fileList });
+    res.status(200).json({ success: true, files: fileList });
   } catch (err) {
     console.error("🔥 파일 목록 불러오기 실패:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

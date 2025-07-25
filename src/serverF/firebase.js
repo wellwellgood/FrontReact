@@ -1,4 +1,3 @@
-// src/serverF/firebase.js
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
 import dotenv from "dotenv";
@@ -14,10 +13,10 @@ let app;
 if (!getApps().length) {
   app = initializeApp({
     credential: cert(firebaseConfig),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "filefolder-54946.firebasestorage.app", // ✅ 기본값 추가
   });
 } else {
-  app = getApps()[0]; // 이미 초기화된 앱 재사용
+  app = getApps()[0];
 }
 
 export const bucket = getStorage().bucket();

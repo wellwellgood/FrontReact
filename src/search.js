@@ -19,6 +19,8 @@ const Search = () => {
   const [isLoading, setIsLoading] = useState(false);
   const infoRef = useRef();
   const [showSettings, setShowSettings] = useState(false);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const storedImage = sessionStorage.getItem("profileImage");
@@ -129,6 +131,39 @@ const Search = () => {
     window.location.href = '/';
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!searchText.trim()) {
+        setResults([]);
+        setShowResults(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const res = await axios.get(`${API}/api/search`, {
+          params: { q: searchText }
+        });
+        setResults(res.data);
+        setShowResults(true);
+      } catch (err) {
+        console.error("❌ 검색 실패:", err);
+        setResults([]);
+        setShowResults(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const delay = setTimeout(fetchData, 300); // ✅ 디바운스
+    return () => clearTimeout(delay);
+  }, [searchText]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("🔍 검색 실행:", searchText);
+  };
+
   return (
     <>
     {/* ✅ 설정창이 중앙에 떠야 하니까 topbar 바깥에 둬야 함 */}
@@ -141,6 +176,7 @@ const Search = () => {
       <div className={styles.topbarContainer}>
         <div className={styles.search}>
           <form onSubmit={handleSearch} className={styles.searchForm}>
+          <span className={styles.cursor}></span>
             <input
               type="text"
               value={searchText}

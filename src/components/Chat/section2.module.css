@@ -296,7 +296,7 @@ nav {
 .theirMessage .messageBubble::before {
   content: "";
   position: absolute;
-  top: 20px;
+  bottom: 20px;
   left: -8px;
   width: 0;
   height: 0;
@@ -308,7 +308,7 @@ nav {
 .myMessage .messageBubble::after {
   content: "";
   position: absolute;
-  top: 20px;
+  bottom: 20px;
   right: -6px;
   width: 0;
   height: 0;

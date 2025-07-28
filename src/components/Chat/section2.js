@@ -145,19 +145,10 @@ const Section2 = () => {
 
   // 사용자 선택 시 메시지 로드
   useEffect(() => {
-    if (!username || !selectedUser) return;
-  
-    const loadMessagesWithErrorHandling = async () => {
-      try {
-        await loadMessages(username, selectedUser.username, socket, setMessages);
-      } catch (error) {
-        console.error('메시지 로드 실패:', error);
-        setUserListError(`메시지 로드 실패: ${error.message}`);
-      }
-    };
-  
-    loadMessagesWithErrorHandling();
-  }, [selectedUser, username, socket]);
+    if (selectedUser) {
+      setReadMessages(new Set());
+    }
+  }, [selectedUser]);
 
   useEffect(() => {
     if (socket && username && selectedUser) {
@@ -178,47 +169,37 @@ const Section2 = () => {
 
     try {
       let fileUrl = null, fileName = null, fileSize = null;
-      
-      // 파일 업로드 처리
+
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
-      
+
         const res = await axios.post(`${API}/api/chat-upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-      
-        fileUrl = res.data.url;              // ✅ 서버 응답 사용
-        fileName = res.data.file_name;       // ✅ 서버 응답 사용
+
+        fileUrl = res.data.url;
+        fileName = res.data.file_name;
         fileSize = res.data.file_size;
       }
 
-      // 메시지 데이터 준비
       const messageData = {
         sender_username: username,
         receiver_username: selectedUser.username,
         receiver_name: selectedUser.name,
-        // content: input.trim() || "[파일]",
+        content: input.trim(),
         file_url: fileUrl,
         file_name: fileName,
         file_size: fileSize,
-        read: false,
+        read: false,   // ✅ 항상 false로 초기화
       };
 
-      // cors.js의 sendMessage 함수 사용
       const savedMessage = await sendMessage(messageData);
-
-      // 로컬 state에 즉시 추가 (중복 방지)
       setMessages(prev => addMessageWithDeduplication(prev, savedMessage));
 
-      // 입력 필드 초기화
       setInput("");
       setSelectedFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-
-      // console.log("📤 메시지 전송 완료:", savedMessage.id);
+      if (fileInputRef.current) fileInputRef.current.value = "";
 
     } catch (err) {
       console.error("❌ 메시지 전송 실패:", err);
@@ -245,19 +226,18 @@ const Section2 = () => {
 
   // 메시지 읽음 상태 확인
   const getMessageReadStatus = (msg) => {
+    if (!msg) return null;
     if (msg.sender_username !== username) return null;
-    return msg.read || readMessages.has(msg.id) ? '읽음' : '안읽음';
+    return msg.read === true ? '읽음' : '안읽음';
   };
 
   // 필터링된 메시지 가져오기
   const getFilteredMessages = () => {
-    if (!selectedUser) return [];
-    
     const filtered = messages.filter(msg =>
-      (msg.sender_username === username && msg.receiver_username === selectedUser.username) ||
-      (msg.receiver_username === username && msg.sender_username === selectedUser.username)
+      (msg.sender_username === username && msg.receiver_username === selectedUser?.username) ||
+      (msg.sender_username === selectedUser?.username && msg.receiver_username === username)
     );
-    
+  
     // 시간순 정렬
     return filtered.sort((a, b) => new Date(a.time) - new Date(b.time));
   };

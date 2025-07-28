@@ -292,6 +292,13 @@ const Section2 = () => {
     }
   };
 
+  // 파일 URL을 절대 경로로 변환
+  const getAbsoluteUrl = (fileUrl) => {
+    return fileUrl.startsWith("http")
+      ? fileUrl
+      : `${API}${fileUrl.startsWith("/") ? fileUrl : "/" + fileUrl}`;
+  };
+
   // 파일 크기 포맷팅
   const formatBytes = (bytes) => {
     if (!bytes) return "0 B";
@@ -525,7 +532,7 @@ const Section2 = () => {
                               src={`${API}${msg.file_url}`} 
                               alt={msg.file_name} 
                               className={styles.chatImage} 
-                              onClick={() => window.open(url, '_blank', 'width=600,height=400')}
+                              onClick={() => window.open(getAbsoluteUrl(msg.file_url), '_blank', 'width=600,height=400')}
                             />
                           ) : (
                             <button 

@@ -280,6 +280,18 @@ const Section2 = () => {
     );
   };
 
+  // 파일 붙여넣기
+  const handlePaste = (e) => {
+    const items = e.clipboardData.items;
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        setSelectedFile(file);
+        console.log("📸 붙여넣은 이미지:", file.name);
+      }
+    }
+  };
+
   // 파일 크기 포맷팅
   const formatBytes = (bytes) => {
     if (!bytes) return "0 B";
@@ -506,25 +518,28 @@ const Section2 = () => {
                     <div className={styles.bubbleWrapper}>
                       <div className={styles.messageBubble}>
                       <div className={styles.messageText}>
-                        {msg.file_url && msg.file_name && (
-                          <div className={styles.filePreview}>
-                            {/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.file_name) ? (
-                              <img 
-                                src={`${API}${msg.file_url}`} 
-                                alt={msg.file_name} 
-                                className={styles.chatImage} 
-                              />
-                            ) : (
-                              <button 
-                                className={styles.downBtn} 
-                                onClick={() => forceDownload(msg.file_url, msg.file_name)}
-                              >
-                                {msg.file_name} ({formatBytes(msg.file_size || 0)})
-                              </button>
-                            )}
-                          </div>
-                        )}
-                        {!msg.file_url && convertTextToLink(msg.content || '내용 없음')}
+                      {msg.file_url && msg.file_name && (
+                        <div className={styles.filePreview}>
+                          {/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.file_name) ? (
+                            <img 
+                              src={`${API}${msg.file_url}`} 
+                              alt={msg.file_name} 
+                              className={styles.chatImage} 
+                              onClick={() => window.open(`${API}${msg.file_url}`, '_blank')}
+                            />
+                          ) : (
+                            <button 
+                              className={styles.downBtn} 
+                              onClick={() => forceDownload(msg.file_url, msg.file_name)}
+                            >
+                              {msg.file_name} ({formatBytes(msg.file_size || 0)})
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* ✅ 텍스트가 있을 경우만 출력 */}
+                      {msg.content && convertTextToLink(msg.content)}
                       </div>
                         <div className={styles.messageMeta}>
                           <span className={styles.time}>
@@ -588,6 +603,7 @@ const Section2 = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
+              onPaste={handlePaste}
               placeholder="메시지를 입력하세요"
               disabled={isSending}
             />

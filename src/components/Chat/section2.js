@@ -505,19 +505,27 @@ const Section2 = () => {
                     )}
                     <div className={styles.bubbleWrapper}>
                       <div className={styles.messageBubble}>
-                        <div className={styles.messageText}>
+                      <div className={styles.messageText}>
                         {msg.file_url && msg.file_name && (
-                      <div className={styles.filePreview}>
-                        <button 
-                          className={styles.downBtn} 
-                          onClick={() => forceDownload(msg.file_url, msg.file_name)}
-                        >
-                          {msg.file_name} ({formatBytes(msg.file_size || 0)})
-                        </button>
+                          <div className={styles.filePreview}>
+                            {/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.file_name) ? (
+                              <img 
+                                src={`${API}${msg.file_url}`} 
+                                alt={msg.file_name} 
+                                className={styles.chatImage} 
+                              />
+                            ) : (
+                              <button 
+                                className={styles.downBtn} 
+                                onClick={() => forceDownload(msg.file_url, msg.file_name)}
+                              >
+                                {msg.file_name} ({formatBytes(msg.file_size || 0)})
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        {!msg.file_url && convertTextToLink(msg.content || '내용 없음')}
                       </div>
-                    )}
-                    {!msg.file_url && convertTextToLink(msg.content || '내용 없음')}
-                        </div>
                         <div className={styles.messageMeta}>
                           <span className={styles.time}>
                             {msg.time

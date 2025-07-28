@@ -287,7 +287,7 @@ const Section2 = () => {
       if (item.type.startsWith("image/")) {
         const file = item.getAsFile();
         setSelectedFile(file);
-        console.log("📸 붙여넣은 이미지:", file.name);
+        // console.log("📸 붙여넣은 이미지:", file.name);
       }
     }
   };
@@ -525,7 +525,7 @@ const Section2 = () => {
                               src={`${API}${msg.file_url}`} 
                               alt={msg.file_name} 
                               className={styles.chatImage} 
-                              onClick={() => window.open(`${API}${msg.file_url}`, '_blank')}
+                              onClick={() => window.open(url, '_blank', 'width=600,height=400')}
                             />
                           ) : (
                             <button 

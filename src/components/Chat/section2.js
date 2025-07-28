@@ -145,10 +145,10 @@ const Section2 = () => {
 
   // 사용자 선택 시 메시지 로드
   useEffect(() => {
-    if (selectedUser) {
-      loadMessages(username, selectedUser.username, setMessages);
+    if (selectedUser && socket) {
+      loadMessages(username, selectedUser.username, socket, setMessages);
     }
-  }, [selectedUser]);
+  }, [selectedUser, socket]);
 
   useEffect(() => {
     if (socket && username && selectedUser) {

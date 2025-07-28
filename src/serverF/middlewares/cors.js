@@ -185,28 +185,24 @@ const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
 };
 
 // 개선된 메시지 로드 함수
-const loadMessages = async (username, targetUsername, socket, setMessages) => {
+const loadMessages = async (username, targetUsername, socket = null, setMessages) => {
   try {
-    // 읽음 처리 먼저 실행 (에러 무시)
-    await markMessagesAsRead(targetUsername, username, socket);
-    
-    // 메시지 가져오기
+    if (socket) {
+      await markMessagesAsRead(targetUsername, username, socket);
+    }
+
     const messages = await apiRequestWithRetry(
       `${API}/api/messages?username=${encodeURIComponent(username)}&target=${encodeURIComponent(targetUsername)}`
     );
-    
+
     const rawMessages = Array.isArray(messages) ? messages : [];
-    
-    // 중복 제거 후 시간순 정렬
     const uniqueMessages = removeDuplicateMessagesAdvanced(rawMessages)
       .sort((a, b) => new Date(a.time) - new Date(b.time));
-    
+
     setMessages(uniqueMessages);
-    
   } catch (error) {
     console.error("❌ 메시지 로드 실패:", error);
     setMessages([]);
-    throw error;
   }
 };
 

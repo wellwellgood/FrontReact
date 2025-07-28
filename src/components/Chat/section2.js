@@ -174,7 +174,7 @@ const Section2 = () => {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        const res = await axios.post(`${API}/api/chat-upload`, formData, {
+        const res = await axios.post(`${API}/api/chat-upload/upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
@@ -194,7 +194,7 @@ const Section2 = () => {
         read: false,   // ✅ 항상 false로 초기화
       };
 
-      const savedMessage = await sendMessage(messageData);
+      const savedMessage = await axios.post(`${API}/api/chat-upload/save`, messageData);
       setMessages(prev => addMessageWithDeduplication(prev, savedMessage));
 
       setInput("");

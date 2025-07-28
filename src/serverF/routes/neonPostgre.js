@@ -22,17 +22,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // ✅ 채팅 파일 업로드 전용
-router.post("/", upload.single("file"), (req, res) => {
-
-  console.log('📂 업로드된 파일 URL:', `/uploads/chat/${filename}`);
-
+router.post("/upload", upload.single("file"), (req, res) => {
   try {
     const filePath = `/uploads/chat/${req.file.filename}`;
     console.log("📂 채팅 파일 업로드:", req.file.filename);
 
     res.status(200).json({
       success: true,
-      url: `/uploads/chat/${req.file.filename}`,
+      url: filePath,
       file_name: req.file.originalname,
       file_size: req.file.size
     });
@@ -42,18 +39,24 @@ router.post("/", upload.single("file"), (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+// ✅ 메시지 DB 저장 라우트
+router.post("/save", async (req, res) => {
+  try {
     const { sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size } = req.body;
-  
+
     const result = await pool.query(
       `INSERT INTO messages 
-      (sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size, read)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,false)
-      RETURNING *`,
+       (sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size, read)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,false)
+       RETURNING *`,
       [sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size]
     );
-  
+
     res.json(result.rows[0]);
-  });
+  } catch (err) {
+    console.error("❌ 메시지 저장 실패:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 export default router;

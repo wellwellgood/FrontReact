@@ -516,7 +516,7 @@ const Section2 = () => {
                               </button>
                             </div>
                           )}
-                          {convertTextToLink(msg.content || '내용 없음')}
+                          /*{convertTextToLink(msg.content || '내용 없음')}*/
                         </div>
                         <div className={styles.messageMeta}>
                           <span className={styles.time}>

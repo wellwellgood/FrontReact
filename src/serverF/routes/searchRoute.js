@@ -55,4 +55,13 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/api/search", async (req, res) => {
+    const q = req.query.q || "";
+    const result = await pool.query(
+        "SELECT title, category FROM items WHERE title ILIKE $1 LIMIT $10",
+        ['%$[q]%']
+    );
+    res.json(result.rows);
+})
+
 export default router;

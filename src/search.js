@@ -176,7 +176,6 @@ const Search = () => {
       <div className={styles.topbarContainer}>
         <div className={styles.search}>
           <form onSubmit={handleSearch} className={styles.searchForm}>
-          <span className={styles.cursor}></span>
             <input
               type="text"
               value={searchText}
@@ -184,6 +183,7 @@ const Search = () => {
               placeholder="검색어 입력..."
               className={styles.searchInput}
             />
+            <span className={styles.cursor}></span>
             <button type="submit" className={styles.searchButton}>
               <FaSearch />
             </button>

@@ -25,8 +25,6 @@ const upload = multer({ storage });
 router.post("/upload", upload.single("file"), (req, res) => {
   try {
     const filePath = `/uploads/chat/${req.file.filename}`;
-    console.log("📂 채팅 파일 업로드:", req.file.filename);
-
     res.status(200).json({
       success: true,
       url: filePath,
@@ -34,7 +32,6 @@ router.post("/upload", upload.single("file"), (req, res) => {
       file_size: req.file.size
     });
   } catch (err) {
-    console.error("❌ 채팅 파일 업로드 실패:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

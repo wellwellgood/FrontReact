@@ -49,8 +49,9 @@ try {
   app.use("/api/messages", messageRoute.default);
 
   const chatUploadRouter = await import("./routes/neonPostgre.js");
-  app.use("/api/chat-upload", chatUploadRouter.default);  // ✅ 라우트 등록
+  app.use("/api/chat-upload", chatUploadRouter);  // ✅ 라우트 등록
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 
 
 } catch (error) {

@@ -183,14 +183,14 @@ const Section2 = () => {
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
-  
+      
         const res = await axios.post(`${API}/api/chat-upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-  
-        fileUrl = res.data.url;       // 서버에서 반환한 URL
-        fileName = selectedFile.name;
-        fileSize = selectedFile.size;
+      
+        fileUrl = res.data.url;              // ✅ 서버 응답 사용
+        fileName = res.data.file_name;       // ✅ 서버 응답 사용
+        fileSize = res.data.file_size;
       }
 
       // 메시지 데이터 준비

@@ -4,6 +4,7 @@ dotenv.config();
 import http from "http";
 import express from "express";
 import cors from "cors";
+import path from "path";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./DB.mjs";
 import initDB from "./initDB.js";
@@ -48,7 +49,9 @@ try {
   app.use("/api/messages", messageRoute.default);
 
   const chatUploadRouter = await import("./routes/neonPostgre.js");
-  app.use("/api/chat/upload", chatUploadRouter);
+  app.use("/api/chat-upload", chatUploadRouter.default);  // ✅ 라우트 등록
+  app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 
 } catch (error) {
   console.error("❌ 라우트 로드 실패:", error);

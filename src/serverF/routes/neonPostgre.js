@@ -29,7 +29,7 @@ router.post("/", upload.single("file"), (req, res) => {
 
     res.status(200).json({
       success: true,
-      url: filePath, // 프론트에서 file_url로 저장
+      url: `/uploads/chat/${req.file.filename}`,
       file_name: req.file.originalname,
       file_size: req.file.size
     });

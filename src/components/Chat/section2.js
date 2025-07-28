@@ -218,7 +218,7 @@ const Section2 = () => {
         fileInputRef.current.value = "";
       }
 
-      console.log("📤 메시지 전송 완료:", savedMessage.id);
+      // console.log("📤 메시지 전송 완료:", savedMessage.id);
 
     } catch (err) {
       console.error("❌ 메시지 전송 실패:", err);
@@ -251,7 +251,6 @@ const Section2 = () => {
 
   // 필터링된 메시지 가져오기
   const getFilteredMessages = () => {
-    console.log("📂 메시지 데이터:", messages);
     if (!selectedUser) return [];
     
     const filtered = messages.filter(msg =>
@@ -517,7 +516,7 @@ const Section2 = () => {
                               </button>
                             </div>
                           )}
-                          {convertTextToLink(msg.content || '내용 없음')}
+                          /*{convertTextToLink(msg.content || '내용 없음')}*/
                         </div>
                         <div className={styles.messageMeta}>
                           <span className={styles.time}>

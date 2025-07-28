@@ -35,7 +35,18 @@
   justify-content: space-between;
   padding: 10px;
 }
+.searchForm .searchInput:focus{
+  content: '';
+  width: 1px;
+  height: 38px;
+  background: #fff;
+  animation: bar 1s linear infinite;
+}
 
+@keyframes bar{
+  0% {width: 0;}
+  100%{width: 1px;}
+}
 .searchbox {
   background: transparent;
   border: none;

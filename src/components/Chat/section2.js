@@ -104,7 +104,7 @@ const Section2 = () => {
     });
   
     s.on("message", (msg) => {
-      console.log("📥 수신된 메시지:", msg);
+      console.log("📥 수신 메시지:", msg);
       setMessages(prev => addMessageWithDeduplication(prev, msg));
     });
   
@@ -146,7 +146,7 @@ const Section2 = () => {
   // 사용자 선택 시 메시지 로드
   useEffect(() => {
     if (selectedUser) {
-      setReadMessages(new Set());
+      loadMessages(username, selectedUser.username, setMessages);
     }
   }, [selectedUser]);
 

@@ -26,6 +26,8 @@ const Search = () => {
     const storedImage = sessionStorage.getItem("profileImage");
     const storedUsername = sessionStorage.getItem("username");
     const receiverUsername = sessionStorage.getItem("receiver_username");
+    const input = document.getElementById("searchInput");
+    const wrapper = document.querySelector(".inputWrapper");
 
     if (!storedUsername) return;
 
@@ -164,6 +166,12 @@ const Search = () => {
     console.log("🔍 검색 실행:", searchText);
   };
 
+  
+input.addEventListener("input", () => {
+  const textWidth = input.value.length * 9; // 글자 폭 대충 계산
+  wrapper.style.setProperty("--cursor-pos", `${textWidth + 12}px`);
+});
+
   return (
     <>
     {/* ✅ 설정창이 중앙에 떠야 하니까 topbar 바깥에 둬야 함 */}
@@ -176,14 +184,15 @@ const Search = () => {
       <div className={styles.topbarContainer}>
         <div className={styles.search}>
           <form onSubmit={handleSearch} className={styles.searchForm}>
+           <div className={styles.inputWrapper}>
             <input
-              type="text"
-              value={searchText}
-              onChange={handleInputChange}
-              placeholder="검색어 입력..."
-              className={styles.searchInput}
-            />
-            <span className={styles.cursor}></span>
+                type="text"
+                value={searchText}
+                onChange={handleInputChange}
+                placeholder="검색어 입력..."
+                className={styles.searchInput}
+              />
+           </div>
             <button type="submit" className={styles.searchButton}>
               <FaSearch />
             </button>

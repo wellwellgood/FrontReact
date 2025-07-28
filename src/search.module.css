@@ -35,15 +35,35 @@
   justify-content: space-between;
   padding: 10px;
 }
-.cursor{
-  content: '';
-  width: 1px;
-  height: 20px;
-  background: #fff;
-  animation: bar 1s linear infinite;
+.inputWrapper {
+  position: relative;
+  display: inline-block;
+  background: #222;
+  border-radius: 20px;
+  padding: 8px 12px;
 }
 
-@keyframes bar{
+.inputWrapper input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+.inputWrapper::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 60%;
+  width: 2px;
+  background: #fff;
+  transform: translateY(-50%);
+  left: 12px; /* 기본 위치 */
+  animation: blink 1s infinite;
+}
+
+@keyframes blink{
   0% {opacity: 0;}
   50% {opacity: 1;}
   100%{opacity: 0;}

@@ -506,17 +506,17 @@ const Section2 = () => {
                     <div className={styles.bubbleWrapper}>
                       <div className={styles.messageBubble}>
                         <div className={styles.messageText}>
-                          {msg.file_url && msg.file_name && (
-                            <div className={styles.filePreview}>
-                              <button 
-                                className={styles.downBtn} 
-                                onClick={() => forceDownload(msg.file_url, msg.file_name)}
-                              >
-                                {msg.file_name} ({formatBytes(msg.file_size || 0)})
-                              </button>
-                            </div>
-                          )}
-                          //{convertTextToLink(msg.content || '내용 없음')}
+                        {msg.file_url && msg.file_name && (
+                      <div className={styles.filePreview}>
+                        <button 
+                          className={styles.downBtn} 
+                          onClick={() => forceDownload(msg.file_url, msg.file_name)}
+                        >
+                          {msg.file_name} ({formatBytes(msg.file_size || 0)})
+                        </button>
+                      </div>
+                    )}
+                    {!msg.file_url && convertTextToLink(msg.content || '내용 없음')}
                         </div>
                         <div className={styles.messageMeta}>
                           <span className={styles.time}>

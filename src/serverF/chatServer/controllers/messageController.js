@@ -54,6 +54,9 @@ const getMessages = async (req, res) => {
       [username, target]
     );
 
+    // ✅ 여기서 rows 출력
+    // console.log("📂 메시지 file_url:", result.rows.map(m => m.file_url));
+
     res.status(200).json(result.rows);
   } catch (err) {
     console.error("❌ 메시지 조회 실패:", err);

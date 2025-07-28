@@ -61,7 +61,7 @@ router.get("/", async (req, res) => {
         };
       });
 
-    console.log("📂 Firebase 파일 목록:", fileList);
+    // console.log("📂 Firebase 파일 목록:", fileList);
     res.status(200).json({ success: true, files: fileList });
   } catch (err) {
     console.error("🔥 파일 목록 불러오기 실패:", err);

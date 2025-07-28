@@ -5,8 +5,6 @@ import styles from "./section2.module.css";
 import Search from "../../search.js";
 import { useNavigate } from "react-router-dom";
 import { FaPaperclip } from "react-icons/fa";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebase/firebase.js";
 import AccountSetting from '../../AccountSetting.js';
 import Logo from "../../image/logo.png";
 import { 
@@ -17,6 +15,7 @@ import {
   addMessageWithDeduplication,
   API
 } from '../../serverF/middlewares/cors.js';
+
 
 const Section2 = () => {
   const navigate = useNavigate();
@@ -185,7 +184,7 @@ const Section2 = () => {
         const formData = new FormData();
         formData.append("file", selectedFile);
   
-        const res = await axios.post(`${API}/api/upload`, formData, {
+        const res = await axios.post(`${API}/api/chat-upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
   

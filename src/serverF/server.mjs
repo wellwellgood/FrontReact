@@ -46,7 +46,10 @@ try {
 
   const messageRoute = await import("./routes/message.js");
   app.use("/api/messages", messageRoute.default);
-  
+
+  const chatUploadRouter = await import("./routes/neonPostgre.js");
+  app.use("/api/chat/upload", chatUploadRouter);
+
 } catch (error) {
   console.error("❌ 라우트 로드 실패:", error);
 }

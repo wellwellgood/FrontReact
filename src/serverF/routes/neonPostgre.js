@@ -23,6 +23,9 @@ const upload = multer({ storage });
 
 // ✅ 채팅 파일 업로드 전용
 router.post("/", upload.single("file"), (req, res) => {
+
+  console.log('📂 업로드된 파일 URL:', `/uploads/chat/${filename}`);
+
   try {
     const filePath = `/uploads/chat/${req.file.filename}`;
     console.log("📂 채팅 파일 업로드:", req.file.filename);

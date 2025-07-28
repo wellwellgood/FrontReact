@@ -39,4 +39,18 @@ router.post("/", upload.single("file"), (req, res) => {
   }
 });
 
+router.post("/", async (req, res) => {
+    const { sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size } = req.body;
+  
+    const result = await pool.query(
+      `INSERT INTO messages 
+      (sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size, read)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,false)
+      RETURNING *`,
+      [sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size]
+    );
+  
+    res.json(result.rows[0]);
+  });
+
 export default router;

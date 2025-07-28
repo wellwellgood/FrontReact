@@ -513,6 +513,7 @@ const Section2 = () => {
                               alt={msg.file_name} 
                               className={styles.chatImage} 
                               onClick={() => window.open(getAbsoluteUrl(msg.file_url), '_blank', 'width=600,height=400')}
+                              
                             />
                           ) : (
                             <button 

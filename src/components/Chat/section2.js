@@ -198,7 +198,7 @@ const Section2 = () => {
         sender_username: username,
         receiver_username: selectedUser.username,
         receiver_name: selectedUser.name,
-        content: input.trim() || "[파일]",
+        // content: input.trim() || "[파일]",
         file_url: fileUrl,
         file_name: fileName,
         file_size: fileSize,
@@ -516,7 +516,7 @@ const Section2 = () => {
                               </button>
                             </div>
                           )}
-                          /*{convertTextToLink(msg.content || '내용 없음')}*/
+                          {convertTextToLink(msg.content || '내용 없음')}
                         </div>
                         <div className={styles.messageMeta}>
                           <span className={styles.time}>

@@ -43,6 +43,7 @@ const Section2 = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState({ status: 'disconnected' });
+  // const [handleChatFileUpload , setHandleChatFileUpload] = useState(null);
 
   // 연결 상태 모니터링
   useEffect(() => {
@@ -85,32 +86,30 @@ const Section2 = () => {
   }, [messages, selectedUser]);
 
 
-  const handleProfileUpload = async () => {
-    if (!selectedFile) return;
-  
-    const currentUsername = sessionStorage.getItem('username');
+  const handleChatFileUpload = async (file) => {
     const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('username', currentUsername);
-  
-    console.log('📤 업로드 시작', selectedFile, currentUsername);
-  
-    try {
-      const res = await fetch('/upload-profile', {
-        method: 'POST',
-        body: formData,
+    formData.append('file', file);
+    formData.append('roomId', selectedUser?.username || 'defaultRoom');
+    formData.append('sender', username);
+    
+    const res = await fetch(`${API}/upload-chat`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      console.log('✅ 채팅 파일 업로드 성공:', data.url);
+      // ✅ 소켓으로 새 메시지 전송
+      socket.emit('chatMessage', {
+        roomId: currentRoomId,
+        sender: currentUsername,
+        type: 'file',
+        content: data.url,
       });
-      const data = await res.json();
-      console.log('✅ 서버 응답:', data);
-      if (data.success) {
-        sessionStorage.setItem('profileImage', data.url);
-      } else {
-        console.error('업로드 실패:', data.error);
-      }
-    } catch (err) {
-      console.error('❌ Fetch 에러:', err);
     }
   };
+  
 
 
   // 소켓 연결 및 메시지 수신 처리
@@ -205,13 +204,14 @@ const Section2 = () => {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        const res = await axios.post(`${API}/api/chat-upload/upload`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        const res = await fetch(`${API}/upload-chat`, {
+          method: 'POST',
+          body: formData,
         });
-
-        fileUrl = res.data.url;
-        fileName = res.data.file_name;
-        fileSize = res.data.file_size;
+        const data = await res.json();
+        fileUrl = data.url;
+        fileName = selectedFile.name;
+        fileSize = selectedFile.size;
       }
 
       const messageData = {
@@ -608,7 +608,7 @@ const Section2 = () => {
               ref={fileInputRef}
               onChange={(e) => {
                 setSelectedFile(e.target.files[0]);
-                handleProfileUpload();
+                handleChatFileUpload(e.target.files[0]);  
               }}
               style={{ display: "none" }}
             />

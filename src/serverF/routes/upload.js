@@ -1,26 +1,24 @@
 import express from 'express';
 import multer from 'multer';
-import r2 from '../uploads/chat/R2.js';
-import db from '../routes/neonPostgre.js';
+import r2 from '../r2.js';
+import db from '../db.js';  // Neon PostgreSQL 연결
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });  // ✅ 메모리 스토리지
+const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/upload-profile', upload.single('file'), async (req, res) => {
-  console.log('📥 업로드 요청 받음');
-  console.log('req.file:', req.file);
-  console.log('req.body.username:', req.body.username);
-
-  if (!req.file) {
-    return res.status(400).json({ success: false, error: '파일 없음' });
-  }
-
-  const file = req.file;
-  const username = req.body.username;
-  const key = `profiles/${Date.now()}-${file.originalname}`;
-
+router.post('/upload-chat', upload.single('file'), async (req, res) => {
   try {
-    // ✅ R2 업로드
+    const file = req.file;
+    const roomId = req.body.roomId;
+    const sender = req.body.sender;
+
+    if (!file) {
+      return res.status(400).json({ success: false, error: '파일 없음' });
+    }
+
+    const key = `chat/${roomId}/${Date.now()}-${file.originalname}`;
+
+    // ✅ R2에 업로드
     await r2.putObject({
       Bucket: process.env.R2_BUCKET,
       Key: key,
@@ -28,19 +26,17 @@ router.post('/upload-profile', upload.single('file'), async (req, res) => {
       ContentType: file.mimetype,
     }).promise();
 
-    console.log('✅ R2 업로드 성공:', key);
-
     const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`;
 
-    // ✅ Neon DB에 URL 저장
+    // ✅ 채팅 DB에 URL 저장
     await db.query(
-      'UPDATE users SET profile_image=$1 WHERE username=$2',
-      [fileUrl, username]
+      'INSERT INTO chat_messages (room_id, sender, message_type, content) VALUES ($1, $2, $3, $4)',
+      [roomId, sender, 'file', fileUrl]
     );
 
     res.json({ success: true, url: fileUrl });
   } catch (err) {
-    console.error('❌ R2 업로드 실패:', err);
+    console.error('❌ 채팅 파일 업로드 실패:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

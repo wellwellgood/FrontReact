@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import r2 from '../r2.js';
-import db from '../db.js';  // Neon PostgreSQL 연결
+import r2 from '../uploads/chat/R2.js';
+import db from '../routes/neonPostgre.js';  // Neon PostgreSQL 연결
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });

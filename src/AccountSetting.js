@@ -28,6 +28,7 @@ const AccountSetting = ({ onClose }) => {
       reader.onloadend = () => {
         setProfileImage(reader.result);
         localStorage.setItem('profileImage', reader.result);
+        sessionStorage.setItem('profileImage', reader.result);
       };
       reader.readAsDataURL(file);
     }

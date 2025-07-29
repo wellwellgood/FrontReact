@@ -37,6 +37,15 @@ const Search = () => {
     axios.get(`/api/users/${storedUsername}`)
       .then(res => setUser(res.data))
       .catch(err => console.error("유저 로드 실패:", err));
+
+      // ✅ storage 이벤트로 실시간 이미지 반영
+    const handleStorageChange = (e) => {
+      if (e.key === "profileImage") {
+        setProfileImage(e.newValue);
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   // ✅ 디바운스 검색 API

@@ -28,17 +28,17 @@ const Search = () => {
     const storedImage = sessionStorage.getItem("profileImage");
     const storedUsername = sessionStorage.getItem("username");
     const receiverUsername = sessionStorage.getItem("receiver_username");
-
+  
     if (!storedUsername) return;
-
+  
     setProfileImage(storedImage);
     setUsername(receiverUsername || storedUsername);
-
+  
     axios.get(`/api/users/${storedUsername}`)
       .then(res => setUser(res.data))
       .catch(err => console.error("유저 로드 실패:", err));
-
-      // ✅ storage 이벤트로 실시간 이미지 반영
+  
+    // ✅ storage 이벤트 실시간 반영
     const handleStorageChange = (e) => {
       if (e.key === "profileImage") {
         setProfileImage(e.newValue);
@@ -164,9 +164,6 @@ const Search = () => {
           <div className={styles.userInfoBox}>
             <img
               className={styles.profileImage}
-              // src={user.profile_image
-              //   ? `https://react-server-wmqa.onrender.com${profileImage}`
-              //   : personIcon}
               src={profileImage || personIcon}
               onClick={handleProfileClick}
               alt="프로필"

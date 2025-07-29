@@ -27,21 +27,34 @@ const AccountSetting = ({ onClose }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
+  
+        // ✅ 미리 저장해서 실시간 반영 가능
         localStorage.setItem('profileImage', reader.result);
         sessionStorage.setItem('profileImage', reader.result);
+  
+        // ✅ storage 이벤트 강제로 발생시켜서 Search에 즉시 전달
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'profileImage',
+          newValue: reader.result
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
-
+  
   const handleSave = () => {
     localStorage.setItem('email', email);
     localStorage.setItem('bio', bio);
     localStorage.setItem('chatAlert', chatAlert);
     localStorage.setItem('pushAlert', pushAlert);
     localStorage.setItem('highContrast', highContrast);
+  
+    // ✅ 최종 저장 시 profileImage도 다시 동기화
+    localStorage.setItem('profileImage', profileImage);
+    sessionStorage.setItem('profileImage', profileImage);
     alert('설정이 저장되었습니다.');
   };
+  
 
   return (
     <div className={styles.containerStyle}>

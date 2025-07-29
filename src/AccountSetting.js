@@ -4,7 +4,8 @@ import styles from './AccountSetting.module.css'
 const AccountSetting = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('profile');
 
-  const [profileImage, setProfileImage] = useState(localStorage.getItem('profileImage') || null);
+  const userKey = localStorage.getItem('username') || 'defaultUser';
+  const [profileImage, setProfileImage] = useState(localStorage.getItem(`profileImage_${userKey}`) || null);
   const [email, setEmail] = useState(localStorage.getItem('email') || '');
   const [bio, setBio] = useState(localStorage.getItem('bio') || '');
   const [password, setPassword] = useState('');

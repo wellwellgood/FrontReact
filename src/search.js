@@ -26,7 +26,7 @@ const Search = () => {
   // ✅ 유저 정보 로드
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
-    const currentUser = sessionStorage.getItem("username") || 'defaultUser';
+    const currentUser = storedUsername || 'defaultUser';
     const storedImage = sessionStorage.getItem(`profileImage_${currentUser}`);
     const receiverUsername = sessionStorage.getItem("receiver_username");
   

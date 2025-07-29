@@ -4,7 +4,7 @@ import styles from './AccountSetting.module.css'
 const AccountSetting = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('profile');
 
-  const userKey = localStorage.getItem('username') || 'defaultUser';
+  // const userKey = localStorage.getItem('username') || 'defaultUser';
   const [profileImage, setProfileImage] = useState(localStorage.getItem(`profileImage_${userKey}`) || null);
   const [email, setEmail] = useState(localStorage.getItem('email') || '');
   const [bio, setBio] = useState(localStorage.getItem('bio') || '');
@@ -14,6 +14,7 @@ const AccountSetting = ({ onClose }) => {
   const [pushAlert, setPushAlert] = useState(localStorage.getItem('pushAlert') === 'true');
   const [highContrast, setHighContrast] = useState(localStorage.getItem('highContrast') === 'true');
   const [username, setUsername] = useState(localStorage.getItem('username') || '');
+  const userKey = sessionStorage.getItem('username') || localStorage.getItem('username') || 'defaultUser';
 
   useEffect(() => {
     document.documentElement.setAttribute(

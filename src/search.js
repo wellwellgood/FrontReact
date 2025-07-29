@@ -31,6 +31,7 @@ const Search = () => {
     const storedImage = sessionStorage.getItem(`profileImage_${currentUser}`) 
                         || localStorage.getItem(`profileImage_${currentUser}`);
     const receiverUsername = sessionStorage.getItem("receiver_username");
+    const userKey = sessionStorage.getItem('username') || localStorage.getItem('username') || 'defaultUser';
   
     if (!storedUsername) return;
   

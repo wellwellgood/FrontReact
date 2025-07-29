@@ -68,6 +68,7 @@ function LoginPage() {
       const { accessToken, username, name } = response.data;
   
       sessionStorage.setItem("username", username);
+      localStorage.setItem("username", username);
       sessionStorage.setItem("name", name);
       sessionStorage.setItem("userToken", accessToken);
   

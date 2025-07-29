@@ -3,6 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import { dbPool } from "../DB.mjs"; 
 
 const router = Router();
 
@@ -41,7 +42,7 @@ router.post("/save", async (req, res) => {
   try {
     const { sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size } = req.body;
 
-    const result = await pool.query(
+    const result = await dbPool.query(
       `INSERT INTO messages 
        (sender_username, receiver_username, receiver_name, content, file_url, file_name, file_size, read)
        VALUES ($1,$2,$3,$4,$5,$6,$7,false)

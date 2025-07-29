@@ -21,6 +21,16 @@ const AccountSetting = ({ onClose }) => {
     );
   }, [highContrast]);
 
+  
+  useEffect(() => {
+      const handleStorageClear = () => {
+        const clearedImage = localStorage.getItem('profileImage');
+        setProfileImage(clearedImage || null);
+      };
+      window.addEventListener('storage', handleStorageClear);
+      return () => window.removeEventListener('storage', handleStorageClear);
+    }, []);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {

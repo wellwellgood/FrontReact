@@ -47,7 +47,13 @@ try {
 
   // ✅ 여기 수정: .default 붙여서 라우터 등록
   const chatUploadRouterModule = await import("./routes/neonPostgre.js");
-  app.use("/api/chat-upload", chatUploadRouterModule.default);
+
+  if (chatUploadRouterModule.default) {
+    console.log("✅ chatUploadRouter 타입:", typeof chatUploadRouterModule.default);
+    app.use("/api/chat-upload", chatUploadRouterModule.default);
+  } else {
+    console.error("❌ chatUploadRouter 불러오기 실패:", chatUploadRouterModule);
+  }
 
   // ✅ 정적 파일 경로
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));

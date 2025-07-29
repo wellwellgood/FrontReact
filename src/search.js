@@ -25,9 +25,11 @@ const Search = () => {
 
   // ✅ 유저 정보 로드
   useEffect(() => {
-    const storedUsername = sessionStorage.getItem("username");
-    const currentUser = storedUsername || 'defaultUser';
-    const storedImage = sessionStorage.getItem(`profileImage_${currentUser}`);
+    const storedUsername = sessionStorage.getItem("username") || localStorage.getItem("username");
+    if (!storedUsername) return;  // ✅ username이 없으면 중단
+    const currentUser = storedUsername;
+    const storedImage = sessionStorage.getItem(`profileImage_${currentUser}`) 
+                        || localStorage.getItem(`profileImage_${currentUser}`);
     const receiverUsername = sessionStorage.getItem("receiver_username");
   
     if (!storedUsername) return;

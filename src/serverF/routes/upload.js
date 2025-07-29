@@ -14,25 +14,28 @@ router.post('/upload-profile', upload.single('file'), async (req, res) => {
 
     // ✅ R2 업로드
     await r2.putObject({
-      Bucket: process.env.R2_BUCKET,
-      Key: key,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-    }).promise();
+        Bucket: process.env.R2_BUCKET,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      }).promise();
 
-    const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`;
+      console.log('✅ R2 업로드 성공:', key);
+
+
+      const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`;
 
     // ✅ Neon DB 업데이트 (users 테이블에 profile_image 컬럼 있다고 가정)
     await db.query(
-      'UPDATE users SET profile_image = $1 WHERE username = $2',
-      [fileUrl, username]
-    );
+        'UPDATE users SET profile_image=$1 WHERE username=$2',
+        [fileUrl, username]
+      );
 
-    res.json({ success: true, url: fileUrl });
-  } catch (err) {
-    console.error('R2 업로드 실패:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
+      res.json({ success: true, url: fileUrl });
+    } catch (err) {
+      console.error('❌ R2 업로드 실패:', err);
+      res.status(500).json({ success: false, error: 'R2 업로드 실패' });
+    }
 });
 
 export default router;

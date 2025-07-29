@@ -9,4 +9,5 @@ const r2 = new AWS.S3({
   signatureVersion: 'v4',
 });
 
+
 export default r2;

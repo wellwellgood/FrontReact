@@ -25,9 +25,8 @@ const Search = () => {
 
   // ✅ 유저 정보 로드
   useEffect(() => {
-    const storedImage = sessionStorage.getItem("profileImage");
-    const storedUsername = sessionStorage.getItem("username");
-    const receiverUsername = sessionStorage.getItem("receiver_username");
+    const currentUser = sessionStorage.getItem("username") || 'defaultUser';
+    const storedImage = sessionStorage.getItem(`profileImage_${currentUser}`);
   
     if (!storedUsername) return;
   
@@ -40,7 +39,7 @@ const Search = () => {
   
     // ✅ storage 이벤트 실시간 반영
     const handleStorageChange = (e) => {
-      if (e.key === "profileImage") {
+      if (e.key === `profileImage_${currentUser}`) {
         setProfileImage(e.newValue);
       }
     };

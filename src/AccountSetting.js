@@ -25,6 +25,7 @@ const AccountSetting = ({ onClose }) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
+      const userKey = localStorage.getItem('username') || 'defaultUser';
       reader.onloadend = () => {
         const img = new Image();
         img.onload = () => {
@@ -36,12 +37,12 @@ const AccountSetting = ({ onClose }) => {
         setProfileImage(reader.result);
   
         // ✅ 미리 저장해서 실시간 반영 가능
-        localStorage.setItem('profileImage', reader.result);
-        sessionStorage.setItem('profileImage', reader.result);
+        localStorage.setItem(`profileImage_${userKey}`, reader.result);
+        sessionStorage.setItem(`profileImage_${userKey}`, reader.result);
   
         // ✅ storage 이벤트 강제로 발생시켜서 Search에 즉시 전달
         window.dispatchEvent(new StorageEvent('storage', {
-          key: 'profileImage',
+          key: `profileImage_${userKey}`,
           newValue: reader.result
         }));
       };
@@ -50,6 +51,7 @@ const AccountSetting = ({ onClose }) => {
   };
   
   const handleSave = () => {
+    const userKey = localStorage.getItem('username') || 'defaultUser';
     localStorage.setItem('email', email);
     localStorage.setItem('bio', bio);
     localStorage.setItem('chatAlert', chatAlert);
@@ -57,8 +59,8 @@ const AccountSetting = ({ onClose }) => {
     localStorage.setItem('highContrast', highContrast);
   
     // ✅ 최종 저장 시 profileImage도 다시 동기화
-    localStorage.setItem('profileImage', profileImage);
-    sessionStorage.setItem('profileImage', profileImage);
+    localStorage.setItem(`profileImage_${userKey}`, profileImage);
+    sessionStorage.setItem(`profileImage_${userKey}`, profileImage);
     alert('설정이 저장되었습니다.');
   };
   

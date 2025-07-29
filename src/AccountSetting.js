@@ -24,9 +24,12 @@ const AccountSetting = ({ onClose }) => {
 
   
   useEffect(() => {
-      const handleStorageClear = () => {
-        const clearedImage = localStorage.getItem('profileImage');
-        setProfileImage(clearedImage || null);
+      const userKey = localStorage.getItem('username') || 'defaultUser';
+      const handleStorageClear = (e) => {
+        if (e.key === `profileImage_${userKey}`) {
+          const clearedImage = localStorage.getItem(`profileImage_${userKey}`);
+          setProfileImage(clearedImage || null);
+        }
       };
       window.addEventListener('storage', handleStorageClear);
       return () => window.removeEventListener('storage', handleStorageClear);

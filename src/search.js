@@ -28,11 +28,12 @@ const Search = () => {
     const storedUsername = sessionStorage.getItem("username");
     const currentUser = sessionStorage.getItem("username") || 'defaultUser';
     const storedImage = sessionStorage.getItem(`profileImage_${currentUser}`);
+    const receiverUsername = sessionStorage.getItem("receiver_username");
   
     if (!storedUsername) return;
   
     setProfileImage(storedImage);
-    setUsername(receiverUsername || storedUsername);
+    setUsername(receiverUsername ? receiverUsername : storedUsername);
   
     axios.get(`/api/users/${storedUsername}`)
       .then(res => setUser(res.data))

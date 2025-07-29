@@ -84,6 +84,35 @@ const Section2 = () => {
     }
   }, [messages, selectedUser]);
 
+
+  const handleProfileUpload = async () => {
+    if (!selectedFile) return;
+  
+    const currentUsername = sessionStorage.getItem('username');
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('username', currentUsername);
+  
+    console.log('📤 업로드 시작', selectedFile, currentUsername);
+  
+    try {
+      const res = await fetch('/upload-profile', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      console.log('✅ 서버 응답:', data);
+      if (data.success) {
+        sessionStorage.setItem('profileImage', data.url);
+      } else {
+        console.error('업로드 실패:', data.error);
+      }
+    } catch (err) {
+      console.error('❌ Fetch 에러:', err);
+    }
+  };
+
+
   // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
     if (!username) return;
@@ -135,6 +164,8 @@ const Section2 = () => {
       s.disconnect();
     };
   }, [username]);
+  
+  
 
   // 사용자 목록 가져오기
   useEffect(() => {
@@ -575,7 +606,10 @@ const Section2 = () => {
             <input
               type="file"
               ref={fileInputRef}
-              onChange={handleFileSelect}
+              onChange={(e) => {
+                setSelectedFile(e.target.files[0]);
+                handleProfileUpload();
+              }}
               style={{ display: "none" }}
             />
 

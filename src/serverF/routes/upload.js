@@ -1,46 +1,48 @@
 import express from 'express';
 import multer from 'multer';
 import r2 from '../uploads/chat/R2.js';
-import db from '../routes/neonPostgre.js';  // Neon PostgreSQL 연결 모듈
+import db from '../routes/neonPostgre.js';
 
 const router = express.Router();
-const upload = multer();
+const upload = multer({ storage: multer.memoryStorage() });  // ✅ 메모리 스토리지
 
 router.post('/upload-profile', upload.single('file'), async (req, res) => {
-    console.log('📥 업로드 요청 받음');
-    console.log('req.file:', req.file);
-    console.log('req.body.username:', req.body.username);
+  console.log('📥 업로드 요청 받음');
+  console.log('req.file:', req.file);
+  console.log('req.body.username:', req.body.username);
 
-    if (!req.file) {
-        return res.status(400).json({ success: false, error: '파일 없음' });
-      }
-    
-      const key = `profiles/${Date.now()}-${req.file.originalname}`;
+  if (!req.file) {
+    return res.status(400).json({ success: false, error: '파일 없음' });
+  }
+
+  const file = req.file;
+  const username = req.body.username;
+  const key = `profiles/${Date.now()}-${file.originalname}`;
 
   try {
-    const file = req.file;
-    const username = req.body.username;
-    const key = `profiles/${Date.now()}-${file.originalname}`;
-
     // ✅ R2 업로드
     await r2.putObject({
-        Bucket: process.env.R2_BUCKET,
-        Key: key,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-      }).promise();
+      Bucket: process.env.R2_BUCKET,
+      Key: key,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    }).promise();
 
-      console.log('✅ R2 업로드 성공:', key);
+    console.log('✅ R2 업로드 성공:', key);
 
+    const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`;
 
-      const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`;
+    // ✅ Neon DB에 URL 저장
+    await db.query(
+      'UPDATE users SET profile_image=$1 WHERE username=$2',
+      [fileUrl, username]
+    );
 
-    // ✅ Neon DB 업데이트 (users 테이블에 profile_image 컬럼 있다고 가정)
     res.json({ success: true, url: fileUrl });
-    } catch (err) {
-      console.error('❌ R2 업로드 실패:', err);
-      res.status(500).json({ success: false, error: 'R2 업로드 실패' });
-    }
+  } catch (err) {
+    console.error('❌ R2 업로드 실패:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 export default router;

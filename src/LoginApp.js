@@ -10,10 +10,16 @@ function LoginPage() {
   const [PWvalid, setPWvalid] = useState(false);
   const [notAllow, setNotAllow] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
 
   const goToid = () => navigate("/id");
   const goToPassword = () => navigate("/password");
   const goToMembership = () => navigate("/membership");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     console.log("✅ sessionStorage userId:", sessionStorage.getItem("userId"));

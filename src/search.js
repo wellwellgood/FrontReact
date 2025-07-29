@@ -25,15 +25,20 @@ const Search = () => {
 
   // ✅ 유저 정보 로드
   useEffect(() => {
-    const storedUsername = sessionStorage.getItem("username") || localStorage.getItem("username");
-    if (!storedUsername) return;  // ✅ username이 없으면 중단
-    const currentUser = storedUsername;
-    const storedImage = sessionStorage.getItem(`profileImage_${currentUser}`) 
-                        || localStorage.getItem(`profileImage_${currentUser}`);
-    const receiverUsername = sessionStorage.getItem("receiver_username");
-    const userKey = sessionStorage.getItem('username') || localStorage.getItem('username') || 'defaultUser';
+    const getUserKey = () =>
+      sessionStorage.getItem("username") ||
+      localStorage.getItem("username") ||
+      'defaultUser';
   
+    const storedUsername = sessionStorage.getItem("username") || localStorage.getItem("username");
     if (!storedUsername) return;
+  
+    const currentUser = getUserKey();
+    const storedImage =
+      sessionStorage.getItem(`profileImage_${currentUser}`) ||
+      localStorage.getItem(`profileImage_${currentUser}`);
+  
+    const receiverUsername = sessionStorage.getItem("receiver_username");
   
     setProfileImage(storedImage);
     setUsername(receiverUsername ? receiverUsername : storedUsername);
@@ -42,15 +47,15 @@ const Search = () => {
       .then(res => setUser(res.data))
       .catch(err => console.error("유저 로드 실패:", err));
   
-    // ✅ storage 이벤트 실시간 반영
     const handleStorageChange = (e) => {
-      if (e.key === `profileImage_${currentUser}`) {
+      if (e.key === `profileImage_${getUserKey()}`) {
         setProfileImage(e.newValue);
       }
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
+  
 
   // ✅ 디바운스 검색 API
   const fetchSuggestions = useCallback(

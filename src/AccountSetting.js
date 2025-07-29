@@ -43,7 +43,7 @@ const AccountSetting = ({ onClose }) => {
       reader.onloadend = () => {
         const img = new Image();
         img.onload = () => {
-          if(img.width > 100 || img.height > 100) {
+          if(img.width < 100 || img.height < 100) {
             alert('이미지 크기는 100px X 100px 이하로 설정해 주세요')
             return;
           }

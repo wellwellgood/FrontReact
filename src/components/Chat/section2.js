@@ -112,6 +112,20 @@ const Section2 = () => {
   };
   
 
+  const handleDownload = (url) => {
+    try {
+      const link = document.createElement('a');
+      link.href = url;                 // ✅ Signed URL 직접 사용
+      link.download = url.split('/').pop();
+      link.target = '_blank';          // 새 탭에서 열림 (이미지 미리보기 가능)
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('❌ 파일 다운로드 실패:', err);
+    }
+  };
+
 
   // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
@@ -550,7 +564,7 @@ const Section2 = () => {
                           ) : (
                             <button 
                               className={styles.downBtn} 
-                              onClick={() => forceDownload(msg.file_url, msg.file_name)}
+                              onClick={() => handleDownload(msg.file_url, msg.file_name)}
                             >
                               {msg.file_name} ({formatBytes(msg.file_size || 0)})
                             </button>

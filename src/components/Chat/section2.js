@@ -540,7 +540,7 @@ const Section2 = () => {
                         <div className={styles.filePreview}>
                           {/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.file_name) ? (
                             <img 
-                              src={`${API}${msg.file_url}`} 
+                              src={getAbsoluteUrl(msg.file_url)} 
                               alt={msg.file_name} 
                               className={styles.chatImage} 
                               onClick={() => window.open(getAbsoluteUrl(msg.file_url), '_blank', 'width=600,height=400')}

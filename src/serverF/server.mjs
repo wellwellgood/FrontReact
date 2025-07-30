@@ -11,6 +11,7 @@ import initDB from "./initDB.js";
 import corsMiddleware from "./middlewares/cors.js";
 import authRouter from "./routes/auth.js";
 import chatUploadRouter from './routes/upload.js';
+import downloadRoute from './routes/download.js';
 
 try {
   await connectDB();
@@ -47,6 +48,7 @@ try {
   app.use("/api/messages", messageRoute.default);
 
   app.use('/api/upload-chat', chatUploadRouter);
+  app.use('/api/download', downloadRoute);
 
   // ✅ 여기 수정: .default 붙여서 라우터 등록
   const chatUploadRouterModule = await import("./routes/neonPostgre.js");

@@ -563,7 +563,7 @@ const Section2 = () => {
                           ) : (
                             <button 
                               className={styles.downBtn} 
-                              onClick={() => handleDownload(getAbsoluteUrl(msg.file_url), msg.file_name)}
+                              onClick={() => forceDownload(getAbsoluteUrl(msg.file_url), msg.file_name)}
                             >
                               {msg.file_name} ({formatBytes(msg.file_size || 0)})
                             </button>

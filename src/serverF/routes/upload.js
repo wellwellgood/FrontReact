@@ -56,6 +56,17 @@ router.post('/', upload.single('file'), async (req, res) => {
       stack: err.stack 
     });
   }
+
+  router.get('/download', async (req, res) => {
+    const key = req.query.key;
+    const fileStream = r2.getObject({
+      Bucket: process.env.R2_BUCKET,
+      Key: key
+    }).createReadStream();
+  
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(key.split('/').pop())}"`);
+    fileStream.pipe(res);
+  });
 });
 
 export default router;

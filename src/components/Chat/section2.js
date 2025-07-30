@@ -89,23 +89,24 @@ const Section2 = () => {
   const handleChatFileUpload = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('roomId', selectedUser?.username ? selectedUser.username : 'defaultRoom');
+    formData.append('roomId', selectedUser?.username || 'defaultRoom');
     formData.append('sender', username);
-    
-    const res = await fetch(`${API}/upload-chat`, {
+  
+    const res = await fetch(`${API}/api/upload-chat`, {
       method: 'POST',
       body: formData,
     });
-
+  
     const data = await res.json();
     if (data.success) {
       console.log('✅ 채팅 파일 업로드 성공:', data.url);
-      // ✅ 소켓으로 새 메시지 전송
-      socket.emit('sendMessage', {
-        roomId: selectedUser?.username,
-        sender: username,
-        type: 'file',
-        content: data.url,
+      socket.emit('sendMessage', {  // ✅ 서버 이벤트명과 맞춤
+        sender_username: username,
+        receiver_username: selectedUser?.username,
+        content: '',
+        file_url: data.url,
+        file_name: file.name,
+        file_size: file.size,
       });
     }
   };

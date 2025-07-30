@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import r2 from '../uploads/chat/R2.js';
+import R2 from '../uploads/chat/R2.js';
 import dbPool from '../DB.mjs';   // ✅ DB Pool 직접 import
 
 const router = express.Router();
@@ -24,7 +24,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     const key = `chat/${roomId}/${Date.now()}-${file.originalname}`;
     console.log("🔑 [3] R2 업로드 Key:", key);
 
-    await r2.putObject({
+    await R2.putObject({
       Bucket: process.env.R2_BUCKET,
       Key: key,
       Body: file.buffer,

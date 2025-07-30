@@ -46,7 +46,6 @@ const corsOptions = {
 
 const corsMiddleware = cors({
   origin: function (origin, callback) {
-    console.log("🛰️ 요청 origin:", origin);
 
     if (!origin) return callback(null, true); // 같은 도메인 or Postman 허용
 

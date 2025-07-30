@@ -143,7 +143,7 @@ const Section2 = () => {
   
       const link = document.createElement('a');
       link.href = `${API}/api/upload-chat/download?key=${encodeURIComponent(key)}`;
-      link.download = key.split('/').pop();              // 원본 파일명
+      link.download = key.split('/').pop();
       document.body.appendChild(link);
       link.click();
       link.remove();

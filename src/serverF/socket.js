@@ -17,7 +17,7 @@ const initializeSocket = (server) => {
   const onlineUsers = new Set();
 
   io.on("connection", (socket) => {
-    console.log("✅ Socket 연결됨:", socket.id);
+    // console.log("✅ Socket 연결됨:", socket.id);
 
     // ✅ 유저별 방 입장
     socket.on("join", (username) => {

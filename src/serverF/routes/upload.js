@@ -18,7 +18,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
 
     const key = `chat/${roomId}/${Date.now()}-${file.originalname}`;
-    console.log("🔑 [3] R2 업로드 Key:", key);
+    // console.log("🔑 [3] R2 업로드 Key:", key);
 
     await R2.putObject({
       Bucket: process.env.R2_BUCKET,
@@ -26,20 +26,20 @@ router.post('/', upload.single('file'), async (req, res) => {
       Body: file.buffer,
       ContentType: file.mimetype,
     }).promise();
-    console.log("✅ [4] R2 업로드 성공");
+    // console.log("✅ [4] R2 업로드 성공");
 
     const signedUrl = R2.getSignedUrl('getObject', {
       Bucket: process.env.R2_BUCKET,
       Key: key,
       Expires: 3600,
     });
-    console.log("🌐 [5] Signed URL:", signedUrl);
+    // console.log("🌐 [5] Signed URL:", signedUrl);
 
     await dbPool.query(
       'INSERT INTO chat_messages (room_id, sender, message_type, content) VALUES ($1, $2, $3, $4)',
       [roomId, sender, 'file', signedUrl]
     );
-    console.log("✅ [6] DB 저장 성공");
+    // console.log("✅ [6] DB 저장 성공");
 
     res.json({ success: true, url: signedUrl });
   } catch (err) {
@@ -52,7 +52,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 router.get('/download', async (req, res) => {
   try {
     const key = req.query.key;
-    console.log("📥 다운로드 요청 Key:", key);
+    // console.log("📥 다운로드 요청 Key:", key);
 
     const fileStream = R2.getObject({
       Bucket: process.env.R2_BUCKET,

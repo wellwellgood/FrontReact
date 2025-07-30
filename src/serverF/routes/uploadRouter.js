@@ -23,7 +23,7 @@ const upload = multer({ storage: diskStorage });
 /* ✅ 파일 업로드 */
 router.post("/", upload.single("file"), async (req, res) => {
   try {
-    console.log("🔥 업로드 요청 수신:", req.file);
+    // console.log("🔥 업로드 요청 수신:", req.file);
 
     const localFile = req.file.path;
     const destFile = `files/${req.file.filename}`;

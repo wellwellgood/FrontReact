@@ -115,7 +115,9 @@ const Section2 = () => {
   const handleDownload = (url) => {
     try {
       const cleanUrl = url.split('?')[0];
-      const key = decodeURIComponent(cleanUrl.split('/').slice(4).join('/'));
+      const pathParts = cleanUrl.split('/');
+      const keyIndex = pathParts.findIndex(part => part === 'chat');
+      const key = decodeURIComponent(pathParts.slice(keyIndex).join('/'));
       const link = document.createElement('a');
       link.href = `${API}/api/download?key=${encodeURIComponent(key)}`;
       link.download = key.split('/').pop();

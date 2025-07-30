@@ -60,7 +60,7 @@ router.post('/', upload.single('file'), async (req, res) => {
   router.get('/download', async (req, res) => {
     try {
       const key = req.query.key;
-      console.log("📥 다운로드 요청:", key);
+      console.log("📥 다운로드 요청 Key:", key);
   
       const fileStream = R2.getObject({
         Bucket: process.env.R2_BUCKET,

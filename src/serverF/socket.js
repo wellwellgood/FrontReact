@@ -26,7 +26,7 @@ const initializeSocket = (server) => {
     });
 
     // ✅ 메시지 전송 처리 (클라이언트에서 emit: sendMessage)
-    socket.on("sendMessage", async (msg) => {
+    socket.on("chatMessage", async (msg) => {
       try {
         const result = await pool.query(
           `INSERT INTO messages 

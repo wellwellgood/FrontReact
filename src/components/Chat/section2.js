@@ -101,7 +101,7 @@ const Section2 = () => {
     if (data.success) {
       console.log('✅ 채팅 파일 업로드 성공:', data.url);
       // ✅ 소켓으로 새 메시지 전송
-      socket.emit('chatMessage', {
+      socket.emit('sendMessage', {
         roomId: selectedUser?.username,
         sender: username,
         type: 'file',

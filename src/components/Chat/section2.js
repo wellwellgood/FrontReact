@@ -102,8 +102,8 @@ const Section2 = () => {
       console.log('✅ 채팅 파일 업로드 성공:', data.url);
       // ✅ 소켓으로 새 메시지 전송
       socket.emit('chatMessage', {
-        roomId: currentRoomId,
-        sender: currentUsername,
+        roomId: selectedUser?.username,
+        sender: username,
         type: 'file',
         content: data.url,
       });
@@ -204,7 +204,7 @@ const Section2 = () => {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        const res = await fetch(`${API}/upload-chat`, {
+        const res = await fetch(`${API}/api/upload-chat`, {
           method: 'POST',
           body: formData,
         });

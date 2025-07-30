@@ -6,7 +6,7 @@ import db from '../routes/neonPostgre.js';  // Neon PostgreSQL 연결
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/api/upload-chat', upload.single('file'), async (req, res) => {
+router.post('/', upload.single('file'), async (req, res) => {
   try {
     const file = req.file;
     const roomId = req.body.roomId;

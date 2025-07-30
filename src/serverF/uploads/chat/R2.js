@@ -9,11 +9,4 @@ const r2 = new AWS.S3({
   signatureVersion: 'v4',
 });
 
-const signedUrl = s3.getSignedUrl('getObject', {
-  Bucket: process.env.R2_BUCKET,
-  Key: key,
-  Expires: 3600, // 1시간
-});
-
-
-res.json({ success: true, url: signedUrl });
+export default r2; 

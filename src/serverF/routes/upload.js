@@ -52,4 +52,12 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 });
 
+const signedUrl = r2.getSignedUrl('getObject', {
+  Bucket: process.env.R2_BUCKET,
+  Key: key,
+  Expires: 3600, // 1시간
+});
+
+res.json({ success: true, url: signedUrl });
+
 export default router;

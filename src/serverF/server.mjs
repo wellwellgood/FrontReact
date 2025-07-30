@@ -11,7 +11,6 @@ import initDB from "./initDB.js";
 import corsMiddleware from "./middlewares/cors.js";
 import authRouter from "./routes/auth.js";
 import chatUploadRouter from './routes/upload.js';
-import downloadRoute from './routes/download.js';
 
 try {
   await connectDB();

@@ -116,8 +116,7 @@ const Section2 = () => {
     try {
       const link = document.createElement('a');
       link.href = url;                 // ✅ Signed URL 직접 사용
-      link.download = url.split('/').pop();
-      link.target = '_blank';          // 새 탭에서 열림 (이미지 미리보기 가능)
+      link.download = filename || url.split('/').pop();
       document.body.appendChild(link);
       link.click();
       link.remove();

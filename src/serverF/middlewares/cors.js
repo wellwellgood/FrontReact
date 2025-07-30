@@ -45,11 +45,23 @@ const corsOptions = {
 };
 
 const corsMiddleware = cors({
-  origin: [
-    "http://localhost:3000",
-    "https://kkydashboard.netlify.app"
-  ],
+  origin: function (origin, callback) {
+    console.log("🛰️ 요청 origin:", origin);
+
+    if (!origin) return callback(null, true); // 같은 도메인 or Postman 허용
+
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (allowedOrigins.includes(cleanOrigin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Not allowed by CORS: ${cleanOrigin}`));
+    }
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  exposedHeaders: ['Content-Length'],
+  maxAge: 86400
 });
 
 

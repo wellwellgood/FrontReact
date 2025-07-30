@@ -16,9 +16,6 @@ import {
   API
 } from '../../serverF/middlewares/cors.js';
 
-const API = process.env.REACT_APP_API || "https://react-server-wmqa.onrender.com";
-const socket = io(API, { transports: ["websocket"], withCredentials: true });
-
 
 const Section2 = () => {
   const navigate = useNavigate();

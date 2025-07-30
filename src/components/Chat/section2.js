@@ -16,6 +16,9 @@ import {
   API
 } from '../../serverF/middlewares/cors.js';
 
+const API = process.env.REACT_APP_API || "https://react-server-wmqa.onrender.com";
+const socket = io(API, { transports: ["websocket"], withCredentials: true });
+
 
 const Section2 = () => {
   const navigate = useNavigate();
@@ -44,6 +47,16 @@ const Section2 = () => {
   const [isSending, setIsSending] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState({ status: 'disconnected' });
   // const [handleChatFileUpload , setHandleChatFileUpload] = useState(null);
+
+  useEffect(() => {
+    socket.on("sendMessage", (msg) => {
+      setMessages(prev => [...prev, msg]);
+    });
+
+    return () => {
+      socket.off("sendMessage");
+    };
+  }, []);
 
   // 연결 상태 모니터링
   useEffect(() => {
@@ -91,16 +104,15 @@ const Section2 = () => {
     formData.append('file', file);
     formData.append('roomId', selectedUser?.username || 'defaultRoom');
     formData.append('sender', username);
-  
+
     const res = await fetch(`${API}/api/upload-chat`, {
       method: 'POST',
       body: formData,
     });
-  
+
     const data = await res.json();
     if (data.success) {
-      console.log('✅ 채팅 파일 업로드 성공:', data.url);
-      socket.emit('sendMessage', {  // ✅ 서버 이벤트명과 맞춤
+      socket.emit('sendMessage', {
         sender_username: username,
         receiver_username: selectedUser?.username,
         content: '',
@@ -111,16 +123,18 @@ const Section2 = () => {
     }
   };
   
-
   const handleDownload = (url) => {
     try {
-      const cleanUrl = url.split('?')[0];
-      const pathParts = cleanUrl.split('/');
-      const keyIndex = pathParts.findIndex(part => part === 'chat');
-      const key = decodeURIComponent(pathParts.slice(keyIndex).join('/'));
+      const cleanUrl = url.split('?')[0];               // 서명 파라미터 제거
+      const parts = cleanUrl.split('/');
+      const chatIndex = parts.findIndex(p => p === 'chat');
+      const key = decodeURIComponent(parts.slice(chatIndex).join('/')); // chat부터 끝까지 key 추출
+  
+      console.log("📥 다운로드 요청 key:", key);
+  
       const link = document.createElement('a');
       link.href = `${API}/api/download?key=${encodeURIComponent(key)}`;
-      link.download = key.split('/').pop();
+      link.download = key.split('/').pop();              // 원본 파일명
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -128,7 +142,6 @@ const Section2 = () => {
       console.error('❌ 파일 다운로드 실패:', err);
     }
   };
-
 
   // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
@@ -567,7 +580,7 @@ const Section2 = () => {
                           ) : (
                             <button 
                               className={styles.downBtn} 
-                              onClick={() => handleDownload(getAbsoluteUrl(msg.file_url), msg.file_name)}
+                              onClick={() => handleDownload(getAbsoluteUrl(msg.file_url))}
                             >
                               {msg.file_name} ({formatBytes(msg.file_size || 0)})
                             </button>

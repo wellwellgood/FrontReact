@@ -32,16 +32,22 @@ router.post('/', upload.single('file'), async (req, res) => {
     }).promise();
     console.log("✅ [4] R2 업로드 성공");
 
-    const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`;
-    console.log("🌐 [5] 파일 URL:", fileUrl);
+    // ✅ Signed URL 생성
+    const signedUrl = R2.getSignedUrl('getObject', {
+      Bucket: process.env.R2_BUCKET,
+      Key: key,
+      Expires: 3600, // 1시간
+    });
+    console.log("🌐 [5] Signed URL:", signedUrl);
 
+    // ✅ DB 저장
     await dbPool.query(
       'INSERT INTO chat_messages (room_id, sender, message_type, content) VALUES ($1, $2, $3, $4)',
-      [roomId, sender, 'file', fileUrl]
+      [roomId, sender, 'file', signedUrl]
     );
     console.log("✅ [6] DB 저장 성공");
 
-    res.json({ success: true, url: fileUrl });
+    res.json({ success: true, url: signedUrl });
   } catch (err) {
     console.error('❌ [7] 채팅 파일 업로드 실패:', err.stack || err);
     res.status(500).json({ 
@@ -51,13 +57,5 @@ router.post('/', upload.single('file'), async (req, res) => {
     });
   }
 });
-
-const signedUrl = r2.getSignedUrl('getObject', {
-  Bucket: process.env.R2_BUCKET,
-  Key: key,
-  Expires: 3600, // 1시간
-});
-
-res.json({ success: true, url: signedUrl });
 
 export default router;

@@ -47,7 +47,7 @@ try {
   app.use("/api/messages", messageRoute.default);
 
   app.use('/api/upload-chat', chatUploadRouter);
-  app.use('/api/download', downloadRoute);
+  app.use('/api/download', chatUploadRouter);
 
   // ✅ 여기 수정: .default 붙여서 라우터 등록
   const chatUploadRouterModule = await import("./routes/neonPostgre.js");

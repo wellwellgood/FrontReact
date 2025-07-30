@@ -142,7 +142,7 @@ const Section2 = () => {
       console.log("📥 다운로드 요청 key:", key);
   
       const link = document.createElement('a');
-      link.href = `${API}/api/download?key=${encodeURIComponent(key)}`;
+      link.href = `${API}/api/upload-chat/download?key=${encodeURIComponent(key)}`;
       link.download = key.split('/').pop();              // 원본 파일명
       document.body.appendChild(link);
       link.click();

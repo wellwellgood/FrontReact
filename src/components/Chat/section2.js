@@ -46,14 +46,25 @@ const Section2 = () => {
   // const [handleChatFileUpload , setHandleChatFileUpload] = useState(null);
 
   useEffect(() => {
+    console.log("🔌 socket 상태:", socket);
+    if (!socket) return;   // ✅ null 방지
+  
     socket.on("sendMessage", (msg) => {
       setMessages(prev => [...prev, msg]);
     });
-
+  
     return () => {
-      socket.off("sendMessage");
+      if (socket) socket.off("sendMessage");
     };
   }, []);
+
+  
+  const s = io(API, { transports: ["websocket"] });
+
+    useEffect(() => {
+      if (!s) return;
+      s.on("sendMessage", handler);
+    }, []);
 
   // 연결 상태 모니터링
   useEffect(() => {

@@ -112,11 +112,12 @@ const Section2 = () => {
   };
   
 
-  const handleDownload = (url, filename) => {
+  const handleDownload = (url) => {
     try {
-      const link = document.createElement('a');
-      link.href = url;                 // ✅ Signed URL 직접 사용
-      link.download = filename || url.split('/').pop();
+      const key = decodeURIComponent(url.split('/').slice(4).join('/'));
+      const link = document.createElement('a');               // ✅ Signed URL 직접 사용
+      link.href = `${API}/api/download?key=${encodeURIComponent(key)}`;
+      link.download = key.split('/').pop();
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -563,7 +564,7 @@ const Section2 = () => {
                           ) : (
                             <button 
                               className={styles.downBtn} 
-                              onClick={() => forceDownload(getAbsoluteUrl(msg.file_url), msg.file_name)}
+                              onClick={() => handleDownload(getAbsoluteUrl(msg.file_url), msg.file_name)}
                             >
                               {msg.file_name} ({formatBytes(msg.file_size || 0)})
                             </button>

@@ -58,14 +58,22 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 
   router.get('/download', async (req, res) => {
-    const key = req.query.key;
-    const fileStream = r2.getObject({
-      Bucket: process.env.R2_BUCKET,
-      Key: key
-    }).createReadStream();
+    try {
+      const key = req.query.key;
+      console.log("📥 다운로드 요청:", key);
   
-    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(key.split('/').pop())}"`);
-    fileStream.pipe(res);
+      const fileStream = R2.getObject({
+        Bucket: process.env.R2_BUCKET,
+        Key: key,
+      }).createReadStream();
+  
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(key.split('/').pop())}"`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+      fileStream.pipe(res);
+    } catch (err) {
+      console.error('❌ 다운로드 실패:', err);
+      res.status(500).json({ error: '파일 다운로드 실패' });
+    }
   });
 });
 

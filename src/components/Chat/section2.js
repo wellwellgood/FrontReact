@@ -134,7 +134,7 @@ const Section2 = () => {
   
   const handleDownload = (url) => {
     try {
-      const cleanUrl = url.split('?')[0];               // 서명 파라미터 제거
+      const cleanUrl = url.split('?')[0];
       const parts = cleanUrl.split('/');
       const chatIndex = parts.findIndex(p => p === 'chat');
       const key = decodeURIComponent(parts.slice(chatIndex).join('/')); // chat부터 끝까지 key 추출

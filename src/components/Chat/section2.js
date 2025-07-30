@@ -43,6 +43,7 @@ const Section2 = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState({ status: 'disconnected' });
+  const [handler , serHandler] = useState(null);
   // const [handleChatFileUpload , setHandleChatFileUpload] = useState(null);
 
   useEffect(() => {

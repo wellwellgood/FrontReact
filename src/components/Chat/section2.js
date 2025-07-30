@@ -112,7 +112,7 @@ const Section2 = () => {
   };
   
 
-  const handleDownload = (url) => {
+  const handleDownload = (url, filename) => {
     try {
       const link = document.createElement('a');
       link.href = url;                 // ✅ Signed URL 직접 사용
@@ -563,7 +563,7 @@ const Section2 = () => {
                           ) : (
                             <button 
                               className={styles.downBtn} 
-                              onClick={() => handleDownload(msg.file_url, msg.file_name)}
+                              onClick={() => handleDownload(getAbsoluteUrl(msg.file_url), msg.file_name)}
                             >
                               {msg.file_name} ({formatBytes(msg.file_size || 0)})
                             </button>

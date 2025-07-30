@@ -114,8 +114,9 @@ const Section2 = () => {
 
   const handleDownload = (url) => {
     try {
-      const key = decodeURIComponent(url.split('/').slice(4).join('/'));
-      const link = document.createElement('a');               // ✅ Signed URL 직접 사용
+      const cleanUrl = url.split('?')[0];
+      const key = decodeURIComponent(cleanUrl.split('/').slice(4).join('/'));
+      const link = document.createElement('a');
       link.href = `${API}/api/download?key=${encodeURIComponent(key)}`;
       link.download = key.split('/').pop();
       document.body.appendChild(link);

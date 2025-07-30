@@ -8,21 +8,21 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/', upload.single('file'), async (req, res) => {
   try {
-    console.log("📥 [1] 업로드 요청 도착");
-    console.log("📂 req.body:", req.body);
-    console.log("📂 req.file:", req.file ? req.file.originalname : "❌ 없음");
+    // console.log("📥 [1] 업로드 요청 도착");
+    // console.log("📂 req.body:", req.body);
+    // console.log("📂 req.file:", req.file ? req.file.originalname : "❌ 없음");
 
     const file = req.file;
     const roomId = req.body.roomId || 'defaultRoom';
     const sender = req.body.sender || 'unknown';
 
     if (!file) {
-      console.warn("⚠️ [2] 파일 없음");
+      // console.warn("⚠️ [2] 파일 없음");
       return res.status(400).json({ success: false, error: '파일 없음' });
     }
 
     const key = `chat/${roomId}/${Date.now()}-${file.originalname}`;
-    console.log("🔑 [3] R2 업로드 Key:", key);
+    // console.log("🔑 [3] R2 업로드 Key:", key);
 
     await R2.putObject({
       Bucket: process.env.R2_BUCKET,
@@ -30,7 +30,7 @@ router.post('/', upload.single('file'), async (req, res) => {
       Body: file.buffer,
       ContentType: file.mimetype,
     }).promise();
-    console.log("✅ [4] R2 업로드 성공");
+    // console.log("✅ [4] R2 업로드 성공");
 
     // ✅ Signed URL 생성
     const signedUrl = R2.getSignedUrl('getObject', {
@@ -38,14 +38,14 @@ router.post('/', upload.single('file'), async (req, res) => {
       Key: key,
       Expires: 3600, // 1시간
     });
-    console.log("🌐 [5] Signed URL:", signedUrl);
+    // console.log("🌐 [5] Signed URL:", signedUrl);
 
     // ✅ DB 저장
     await dbPool.query(
       'INSERT INTO chat_messages (room_id, sender, message_type, content) VALUES ($1, $2, $3, $4)',
       [roomId, sender, 'file', signedUrl]
     );
-    console.log("✅ [6] DB 저장 성공");
+    // console.log("✅ [6] DB 저장 성공");
 
     res.json({ success: true, url: signedUrl });
   } catch (err) {

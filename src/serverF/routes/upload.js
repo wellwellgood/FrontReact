@@ -11,6 +11,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     // console.log("📥 [1] 업로드 요청 도착");
     // console.log("📂 req.body:", req.body);
     // console.log("📂 req.file:", req.file ? req.file.originalname : "❌ 없음");
+    console.log("📥 다운로드 요청 Key:", key);
 
     const file = req.file;
     const roomId = req.body.roomId || 'defaultRoom';
@@ -60,7 +61,6 @@ router.post('/', upload.single('file'), async (req, res) => {
   router.get('/download', async (req, res) => {
     try {
       const key = req.query.key;
-      console.log("📥 다운로드 요청 Key:", key);
   
       const fileStream = R2.getObject({
         Bucket: process.env.R2_BUCKET,

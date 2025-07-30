@@ -62,6 +62,8 @@ router.post('/', upload.single('file'), async (req, res) => {
       stack: err.stack 
     });
   }
+
+  console.log("🧪 DB 객체 타입:", typeof db, Object.keys(db));
 });
 
 export default router;

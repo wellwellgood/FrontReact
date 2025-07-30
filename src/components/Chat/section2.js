@@ -89,7 +89,7 @@ const Section2 = () => {
   const handleChatFileUpload = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('roomId', selectedUser?.username || 'defaultRoom');
+    formData.append('roomId', selectedUser?.username ? selectedUser.username : 'defaultRoom');
     formData.append('sender', username);
     
     const res = await fetch(`${API}/upload-chat`, {

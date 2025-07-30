@@ -3,7 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import dbPool from "../DB.mjs"; 
+import { dbPool } from "../DB.mjs"; 
 
 const router = Router();
 

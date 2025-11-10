@@ -11,6 +11,7 @@ import SendEmail from './components/section4/section4.js';
 import Id from './ID.js';
 import Password from './password.js';
 import LinkPage from './membership.js';
+import SearchPage from "./SearchPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/membership" element={<LinkPage />} />
         <Route path="/id" element={<Id />} />
         <Route path="/password" element={<Password />} />
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
     </BrowserRouter>
   );

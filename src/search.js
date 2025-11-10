@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import styles from './search.module.css';
-import { FaSearch } from 'react-icons/fa';
-import personIcon from './image/person-circle.jpg';
-import AccountSetting from './AccountSetting.js';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import axios from "axios";
+import { FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import styles from "./search.module.css";
+import personIcon from "./image/person-circle.jpg";
+import AccountSetting from "./AccountSetting.js";
 
 const API = process.env.REACT_APP_API || "http://localhost:10000";
 
@@ -18,9 +18,9 @@ const Search = () => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showInfoForm, setShowInfoForm] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   // ✅ 유저 정보 로드
@@ -28,25 +28,27 @@ const Search = () => {
     const getUserKey = () =>
       sessionStorage.getItem("username") ||
       localStorage.getItem("username") ||
-      'defaultUser';
-  
-    const storedUsername = sessionStorage.getItem("username") || localStorage.getItem("username");
+      "defaultUser";
+
+    const storedUsername =
+      sessionStorage.getItem("username") || localStorage.getItem("username");
     if (!storedUsername) return;
-  
+
     const currentUser = getUserKey();
     const storedImage =
       sessionStorage.getItem(`profileImage_${currentUser}`) ||
       localStorage.getItem(`profileImage_${currentUser}`);
-  
+
     const receiverUsername = sessionStorage.getItem("receiver_username");
-  
+
     setProfileImage(storedImage);
     setUsername(receiverUsername ? receiverUsername : storedUsername);
-  
-    axios.get(`/api/users/${storedUsername}`)
-      .then(res => setUser(res.data))
-      .catch(err => console.error("유저 로드 실패:", err));
-  
+
+    axios
+      .get(`${API}/api/users/${storedUsername}`)
+      .then((res) => setUser(res.data))
+      .catch((err) => console.error("유저 로드 실패:", err));
+
     const handleStorageChange = (e) => {
       if (e.key === `profileImage_${getUserKey()}`) {
         setProfileImage(e.newValue);
@@ -55,59 +57,61 @@ const Search = () => {
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
-  
 
-  // ✅ 디바운스 검색 API
-  const fetchSuggestions = useCallback(
-    (() => {
-      let timer;
-      return (query) => {
-        clearTimeout(timer);
-        timer = setTimeout(async () => {
-          if (!query.trim()) {
-            setSearchResults([]);
-            setShowResults(false);
-            return;
-          }
-          try {
-            const res = await axios.get(`${API}/api/search/suggest?keyword=${query}`);
-            const raw = Array.isArray(res.data) ? res.data : [];
-            setSearchResults(raw);
-            setShowResults(true);
-          } catch (err) {
-            console.error("자동완성 실패:", err);
-            setSearchResults([]);
-          }
-        }, 300);
-      };
-    })(),
-    []
-  );
+  // ✅ 디바운스 자동완성
+  const fetchSuggestions = useCallback(() => {
+    let timer;
+    return (query) => {
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        if (!query.trim()) {
+          setSearchResults([]);
+          setShowResults(false);
+          return;
+        }
+        try {
+          const res = await axios.get(
+            `${API}/api/search/suggest?keyword=${query}`
+          );
+          const raw = Array.isArray(res.data) ? res.data : [];
+          setSearchResults(raw);
+          setShowResults(true);
+        } catch (err) {
+          console.error("자동완성 실패:", err);
+          setSearchResults([]);
+        }
+      }, 300);
+    };
+  }, []);
+
+  const debouncedFetch = fetchSuggestions();
 
   useEffect(() => {
-    fetchSuggestions(searchText);
-  }, [searchText, fetchSuggestions]);
+    debouncedFetch(searchText);
+  }, [searchText, debouncedFetch]);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchText.trim()) return;
-    try {
-      setIsLoading(true);
-      const res = await axios.get(`${API}/api/search?query=${encodeURIComponent(searchText)}`);
-      setSearchResults(res.data || []);
-      setShowResults(true);
-    } catch (err) {
-      console.error("검색 실패:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // ✅ 입력 핸들러
   const handleInputChange = (e) => {
     setSearchText(e.target.value);
     setShowResults(e.target.value.trim() !== "");
   };
 
+  // ✅ 검색 제출 → 새 페이지로 이동
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!searchText.trim()) return;
+    navigate(`/search?keyword=${encodeURIComponent(searchText)}`);
+    setShowResults(false);
+  };
+
+  // ✅ 자동완성 항목 클릭 시 이동
+  const handleResultClick = (item) => {
+    const label = item?.label || item?.title || "";
+    navigate(`/search?keyword=${encodeURIComponent(label)}`);
+    setShowResults(false);
+  };
+
+  // ✅ 프로필 관련
   const handleProfileClick = () => {
     setShowInfoForm((prev) => !prev);
     setShowThemeMenu(false);
@@ -121,17 +125,14 @@ const Search = () => {
     window.location.href = "/";
   };
 
-  const handleResultClick = (label) => {
-    navigate(`/search?keyword=${encodeURIComponent(label)}`);
-  };
-
   return (
-    <>
-      {showSettings && <AccountSetting onClose={() => setShowSettings(false)} />}
+    <div>
+      {showSettings && (
+        <AccountSetting onClose={() => setShowSettings(false)} />
+      )}
 
       <div className={styles.topbar}>
         <div className={styles.topbarContainer}>
-          
           {/* ✅ 검색창 */}
           <div className={styles.search}>
             <form onSubmit={handleSearch} className={styles.searchForm}>
@@ -148,6 +149,7 @@ const Search = () => {
               </button>
             </form>
 
+            {/* ✅ 자동완성 패널 */}
             {showResults && (
               <div className={styles.resultsPanel}>
                 {isLoading ? (
@@ -159,7 +161,7 @@ const Search = () => {
                     <div
                       key={i}
                       className={styles.resultItem}
-                      onClick={() => handleResultClick(s.label || s.title)}
+                      onClick={() => handleResultClick(s)}
                     >
                       [{s.type}] {s.label || s.title}
                     </div>
@@ -169,7 +171,7 @@ const Search = () => {
             )}
           </div>
 
-          {/* ✅ 유저 정보 / 메뉴 */}
+          {/* ✅ 유저 메뉴 */}
           <div className={styles.userInfoBox}>
             <img
               className={styles.profileImage}
@@ -202,10 +204,26 @@ const Search = () => {
                   </span>
                   {showThemeMenu && (
                     <div className={styles.themeMenu}>
-                      <div className={styles.light} onClick={() => document.documentElement.setAttribute('data-theme', 'light')}>
+                      <div
+                        className={styles.light}
+                        onClick={() =>
+                          document.documentElement.setAttribute(
+                            "data-theme",
+                            "light"
+                          )
+                        }
+                      >
                         Light
                       </div>
-                      <div className={styles.dark} onClick={() => document.documentElement.setAttribute('data-theme', 'dark')}>
+                      <div
+                        className={styles.dark}
+                        onClick={() =>
+                          document.documentElement.setAttribute(
+                            "data-theme",
+                            "dark"
+                          )
+                        }
+                      >
                         Dark
                       </div>
                     </div>
@@ -222,7 +240,7 @@ const Search = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

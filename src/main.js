@@ -99,7 +99,6 @@ function Main() {
           handleLogout={handleLogout}
           setShowSettings={setShowSettings}
         />
-.0
 
       <div className={styles.mainboard}>
         <div className={styles.main}>

@@ -1,10 +1,35 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+import LoginPage from './LoginApp';
+import Main from "./main";
+// import Example from './components/section1/section1.js';
+import ChatApp from "./components/section2/section2.js";
+import File from "./components/section3/section3.js";
+import SendEmail from './components/section4/section4.js';
+
+import Id from './ID.js';
+import Password from './password.js';
+import LinkPage from './membership.js';
+import SearchPage from "./SearchPage";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/main" element={<Main />} />
+        {/* <Route path="/example" element={<Example />} /> */}
+        <Route path="/chatApp" element={<ChatApp />} />
+        <Route path="/file" element={<File />} />
+        <Route path="/sendemail" element={<SendEmail />} />
+        <Route path="/membership" element={<LinkPage />} />
+        <Route path="/id" element={<Id />} />
+        <Route path="/password" element={<Password />} />
+        <Route path="/search" element={<SearchPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;

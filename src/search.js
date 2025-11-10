@@ -45,7 +45,7 @@ const Search = () => {
     setUsername(receiverUsername ? receiverUsername : storedUsername);
 
     axios
-      .get(`${API}/api/users/${storedUsername}`)
+      .get(`${API}/users/${storedUsername}`)
       .then((res) => setUser(res.data))
       .catch((err) => console.error("유저 로드 실패:", err));
 

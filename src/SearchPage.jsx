@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API = process.env.REACT_APP_API || "https://react-server-wmqa.onrender.com";
+const API =
+  process.env.REACT_APP_API || "https://react-server-wmqa.onrender.com";
 
 export default function SearchPage() {
   const [params] = useSearchParams();

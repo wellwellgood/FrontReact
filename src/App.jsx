@@ -11,6 +11,7 @@ import File from './components/File/section3';
 import Section4SendEmail from './components/email/section4';
 import AccountSetting from './AccountSetting';
 import ProtectedRoute from './components/ProtectedRoute';
+import SearchPage from './SearchPage';
 // import SearchResult from './serverF/routes/searchRoute';   // ✅ 검색 결과 컴포넌트
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
         <Route path="/customCalendar" element={<CustomCalendar />} />
 
         {/* ✅ 검색 라우트만 추가 */}
-        {/* <Route path="/search" element={<SearchResult />} /> */}
+        <Route path="/search" element={<SearchPage />} />
 
         {/* 보호된 라우트 */}
         <Route

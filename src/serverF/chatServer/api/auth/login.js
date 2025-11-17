@@ -6,7 +6,8 @@ const loginWithBackupUrls = async (credentials) => {
   const apiUrls = [
     "http://localhost:10000/users/login",
     "http://localhost:10000/login",
-    "http://localhost:10000/auth/login"
+    "http://localhost:10000/auth/login",
+    "https://kkywebapp.netlify.app/"
   ];
 
   localStorage.removeItem("SuccessfulLoginUrl");

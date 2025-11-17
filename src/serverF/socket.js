@@ -6,7 +6,7 @@ const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
       origin: [
-      "https://kkywebapp.netlify.app/",
+      "https://kkywebapp.netlify.app",
       "http://localhost:10000"// ✅ 실제 프론트 배포 주소
       ],
       methods: ["GET", "POST"],

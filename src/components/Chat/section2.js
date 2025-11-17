@@ -7,15 +7,14 @@ import { useNavigate } from "react-router-dom";
 import { FaPaperclip } from "react-icons/fa";
 import AccountSetting from '../../AccountSetting.js';
 import Logo from "../../image/logo.png";
-import { 
-  loadMessages, 
-  sendMessage, 
-  fetchUsers, 
+import {
+  loadMessages,
+  sendMessage,
+  fetchUsers,
   monitorConnectionStatus,
   addMessageWithDeduplication,
   API
 } from '../../serverF/middlewares/cors.js';
-
 
 const Section2 = () => {
   const navigate = useNavigate();
@@ -43,36 +42,12 @@ const Section2 = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState({ status: 'disconnected' });
-  const [handler , serHandler] = useState(null);
-  // const [handleChatFileUpload , setHandleChatFileUpload] = useState(null);
-
-  useEffect(() => {
-    console.log("🔌 socket 상태:", socket);
-    if (!socket) return;   // ✅ null 방지
-  
-    socket.on("sendMessage", (msg) => {
-      setMessages(prev => [...prev, msg]);
-    });
-  
-    return () => {
-      if (socket) socket.off("sendMessage");
-    };
-  }, []);
-
-  
-  const s = io(API, { transports: ["websocket"] });
-
-    useEffect(() => {
-      if (!s) return;
-      s.on("sendMessage", handler);
-    }, []);
 
   // 연결 상태 모니터링
   useEffect(() => {
     const cleanup = monitorConnectionStatus((status) => {
       setConnectionStatus(status);
     });
-    
     return cleanup;
   }, []);
 
@@ -94,68 +69,10 @@ const Section2 = () => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // 메시지 스크롤 처리
-  useEffect(() => {
-    scrollToBottom();
-  
-    if (messages.length > 0) {
-      const lastMsg = messages[messages.length - 1];
-      if (lastMsg?.id && selectedUser?.username) {
-        const key = `${selectedUser.username}_lastMessageId`;
-        localStorage.setItem(key, lastMsg.id);
-      }
-    }
-  }, [messages, selectedUser]);
-
-
-  const handleChatFileUpload = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('roomId', selectedUser?.username || 'defaultRoom');
-    formData.append('sender', username);
-
-    const res = await fetch(`${API}/api/upload-chat`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    const data = await res.json();
-    if (data.success) {
-      socket.emit('sendMessage', {
-        sender_username: username,
-        receiver_username: selectedUser?.username,
-        content: '',
-        file_url: data.url,
-        file_name: file.name,
-        file_size: file.size,
-      });
-    }
-  };
-  
-  const handleDownload = (url) => {
-    try {
-      const cleanUrl = url.split('?')[0];
-      const parts = cleanUrl.split('/');
-      const chatIndex = parts.findIndex(p => p === 'chat');
-      const key = decodeURIComponent(parts.slice(chatIndex).join('/')); // chat부터 끝까지 key 추출
-  
-      console.log("📥 다운로드 요청 key:", key);
-  
-      const link = document.createElement('a');
-      link.href = `${API}/api/upload-chat/download?key=${encodeURIComponent(key)}`;
-      link.download = key.split('/').pop();
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      console.error('❌ 파일 다운로드 실패:', err);
-    }
-  };
-
   // 소켓 연결 및 메시지 수신 처리
   useEffect(() => {
     if (!username) return;
-  
+
     const s = io(API, {
       transports: ["websocket"],
       withCredentials: true,
@@ -163,19 +80,20 @@ const Section2 = () => {
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
-  
+
     setSocket(s);
-  
+
     s.on("connect", () => {
       console.log("🔌 소켓 연결됨");
       s.emit("join", username);
+      s.emit("online", username);
     });
-  
+
     s.on("message", (msg) => {
       console.log("📥 수신 메시지:", msg);
       setMessages(prev => addMessageWithDeduplication(prev, msg));
     });
-  
+
     s.on("messageRead", ({ messageId }) => {
       setMessages(prev =>
         prev.map(msg =>
@@ -186,25 +104,30 @@ const Section2 = () => {
       );
     });
 
+    s.on("onlineUsers", (list) => {
+      setOnlineUsers(list || []);
+    });
+
     s.on("disconnect", () => {
       console.log("🔌 소켓 연결 해제");
     });
 
     s.on("reconnect", () => {
       console.log("🔄 소켓 재연결됨");
+      s.emit("join", username);
+      s.emit("online", username);
     });
 
     s.on("connect_error", (error) => {
       console.error("❌ 소켓 연결 오류:", error);
     });
-  
+
     return () => {
       console.log("🧹 소켓 정리");
       s.disconnect();
+      setSocket(null);
     };
   }, [username]);
-  
-  
 
   // 사용자 목록 가져오기
   useEffect(() => {
@@ -217,11 +140,6 @@ const Section2 = () => {
   useEffect(() => {
     if (selectedUser && socket) {
       loadMessages(username, selectedUser.username, socket, setMessages);
-    }
-  }, [selectedUser, socket]);
-
-  useEffect(() => {
-    if (socket && username && selectedUser) {
       socket.emit("enterChat", {
         myUsername: username,
         withUser: selectedUser.username,
@@ -229,7 +147,86 @@ const Section2 = () => {
     }
   }, [selectedUser, socket, username]);
 
-  // 메시지 전송 처리 (개선된 버전)
+  // 메시지 스크롤 처리
+  useEffect(() => {
+    scrollToBottom();
+
+    if (messages.length > 0 && selectedUser?.username) {
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg?.id) {
+        const key = `${selectedUser.username}_lastMessageId`;
+        localStorage.setItem(key, lastMsg.id);
+      }
+    }
+  }, [messages, selectedUser]);
+
+  const handleChatFileUpload = async (file) => {
+    if (!file || !selectedUser || !username) return;
+    if (!socket) {
+      console.warn("⚠️ 소켓 연결이 없습니다. 파일 전송 불가");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('roomId', selectedUser.username || 'defaultRoom');
+      formData.append('sender', username);
+
+      const res = await fetch(`${API}/api/upload-chat`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        const messageData = {
+          sender_username: username,
+          receiver_username: selectedUser.username,
+          receiver_name: selectedUser.name,
+          content: '',
+          file_url: data.url,
+          file_name: file.name,
+          file_size: file.size,
+          read: false,
+          time: new Date().toISOString(),
+        };
+
+        // 서버로 실시간 전송
+        socket.emit('chatMessage', messageData);
+
+        // 내 화면에도 즉시 반영
+        setMessages(prev => addMessageWithDeduplication(prev, {
+          ...messageData,
+        }));
+      }
+    } catch (err) {
+      console.error('❌ 파일 업로드 실패:', err);
+      alert('파일 업로드 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDownload = (url) => {
+    try {
+      const cleanUrl = url.split('?')[0];
+      const parts = cleanUrl.split('/');
+      const chatIndex = parts.findIndex(p => p === 'chat');
+      const key = decodeURIComponent(parts.slice(chatIndex).join('/'));
+
+      console.log("📥 다운로드 요청 key:", key);
+
+      const link = document.createElement('a');
+      link.href = `${API}/api/upload-chat/download?key=${encodeURIComponent(key)}`;
+      link.download = key.split('/').pop();
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('❌ 파일 다운로드 실패:', err);
+    }
+  };
+
+  // 메시지 전송 처리
   const handleSend = async () => {
     if (!input.trim() && !selectedFile) return;
     if (!selectedUser) return;
@@ -262,11 +259,23 @@ const Section2 = () => {
         file_url: fileUrl,
         file_name: fileName,
         file_size: fileSize,
-        read: false,   // ✅ 항상 false로 초기화
+        read: false,
       };
 
-      const savedMessage = await axios.post(`${API}/api/chat-upload/save`, messageData);
+      // HTTP로 저장
+      const savedMessageRes = await axios.post(`${API}/api/chat-upload/save`, messageData);
+      const savedMessage = savedMessageRes.data || messageData;
+
+      // 내 화면 반영
       setMessages(prev => addMessageWithDeduplication(prev, savedMessage));
+
+      // 소켓으로도 실시간 전송 (상대방에게)
+      if (socket) {
+        socket.emit('chatMessage', {
+          ...savedMessage,
+          time: savedMessage.time || new Date().toISOString(),
+        });
+      }
 
       setInput("");
       setSelectedFile(null);
@@ -308,8 +317,7 @@ const Section2 = () => {
       (msg.sender_username === username && msg.receiver_username === selectedUser?.username) ||
       (msg.sender_username === selectedUser?.username && msg.receiver_username === username)
     );
-  
-    // 시간순 정렬
+
     return filtered.sort((a, b) => new Date(a.time) - new Date(b.time));
   };
 
@@ -318,11 +326,11 @@ const Section2 = () => {
     const regex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi;
     return text.split(regex).map((part, i) =>
       regex.test(part) ? (
-        <a 
-          key={i} 
-          href={part.startsWith("http") ? part : `https://${part}`} 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          key={i}
+          href={part.startsWith("http") ? part : `https://${part}`}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{ color: "#4caf50" }}
         >
           {part}
@@ -338,7 +346,6 @@ const Section2 = () => {
       if (item.type.startsWith("image/")) {
         const file = item.getAsFile();
         setSelectedFile(file);
-        // console.log("📸 붙여넣은 이미지:", file.name);
       }
     }
   };
@@ -364,11 +371,11 @@ const Section2 = () => {
       const absoluteUrl = url.startsWith("http")
         ? url
         : `${API}${url.startsWith("/") ? url : "/" + url}`;
-  
+
       const res = await fetch(absoluteUrl, { mode: 'cors' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const blob = await res.blob();
-  
+
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobUrl;
@@ -389,6 +396,7 @@ const Section2 = () => {
     if (file) {
       setSelectedFile(file);
       console.log("📎 파일 선택:", file.name);
+      handleChatFileUpload(file);
     }
   };
 
@@ -427,7 +435,7 @@ const Section2 = () => {
   useEffect(() => {
     const observer = new MutationObserver(() => {
       if (chatBoxRef.current) {
-        chatBoxRef.current.scrollTo({ 
+        chatBoxRef.current.scrollTo({
           top: chatBoxRef.current.scrollHeight,
           behavior: 'smooth'
         });
@@ -440,7 +448,6 @@ const Section2 = () => {
 
     return () => observer.disconnect();
   }, []);
-
 
   return (
     <div className={styles.container}>
@@ -530,9 +537,8 @@ const Section2 = () => {
             return (
               <div
                 key={user.username}
-                className={`${styles.userItem} ${
-                  selectedUser?.username === user.username ? styles.selected : ""
-                }`}
+                className={`${styles.userItem} ${selectedUser?.username === user.username ? styles.selected : ""
+                  }`}
                 onClick={() => setSelectedUser(user)}
               >
                 <span>
@@ -555,15 +561,15 @@ const Section2 = () => {
             <div className={styles.chatHeader}>
               {selectedUser ? `${selectedUser.name}님과 채팅중...` : "채팅할 유저를 선택하세요"}
             </div>
-          
+
             {/* 메시지 표시 영역 */}
             <div className={styles.messages}>
-              {getFilteredMessages().map((msg, index) => {
+              {selectedUser && getFilteredMessages().map((msg, index) => {
                 const isMine = msg.sender_username === username;
                 const readStatus = getMessageReadStatus(msg);
 
                 return (
-                  <div 
+                  <div
                     key={`${msg.id}-${index}`}
                     id={`msg-${msg.id}`}
                     className={isMine ? styles.myMessage : styles.theirMessage}
@@ -575,40 +581,38 @@ const Section2 = () => {
                     )}
                     <div className={styles.bubbleWrapper}>
                       <div className={styles.messageBubble}>
-                      <div className={styles.messageText}>
-                      {msg.file_url && msg.file_name && (
-                        <div className={styles.filePreview}>
-                          {/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.file_name) ? (
-                            <img 
-                              src={getAbsoluteUrl(msg.file_url)} 
-                              alt={msg.file_name} 
-                              className={styles.chatImage} 
-                              onClick={() => window.open(getAbsoluteUrl(msg.file_url), '_blank', 'width=600,height=400')}
-                              
-                            />
-                          ) : (
-                            <button 
-                              className={styles.downBtn} 
-                              onClick={() => handleDownload(getAbsoluteUrl(msg.file_url))}
-                            >
-                              {msg.file_name} ({formatBytes(msg.file_size || 0)})
-                            </button>
+                        <div className={styles.messageText}>
+                          {msg.file_url && msg.file_name && (
+                            <div className={styles.filePreview}>
+                              {/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.file_name) ? (
+                                <img
+                                  src={getAbsoluteUrl(msg.file_url)}
+                                  alt={msg.file_name}
+                                  className={styles.chatImage}
+                                  onClick={() => window.open(getAbsoluteUrl(msg.file_url), '_blank', 'width=600,height=400')}
+                                />
+                              ) : (
+                                <button
+                                  className={styles.downBtn}
+                                  onClick={() => handleDownload(getAbsoluteUrl(msg.file_url))}
+                                >
+                                  {msg.file_name} ({formatBytes(msg.file_size || 0)})
+                                </button>
+                              )}
+                            </div>
                           )}
+
+                          {msg.content && convertTextToLink(msg.content)}
                         </div>
-                      )}
-                      
-                      {/* ✅ 텍스트가 있을 경우만 출력 */}
-                      {msg.content && convertTextToLink(msg.content)}
-                      </div>
                         <div className={styles.messageMeta}>
                           <span className={styles.time}>
                             {msg.time
                               ? new Date(msg.time).toLocaleTimeString("ko-KR", {
-                                  timeZone: "Asia/Seoul",
-                                  year: "2-digit",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })
+                                timeZone: "Asia/Seoul",
+                                year: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                               : ""}
                           </span>
                           {isMine && readStatus && (
@@ -646,10 +650,7 @@ const Section2 = () => {
             <input
               type="file"
               ref={fileInputRef}
-              onChange={(e) => {
-                setSelectedFile(e.target.files[0]);
-                handleChatFileUpload(e.target.files[0]);  
-              }}
+              onChange={handleFileSelect}
               style={{ display: "none" }}
             />
 
@@ -667,12 +668,12 @@ const Section2 = () => {
               onKeyPress={handleKeyPress}
               onPaste={handlePaste}
               placeholder="메시지를 입력하세요"
-              disabled={isSending}
+              disabled={isSending || !selectedUser}
             />
 
-            <button 
-              className={styles.submit} 
-              onClick={handleSend} 
+            <button
+              className={styles.submit}
+              onClick={handleSend}
               disabled={(!input.trim() && !selectedFile) || !selectedUser || isSending}
             >
               {isSending ? "전송 중..." : "전송"}

@@ -1,0 +1,48 @@
+import express from "express";
+import pool from "../DB.mjs";
+
+const router = express.Router();
+
+// 🔍 자동완성
+router.get("/suggest", async (req, res) => {
+  const { keyword } = req.query;
+  if (!keyword) return res.json([]);
+
+  const key = `%${keyword}%`;
+  try {
+    const [userRes, fileRes, contentRes] = await Promise.all([
+      pool.query(`SELECT username, name FROM users WHERE username ILIKE $1 OR name ILIKE $1 LIMIT 5`, [key]),
+      pool.query(`SELECT file_name FROM messages WHERE file_name ILIKE $1 LIMIT 5`, [key]),
+      pool.query(`SELECT content FROM messages WHERE content ILIKE $1 LIMIT 5`, [key]),
+    ]);
+
+    const suggestions = [
+      ...userRes.rows.map(u => ({ type: "user", label: u.name || u.username })),
+      ...fileRes.rows.map(f => ({ type: "file", label: f.file_name })),
+      ...contentRes.rows.map(c => ({ type: "content", label: c.content?.substring(0, 50) + "..." })),
+    ];
+
+    res.json(suggestions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 🔎 전체 검색
+router.get("/", async (req, res) => {
+  const q = req.query.q || "";
+  const key = `%${q}%`;
+  try {
+    const [userRes, fileRes, contentRes] = await Promise.all([
+      pool.query(`SELECT 'user' AS type, id, username, name FROM users WHERE username ILIKE $1 OR name ILIKE $1`, [key]),
+      pool.query(`SELECT 'file' AS type, id, file_name FROM messages WHERE file_name ILIKE $1`, [key]),
+      pool.query(`SELECT 'content' AS type, id, content FROM messages WHERE content ILIKE $1`, [key]),
+    ]);
+
+    res.json([...userRes.rows, ...fileRes.rows, ...contentRes.rows]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+export default router;

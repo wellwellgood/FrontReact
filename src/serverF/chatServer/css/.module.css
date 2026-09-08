@@ -1,0 +1,24 @@
+.w-64{
+    background-color: #4e4e4e;
+    padding: 50px;
+    height: 100vh;
+}
+.flex-col{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50%;
+    font-size: 32px;
+}
+.flex-col a{
+    text-decoration: none;
+    color: #fff;
+    width: 100%;
+    height: 50px;
+    margin: 10px;
+    text-align: center;
+}
+.flex-col a:hover{
+    color: #000;
+}

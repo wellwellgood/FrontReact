@@ -1,0 +1,46 @@
+.react-calendar{
+    width: 100% !important;
+    height: 370px !important;
+    background: linear-gradient(to right, rgba(124, 128, 138, 0.74), rgba(66,134,244,0.1)) !important;
+    color: #fff !important; 
+    /* border-radius: 0 0 15px 15px; */
+    background: linear-gradient(to right, rgba(124,128,138,0.74), rgba(40, 110, 86,0.4)) !important;
+}
+react-calendar__tile react-calendar__month-view__days__day{
+    color: #fff !important;
+}
+
+.memo-popup{
+
+}
+
+.memo-popup textarea{
+    background-color: #ffff76 !important;
+    border: 1px solid #000 !important;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+h4{
+    width: 175px;
+    border-radius: 8px;
+    background-color: #000 !important;
+    color: #fff !important;
+    text-align: center;
+}
+.memoareabtn{
+    position: absolute;
+    bottom: 8%;
+    right: 3%;
+    z-index: 1001;
+    border: 1px solid #000;
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 3px;
+    transition: 0.5s linear;
+}
+.memoareabtn:hover{
+    background: steelblue;
+    color: #fff !important;
+    transition: 0.5s linear;
+}

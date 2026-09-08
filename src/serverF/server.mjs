@@ -21,7 +21,19 @@ try {
 
 const app = express();
 
-app.use(corsMiddleware);
+app.use(cors({
+  origin: "https://dashboardkky.netlify.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization"
+  ]
+}));
+
 app.use(express.json());
 app.use(cookieParser());
 

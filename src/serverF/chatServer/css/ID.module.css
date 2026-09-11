@@ -35,7 +35,7 @@
     width: 500px;
     height: 100%;
     background: #fff;
-    padding: 14% 30px; 
+    padding: 4% 30px; 
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   }
   
@@ -168,7 +168,7 @@
   .result {
     margin-top: 30px;
     padding: 20px;
-    background-color: #e2f5f0;
+    background-color: #fff;
     border-radius: 12px;
     text-align: center;
     color: #1f2937;
@@ -192,7 +192,7 @@
   }
   
   .goLogin:hover {
-    background-color: #1a6e60;
+    background-color: #3392ff;
     transform: scale(1.05);
   }
   

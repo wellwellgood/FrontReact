@@ -1,3 +1,4 @@
+import { User, Lock, Eye, Mail, Bell } from 'lucide-react';
 import React, { useState, useEffect } from "react";
 import api from "./util/api.js";
 import styles from "./serverF/chatServer/css/ID.module.css";
@@ -40,7 +41,7 @@ export default function ID() {
 
     try {
       const res = await api.post("/auth/send-code", { phone });
-      alert("인증번호는 개발자도구에서 console로 확인이 가능합니다.")
+      // alert("인증번호는 개발자도구에서 console로 확인이 가능합니다.")
       console.log("✅ 인증번호가 전송되었습니다: " + res.data.code); // 테스트용
       setTimer(180); // 3분
       setIsCodeSent(true);
@@ -88,9 +89,10 @@ export default function ID() {
   return (
     <div className={styles.findID}>
       <div className={styles.IDform}>
+        <User className={styles.icon} />
         <div className={styles.IDarea}>
           <h1>아이디 찾기</h1>
-
+          <h2>Consol로 아이디를 안내해 드립니다.</h2>
           <input
             type="text"
             name="name"

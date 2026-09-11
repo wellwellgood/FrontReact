@@ -125,7 +125,7 @@
     margin-bottom: 15px;
     padding: 0 15px;
     border: 2px solid #bae6fd; /* 연파랑 테두리 */
-    background-color: #f0fdf4; /* 연민트 배경 */
+    background-color: #fff; /* 연민트 배경 */
     border-radius: 8px;
     font-size: 14px;
     color: #1f2937;
@@ -176,7 +176,7 @@
   }
   
   .result span {
-    color: #2c947e;
+    color: #3392ff;
     font-weight: bold;
   }
   

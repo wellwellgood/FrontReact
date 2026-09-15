@@ -22,7 +22,12 @@ try {
 const app = express();
 
 app.use(cors({
-  origin: "https://dashboardkky.netlify.app",
+  origin: [
+    "https://dashboardkky.netlify.app",
+    ...(process.env.NODE_ENV !== "production"
+      ? [3000, 3001, 3002, 3003].map(port => `http://localhost:${port}`)
+      : []),
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [

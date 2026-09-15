@@ -148,7 +148,22 @@ router.post("/find-id", async (req, res) => {
 // ✅ 비밀번호 찾기 (임시)
 router.post("/find-password", async (req, res) => {
   const { username, name, phone1, phone2, phone3 } = req.body;
-  const phone = `${phone1}-${phone2}-${phone3}`;
+
+const result = await pool.query(
+  `SELECT id FROM users
+   WHERE username = $1
+     AND name = $2
+     AND phone1 = $3
+     AND phone2 = $4
+     AND phone3 = $5`,
+  [
+    username?.trim(),
+    name?.trim(),
+    phone1?.trim(),
+    phone2?.trim(),
+    phone3?.trim(),
+  ]
+);
 
   try {
     const result = await pool.query(

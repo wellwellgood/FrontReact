@@ -1,16 +1,19 @@
-// ✅ DB.mjs - 충돌 해결
 import pkg from "pg";
-const { Pool } = pkg;
 import dotenv from "dotenv";
 
-dotenv.config();
+const { Pool } = pkg;
 
-// pool 변수 이름 중복 방지 (pool → dbPool 등)
+// DB.mjs와 같은 폴더의 .env 불러오기
+dotenv.config({
+  path: new URL("./.env", import.meta.url),
+});
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL 환경변수가 없습니다.");
+}
+
 const dbPool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    `postgresql://neondb_owner:zLsRmsjkEJIPDoUHTFRnzpGUjZxVVfAy@ep-xxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`,
-  ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+  connectionString: process.env.DATABASE_URL,
 });
 
 const connectDB = async () => {
@@ -23,6 +26,7 @@ const connectDB = async () => {
   }
 };
 
+// 4분 30초마다 연결 확인
 setInterval(async () => {
   try {
     await dbPool.query("SELECT 1");
@@ -31,5 +35,5 @@ setInterval(async () => {
   }
 }, 1000 * 60 * 4.5);
 
-export default dbPool;         // ✅ default로 내보내기
-export { connectDB };         // ✅ connectDB는 named export
+export default dbPool;
+export { connectDB };

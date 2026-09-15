@@ -38,7 +38,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 try {
-  console.log("⏸️ 모든 라우트 임시 비활성화 - 기본 서버만 실행");
+  console.log("라우트 등록 시작");
 
   console.log("✅ authRouter 타입:", typeof authRouter);
   app.use("/api/auth", authRouter);
@@ -85,7 +85,7 @@ const server = http.createServer(app);
 try {
   const initializeSocket = await import("./socket.js");
   initializeSocket.default(server);
-  console.log("⏸️ 소켓 임시 비활성화");
+  console.log("✅ 소켓 초기화 완료");
 } catch (error) {
   console.error("❌ 소켓 초기화 실패:", error);
 }
@@ -100,4 +100,4 @@ server.listen(PORT, async () => {
   }
 });
 
-console.log("DATABASE_URL:", process.env.NODE_ENV);
+console.log("DB 설정 여부:", Boolean(process.env.DATABASE_URL));

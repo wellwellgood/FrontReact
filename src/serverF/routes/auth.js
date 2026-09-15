@@ -147,30 +147,22 @@ router.post("/find-id", async (req, res) => {
 
 // ✅ 비밀번호 찾기 (임시)
 router.post("/find-password", async (req, res) => {
-const { username, name, phone1, phone2, phone3 } = req.body;
-
-const result = await pool.query(
-  `SELECT id FROM public.users
-   WHERE username = $1
-     AND name = $2
-     AND phone1 = $3
-     AND phone2 = $4
-     AND phone3 = $5`,
-  [
-    username?.trim(),
-    name?.trim(),
-    phone1?.trim(),
-    phone2?.trim(),
-    phone3?.trim(),
-  ]
-);
+  const { username, name, phone1, phone2, phone3 } = req.body;
+  const values = [username, name, phone1, phone2, phone3];
+  if (values.some(value => typeof value !== "string" || !value.trim())) {
+    return res.status(400).json({ message: "아이디, 이름, 전화번호를 모두 입력해주세요." });
+  }
 
   try {
     const result = await pool.query(
-      "SELECT * FROM users WHERE username = $1 AND name = $2 AND phone = $3",
-      [username, name, phone]
+      `SELECT id FROM public.users
+       WHERE username = $1 AND name = $2
+         AND phone1 = $3 AND phone2 = $4 AND phone3 = $5`,
+      values.map(value => value.trim())
     );
-    if (result.rows.length === 0) return res.status(404).json({ message: "정보 불일치" });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "정보 불일치" });
+    }
 
     const token = jwt.sign({ id: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     res.status(200).json({ message: "인증 완료", token });

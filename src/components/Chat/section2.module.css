@@ -742,7 +742,7 @@
 
 @media(max-width:1250px) {
     .header {
-        gap: 25px
+        gap: 115px
     }
 
     .tabs {
@@ -755,7 +755,7 @@
     }
 
     .brand {
-        font-size: 24px !important
+        font-size: 23px !important
     }
 
     .account {
@@ -808,7 +808,8 @@
     }
 
     .tabs button {
-        font-size: 12px
+        font-size: 12px;
+        padding: 0 7px;
     }
 
     .brand {

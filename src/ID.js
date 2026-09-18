@@ -1,4 +1,4 @@
-import { User, Lock, Eye, Mail, Bell } from 'lucide-react';
+import { User } from 'lucide-react';
 import React, { useState, useEffect } from "react";
 import api from "./util/api.js";
 import styles from "./serverF/chatServer/css/ID.module.css";

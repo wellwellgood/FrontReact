@@ -5,8 +5,6 @@ import styles from "./section3.module.css";
 import Search from "../../search.js";
 import AccountSetting from '../../AccountSetting.js';
 import Logo from "../../image/logo.png";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from '../../firebase.js';
 import api from '../../util/api.js';
 
 // const API = process.env.REACT_APP_API || "http://localhost:4000";
@@ -87,7 +85,7 @@ export default function FileUploadPage() {
 
   const handleDownload = async (file) => {
     try {
-      const response = await api.get(`/upload/download/${file.type}/${file.file_name}`, {
+      const response = await api.get(`/upload/files/${encodeURIComponent(file.id)}?download=1`, {
         responseType: "blob",
       });
 
@@ -98,6 +96,7 @@ export default function FileUploadPage() {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("다운로드 실패:", error);
       alert("다운로드 중 오류 발생");

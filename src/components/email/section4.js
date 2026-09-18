@@ -1,34 +1,18 @@
-// ✅ Firebase + EmailJS로 네이버 메일 방식 구현 예시 (React 기준)
-// 파일 업로드 -> Firebase Storage -> 다운로드 URL -> EmailJS로 전송
+import api from "../../util/api.js";
 
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Search from "../../search.js";
 import emailjs from "@emailjs/browser";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { initializeApp } from "firebase/app";
 import styles from "./AA/email.js/SendEmail.module.css"
 import AccountSetting from '../../AccountSetting.js';
 import axios from "axios";
 import Logo from "../../image/logo.png";
 
-// 🔧 Firebase 설정
-const firebaseConfig = {
-  apiKey: "AIzaSyCoRBViUbD7MSGC_2jxged-fBjGkOQC1So",
-  authDomain: "filefolder-54946.firebaseapp.com",
-  projectId: "filefolder-54946",
-  storageBucket: "filefolder-54946.firebasestorage.app",
-  messagingSenderId: "1016654651914",
-  appId: "1:1016654651914:web:552cc88f977c5470d9b5f3",
-  measurementId: "G-HNXRF6QV2R"
-};
-
-// 🔧 초기화
-const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
 
 
-const FirebaseEmailForm = () => {
+
+const EmailForm = () => {
   const form = useRef();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -75,16 +59,11 @@ const FirebaseEmailForm = () => {
     setUploading(true);
 
     try {
-      // 🔼 1. Firebase Storage에 업로드
-      const storageRef = ref(storage, `uploads/${file.name}`);
-      await uploadBytes(storageRef, file);
-
-      // 🔗 2. 다운로드 URL 가져오기
-      const downloadURL = await getDownloadURL(storageRef);
-
-      // 📨 3. EmailJS로 다운로드 링크 포함 전송
-      const formData = new FormData(form.current);
-      formData.append("download_link", downloadURL);
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      const { data } = await api.post("/upload", uploadData);
+      if (!data.success || !data.url) throw new Error("첨부 파일 업로드 실패");
+      form.current.elements.namedItem("download_link").value = data.url;
 
       await emailjs.sendForm(
         "service_a9udeim",
@@ -231,4 +210,4 @@ const FirebaseEmailForm = () => {
     );
   };
     
-    export default FirebaseEmailForm;
+    export default EmailForm;

@@ -89,7 +89,7 @@ export default function Main() {
                 key={tab}
                 className={i === 0 ? styles.activeTab : ""}
                 onClick={() =>
-                  i
+                  i === 1 ? navigate("/ChatApp") : i
                     ? open(
                         tab,
                         "이 화면은 디자인 미리보기입니다. 해당 기능은 아직 연결되지 않았습니다.",
@@ -125,7 +125,7 @@ export default function Main() {
           {account && (
             <div className={styles.accountMenu}>
               <button onClick={() => navigate("/settings")}>계정 설정</button>
-              <button onClick={() => navigate("/ChatApp")}>채팅</button>
+              <button onClick={() => navigate("/ChatApp")}>공고·이력서 분석</button>
               <button onClick={() => navigate("/file")}>파일</button>
               <button onClick={() => navigate("/sendEmail")}>이메일</button>
               <button

@@ -1,693 +1,483 @@
-import React, { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
-import axios from "axios";
-import styles from "./section2.module.css";
-import Search from "../../search.js";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPaperclip } from "react-icons/fa";
-import AccountSetting from '../../AccountSetting.js';
-import Logo from "../../image/logo.png";
 import {
-  loadMessages,
-  sendMessage,
-  fetchUsers,
-  monitorConnectionStatus,
-  addMessageWithDeduplication,
-  API
-} from '../../serverF/middlewares/cors.js';
+  Bell,
+  ChevronDown,
+  Check,
+  CircleCheck,
+  FileText,
+  BriefcaseBusiness,
+  ChartNoAxesColumnIncreasing,
+  Settings,
+  MapPin,
+  ExternalLink,
+  TriangleAlert,
+  CircleHelp,
+  Sparkles,
+  ArrowRight,
+  X,
+} from "lucide-react";
+import styles from "./section2.module.css";
 
-const Section2 = () => {
+const requirements = [
+  {
+    title: "React",
+    status: "충족",
+    tone: "green",
+    icon: CircleCheck,
+    text: "프로젝트 2건에서 사용한 경험이 확인돼요.",
+  },
+  {
+    title: "TypeScript",
+    status: "보완 필요",
+    tone: "yellow",
+    icon: TriangleAlert,
+    text: "이력서에서 경험을 확인하기 어려워요.\n관련 프로젝트나 학습 경험을 추가해 보세요.",
+  },
+  {
+    title: "REST API",
+    status: "충족",
+    tone: "green",
+    icon: CircleCheck,
+    text: "여러 프로젝트에서 API 연동 경험이 확인돼요.",
+  },
+  {
+    title: "테스트 경험",
+    status: "확인 필요",
+    tone: "gray",
+    icon: CircleHelp,
+    text: "자동화 테스트 또는 단위 테스트 경험이 명확히 보이지 않아요.\n관련 경험이 있다면 구체적으로 작성해 보세요.",
+  },
+];
+const initialJob = {
+  company: "루미랩",
+  role: "프론트엔드 개발자",
+  location: "서울 강남구",
+  description:
+    "사용자 중심의 웹 서비스 개발 및 유지보수\n다양한 팀과 협업하여 제품 개선\n새로운 기술을 도입하고 서비스 품질 향상에 기여",
+  requirements:
+    "React 관련 실무 경험\nTypeScript 사용 경험\nREST API 연동 경험\n팀원과의 협업 경험",
+  url: "",
+};
+
+export default function Section2() {
   const navigate = useNavigate();
-  const chatBoxRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const messagesEndRef = useRef(null);
-
-  // 상태 관리
-  const [socket, setSocket] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [name, setName] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [readMessages, setReadMessages] = useState(new Set());
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [showResults, setShowResults] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [userListError, setUserListError] = useState("");
-  const [onlineUsers, setOnlineUsers] = useState([]);
-  const [showSettings, setShowSettings] = useState(false);
-  const [isSending, setIsSending] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState({ status: 'disconnected' });
-
-  // 연결 상태 모니터링
-  useEffect(() => {
-    const cleanup = monitorConnectionStatus((status) => {
-      setConnectionStatus(status);
-    });
-    return cleanup;
-  }, []);
-
-  // 사용자 인증 확인
-  useEffect(() => {
-    const u = sessionStorage.getItem("username");
-    const n = sessionStorage.getItem("name");
-    if (!u || !n) {
-      navigate("/login");
-    } else {
-      setUsername(u);
-      setName(n);
-    }
-  }, [navigate]);
-
-  // 테마 설정
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  // 소켓 연결 및 메시지 수신 처리
-  useEffect(() => {
-    if (!username) return;
-
-    const s = io(API, {
-      transports: ["websocket"],
-      withCredentials: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
-    setSocket(s);
-
-    s.on("connect", () => {
-      console.log("🔌 소켓 연결됨");
-      s.emit("join", username);
-      s.emit("online", username);
-    });
-
-    s.on("message", (msg) => {
-      console.log("📥 수신 메시지:", msg);
-      setMessages(prev => addMessageWithDeduplication(prev, msg));
-    });
-
-    s.on("messageRead", ({ messageId }) => {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === messageId
-            ? { ...msg, read: true }
-            : msg
-        )
-      );
-    });
-
-    s.on("onlineUsers", (list) => {
-      setOnlineUsers(list || []);
-    });
-
-    s.on("disconnect", () => {
-      console.log("🔌 소켓 연결 해제");
-    });
-
-    s.on("reconnect", () => {
-      console.log("🔄 소켓 재연결됨");
-      s.emit("join", username);
-      s.emit("online", username);
-    });
-
-    s.on("connect_error", (error) => {
-      console.error("❌ 소켓 연결 오류:", error);
-    });
-
-    return () => {
-      console.log("🧹 소켓 정리");
-      s.disconnect();
-      setSocket(null);
-    };
-  }, [username]);
-
-  // 사용자 목록 가져오기
-  useEffect(() => {
-    if (username) {
-      fetchUsers(setUsers, setIsLoading, setUserListError);
-    }
-  }, [username]);
-
-  // 사용자 선택 시 메시지 로드
-  useEffect(() => {
-    if (selectedUser && socket) {
-      loadMessages(username, selectedUser.username, socket, setMessages);
-      socket.emit("enterChat", {
-        myUsername: username,
-        withUser: selectedUser.username,
-      });
-    }
-  }, [selectedUser, socket, username]);
-
-  // 메시지 스크롤 처리
-  useEffect(() => {
-    scrollToBottom();
-
-    if (messages.length > 0 && selectedUser?.username) {
-      const lastMsg = messages[messages.length - 1];
-      if (lastMsg?.id) {
-        const key = `${selectedUser.username}_lastMessageId`;
-        localStorage.setItem(key, lastMsg.id);
-      }
-    }
-  }, [messages, selectedUser]);
-
-  const handleChatFileUpload = async (file) => {
-    if (!file || !selectedUser || !username) return;
-    if (!socket) {
-      console.warn("⚠️ 소켓 연결이 없습니다. 파일 전송 불가");
+  const input = useRef(null);
+  const modal = useRef(null);
+  const [dialog, setDialog] = useState({ title: "", text: "" });
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [resume, setResume] = useState(null);
+  const [fileError, setFileError] = useState("");
+  const [job, setJob] = useState(initialJob);
+  const [draft, setDraft] = useState(initialJob);
+  const [changed, setChanged] = useState(false);
+  const [collapsed, setCollapsed] = useState([]);
+  const [urlError, setUrlError] = useState("");
+  const name =
+    sessionStorage.getItem("name") ||
+    sessionStorage.getItem("username") ||
+    "사용자";
+  const showDialog = (title, text, edit = false) => {
+    setDialog({ title, text, edit });
+    setDraft(job);
+    setUrlError("");
+    modal.current.showModal();
+  };
+  const selectResume = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!/\.(pdf|docx)$/i.test(file.name) || file.size > 10 * 1024 * 1024) {
+      setFileError("10MB 이하의 PDF 또는 DOCX 파일을 선택해 주세요.");
+      e.target.value = "";
       return;
     }
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('roomId', selectedUser.username || 'defaultRoom');
-      formData.append('sender', username);
-
-      const res = await fetch(`${API}/api/upload-chat`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        const messageData = {
-          sender_username: username,
-          receiver_username: selectedUser.username,
-          receiver_name: selectedUser.name,
-          content: '',
-          file_url: data.url,
-          file_name: file.name,
-          file_size: file.size,
-          read: false,
-          time: new Date().toISOString(),
-        };
-
-        // 서버로 실시간 전송
-        socket.emit('chatMessage', messageData);
-
-        // 내 화면에도 즉시 반영
-        setMessages(prev => addMessageWithDeduplication(prev, {
-          ...messageData,
-        }));
-      }
-    } catch (err) {
-      console.error('❌ 파일 업로드 실패:', err);
-      alert('파일 업로드 중 오류가 발생했습니다.');
-    }
+    setFileError("");
+    setResume({ name: file.name, date: new Date().toLocaleString("ko-KR") });
+    setChanged(true);
+    e.target.value = "";
   };
-
-  const handleDownload = (url) => {
-    try {
-      const cleanUrl = url.split('?')[0];
-      const parts = cleanUrl.split('/');
-      const chatIndex = parts.findIndex(p => p === 'chat');
-      const key = decodeURIComponent(parts.slice(chatIndex).join('/'));
-
-      console.log("📥 다운로드 요청 key:", key);
-
-      const link = document.createElement('a');
-      link.href = `${API}/api/upload-chat/download?key=${encodeURIComponent(key)}`;
-      link.download = key.split('/').pop();
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      console.error('❌ 파일 다운로드 실패:', err);
-    }
-  };
-
-  // 메시지 전송 처리
-  const handleSend = async () => {
-    if (!input.trim() && !selectedFile) return;
-    if (!selectedUser) return;
-    if (isSending) return;
-
-    setIsSending(true);
-
-    try {
-      let fileUrl = null, fileName = null, fileSize = null;
-
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-
-        const res = await fetch(`${API}/api/upload-chat`, {
-          method: 'POST',
-          body: formData,
-        });
-        const data = await res.json();
-        fileUrl = data.url;
-        fileName = selectedFile.name;
-        fileSize = selectedFile.size;
-      }
-
-      const messageData = {
-        sender_username: username,
-        receiver_username: selectedUser.username,
-        receiver_name: selectedUser.name,
-        content: input.trim(),
-        file_url: fileUrl,
-        file_name: fileName,
-        file_size: fileSize,
-        read: false,
-      };
-
-      // HTTP로 저장
-      const savedMessageRes = await axios.post(`${API}/api/chat-upload/save`, messageData);
-      const savedMessage = savedMessageRes.data || messageData;
-
-      // 내 화면 반영
-      setMessages(prev => addMessageWithDeduplication(prev, savedMessage));
-
-      // 소켓으로도 실시간 전송 (상대방에게)
-      if (socket) {
-        socket.emit('chatMessage', {
-          ...savedMessage,
-          time: savedMessage.time || new Date().toISOString(),
-        });
-      }
-
-      setInput("");
-      setSelectedFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-
-    } catch (err) {
-      console.error("❌ 메시지 전송 실패:", err);
-      alert(`메시지 전송에 실패했습니다: ${err.message}`);
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  // 사용자 정렬 (나 먼저, 나머지는 이름순)
-  const sortedUsers = [
-    ...users.filter(u => u.username === username),
-    ...users.filter(u => u.username !== username)
-      .sort((a, b) => a.name.localeCompare(b.name))
-  ];
-
-  // 키보드 이벤트 처리
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  // 메시지 읽음 상태 확인
-  const getMessageReadStatus = (msg) => {
-    if (!msg) return null;
-    if (msg.sender_username !== username) return null;
-    return msg.read === true ? '읽음' : '안읽음';
-  };
-
-  // 필터링된 메시지 가져오기
-  const getFilteredMessages = () => {
-    const filtered = messages.filter(msg =>
-      (msg.sender_username === username && msg.receiver_username === selectedUser?.username) ||
-      (msg.sender_username === selectedUser?.username && msg.receiver_username === username)
-    );
-
-    return filtered.sort((a, b) => new Date(a.time) - new Date(b.time));
-  };
-
-  // 텍스트를 링크로 변환
-  const convertTextToLink = (text) => {
-    const regex = /\b((?:https?:\/\/|ftp:\/\/|www\.)[^\s\/]+(?:\/[^\s\/]+)*)(?:\/)?/gi;
-    return text.split(regex).map((part, i) =>
-      regex.test(part) ? (
-        <a
-          key={i}
-          href={part.startsWith("http") ? part : `https://${part}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "#4caf50" }}
-        >
-          {part}
-        </a>
-      ) : part
-    );
-  };
-
-  // 파일 붙여넣기
-  const handlePaste = (e) => {
-    const items = e.clipboardData.items;
-    for (const item of items) {
-      if (item.type.startsWith("image/")) {
-        const file = item.getAsFile();
-        setSelectedFile(file);
+  const saveJob = (e) => {
+    e.preventDefault();
+    if (draft.url.trim()) {
+      try {
+        if (!["http:", "https:"].includes(new URL(draft.url.trim()).protocol))
+          throw new Error();
+      } catch {
+        setUrlError("http 또는 https로 시작하는 올바른 주소를 입력해 주세요.");
+        return;
       }
     }
-  };
-
-  // 파일 URL을 절대 경로로 변환
-  const getAbsoluteUrl = (fileUrl) => {
-    return fileUrl.startsWith("http")
-      ? fileUrl
-      : `${API}${fileUrl.startsWith("/") ? fileUrl : "/" + fileUrl}`;
-  };
-
-  // 파일 크기 포맷팅
-  const formatBytes = (bytes) => {
-    if (!bytes) return "0 B";
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  // 파일 강제 다운로드
-  const forceDownload = async (url, filename) => {
-    try {
-      const absoluteUrl = url.startsWith("http")
-        ? url
-        : `${API}${url.startsWith("/") ? url : "/" + url}`;
-
-      const res = await fetch(absoluteUrl, { mode: 'cors' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const blob = await res.blob();
-
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(blobUrl);
-    } catch (e) {
-      console.error("❌ 파일 다운로드 실패:", e);
-      alert("파일을 다운로드할 수 없습니다.");
-    }
-  };
-
-  // 파일 선택 처리
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      console.log("📎 파일 선택:", file.name);
-      handleChatFileUpload(file);
-    }
-  };
-
-  // 로그아웃 처리
-  const handleLogout = () => {
-    sessionStorage.clear();
-    socket?.disconnect();
-    setUsername("");
-    setName("");
-    setUsers([]);
-    setMessages([]);
-    setSelectedUser(null);
-    setReadMessages(new Set());
-    navigate("/login");
-  };
-
-  // 검색 데이터 가져오기
-  const fetchSearchData = async () => {
-    try {
-      const res = await axios.get(`${API}/api/search`, { params: { q: searchText } });
-      setSearchResults(res.data || []);
-      setShowResults(true);
-    } catch (err) {
-      console.error("❌ 검색 실패:", err);
-    }
-  };
-
-  // 스크롤 최하단으로 이동
-  const scrollToBottom = () => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-    }
-  };
-
-  // 스크롤 자동 최하단 고정
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      if (chatBoxRef.current) {
-        chatBoxRef.current.scrollTo({
-          top: chatBoxRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
+    setJob({
+      ...draft,
+      company: draft.company.trim(),
+      role: draft.role.trim(),
+      url: draft.url.trim(),
     });
-
-    if (chatBoxRef.current) {
-      observer.observe(chatBoxRef.current, { childList: true, subtree: true });
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
+    setChanged(true);
+    modal.current.close();
+  };
+  const bullets = (text) =>
+    text
+      .split("\n")
+      .filter(Boolean)
+      .map((line, i) => (
+        <p className={styles.bullet} key={i}>
+          • {line}
+        </p>
+      ));
   return (
-    <div className={styles.container}>
-      {/* 네비게이션 바 */}
-      <nav>
-        <div className={styles.nav}>
-          <div className={styles.logo1}>
-            <img src={Logo} className={styles.logo} alt="로고" />
-          </div>
-          <ul className={styles.navmenu}>
-            <li className={styles.homebtn}>
-              <button className={styles.button} onClick={() => navigate("/main")}>
-                Home
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <button className={styles.brand} onClick={() => navigate("/main")}>
+          취업 대시보드
+        </button>
+        <div className={styles.tabs} aria-label="주요 메뉴">
+          {["종합 현황", "공고·이력서 분석", "지원 관리", "면접 준비"].map(
+            (tab, i) => (
+              <button
+                key={tab}
+                aria-current={i === 1 ? "page" : undefined}
+                className={i === 1 ? styles.active : ""}
+                onClick={() =>
+                  i === 0
+                    ? navigate("/main")
+                    : i > 1 &&
+                      showDialog(tab, "해당 화면은 아직 연결되지 않았습니다.")
+                }
+              >
+                {tab}
               </button>
-            </li>
-            <li className={styles.infobtn}>
-              <button className={styles.button} onClick={() => navigate("/ChatApp")}>
-                Chat
-              </button>
-            </li>
-            <li className={styles.filebtn}>
-              <button className={styles.button} onClick={() => navigate("/file")}>
-                File
-              </button>
-            </li>
-            <li className={styles.emailbtn}>
-              <button onClick={() => navigate("/sendEmail")}>
-                Email
-              </button>
-            </li>
-          </ul>
+            ),
+          )}
         </div>
-      </nav>
-
-      {/* 검색 컴포넌트 */}
-      <Search
-        setTheme={setTheme}
-        fetchSearchData={fetchSearchData}
-        searchResults={searchResults}
-        isLoading={isLoading}
-        setSearchText={setSearchText}
-        searchText={searchText}
-        showResults={showResults}
-        setShowResults={setShowResults}
-        handleLogout={handleLogout}
-        setShowSettings={setShowSettings}
-      />
-
-      {/* 메인 채팅 화면 */}
-      <div className={styles.chatscreen}>
-        {/* 사용자 목록 */}
-        <div className={styles.userList}>
-          <h3>유저 목록 {users.length > 0 && `(${users.length}명)`}</h3>
-
-          {isLoading && <div className={styles.loading}>로딩 중...</div>}
-
-          {userListError && (
-            <div className={styles.error}>
-              <div>{userListError}</div>
-              <button onClick={() => window.location.reload()}>새로고침</button>
+        <div className={styles.account}>
+          <button
+            className={styles.iconButton}
+            aria-label="알림"
+            onClick={() => showDialog("알림", "새로운 알림이 없습니다.")}
+          >
+            <Bell />
+            <i />
+          </button>
+          <button
+            className={styles.profile}
+            aria-expanded={profileOpen}
+            onClick={() => setProfileOpen(!profileOpen)}
+          >
+            <span className={styles.avatar}>{name.slice(0, 1)}</span>
+            {name}
+            <ChevronDown />
+          </button>
+          {profileOpen && (
+            <div className={styles.menu}>
+              <button onClick={() => navigate("/settings")}>계정 설정</button>
               <button
                 onClick={() => {
-                  setUserListError("");
-                  setIsLoading(true);
-                  window.location.reload();
+                  sessionStorage.clear();
+                  navigate("/login");
                 }}
               >
-                다시 시도
+                로그아웃
               </button>
             </div>
           )}
-
-          {!isLoading && !userListError && users.length === 0 && (
-            <div className={styles.noUsers}>
-              <div>등록된 다른 사용자가 없습니다.</div>
-              <button onClick={() => window.location.reload()}>새로고침</button>
-            </div>
-          )}
-
-          {sortedUsers.map(user => {
-            const unreadCount = messages.filter(msg =>
-              msg.sender_username === user.username &&
-              msg.receiver_username === username &&
-              !msg.read
-            ).length;
-
-            return (
-              <div
-                key={user.username}
-                className={`${styles.userItem} ${selectedUser?.username === user.username ? styles.selected : ""
-                  }`}
-                onClick={() => setSelectedUser(user)}
-              >
-                <span>
-                  {onlineUsers.includes(user.username) && (
-                    <span className={styles.onlineDot}>●</span>
-                  )}
-                  {user.name} ({user.username})
-                  {unreadCount > 0 && (
-                    <span className={styles.unreadBadge}>{unreadCount}</span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
         </div>
-
-        {/* 채팅 박스 */}
-        <div className={styles.chatBox}>
-          <div className={styles.chatHeaderContainer} ref={chatBoxRef}>
-            <div className={styles.chatHeader}>
-              {selectedUser ? `${selectedUser.name}님과 채팅중...` : "채팅할 유저를 선택하세요"}
+      </header>
+      <main className={styles.content}>
+        <section className={styles.hero}>
+          <div>
+            <span className={styles.badge}>
+              <CircleCheck />
+              {changed ? "분석 대기" : "분석 예시"}
+            </span>
+            <h1>내 경험과 공고를 연결하세요</h1>
+            <p>
+              이력서와 채용공고를 분석하여, 강점은 더 부각하고 부족한 부분은
+              채워보세요.
+            </p>
+          </div>
+          <aside>
+            더 나은 기회를 향한
+            <br />
+            당신의 도전을 응원합니다.
+            <span />
+          </aside>
+        </section>
+        <div className={styles.columns}>
+          <section className={styles.card}>
+            <div className={styles.cardHeading}>
+              <FileText />
+              <div>
+                <h2>내 이력서</h2>
+                <p>지금의 이력서로 분석을 진행해요.</p>
+              </div>
             </div>
-
-            {/* 메시지 표시 영역 */}
-            <div className={styles.messages}>
-              {selectedUser && getFilteredMessages().map((msg, index) => {
-                const isMine = msg.sender_username === username;
-                const readStatus = getMessageReadStatus(msg);
-
+            <div className={styles.upload}>
+              <div className={styles.fileIcon}>
+                <FileText />
+              </div>
+              <strong>{resume?.name || "김지원_이력서.pdf"}</strong>
+              <span>
+                {resume
+                  ? `선택일 ${resume.date}`
+                  : "예시 이력서 · 2026. 09. 18. 14:32"}
+              </span>
+              <button
+                className={styles.outline}
+                onClick={() => input.current.click()}
+              >
+                이력서 변경
+              </button>
+              <input
+                ref={input}
+                type="file"
+                accept=".pdf,.docx"
+                onChange={selectResume}
+                hidden
+              />
+              <small>PDF, DOCX · 최대 10MB</small>
+            </div>
+            {fileError && (
+              <p className={styles.error} role="alert">
+                {fileError}
+              </p>
+            )}
+            <div className={styles.skills}>
+              <h3>
+                <Settings />
+                주요 스킬 {changed && <small>예시</small>}
+              </h3>
+              <div>
+                {["React", "JavaScript", "CSS", "Git"].map((skill) => (
+                  <span key={skill}>{skill}</span>
+                ))}
+              </div>
+            </div>
+          </section>
+          <section className={styles.card}>
+            <div className={styles.cardHeading}>
+              <BriefcaseBusiness />
+              <div>
+                <h2>채용공고</h2>
+                <p>선택한 공고와 이력서를 비교해요.</p>
+              </div>
+              {job.url ? (
+                <a
+                  className={styles.external}
+                  href={job.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  새 창에서 보기 <ExternalLink />
+                </a>
+              ) : (
+                <button
+                  className={styles.external}
+                  onClick={() =>
+                    showDialog(
+                      "공고 링크",
+                      "현재는 예시 공고입니다. 공고 변경에서 실제 주소를 입력하면 새 창에서 열 수 있어요.",
+                    )
+                  }
+                >
+                  새 창에서 보기 <ExternalLink />
+                </button>
+              )}
+            </div>
+            <div className={styles.company}>
+              <span>{job.company.slice(0, 1)}</span>
+              <div>
+                <strong>{job.company}</strong>
+                <p>일상을 더 빛나게, 함께 만드는 기술</p>
+              </div>
+            </div>
+            <h2 className={styles.jobTitle}>{job.role}</h2>
+            <div className={styles.chips}>
+              <span>정규직</span>
+              <span>경력 무관</span>
+              <span>
+                <MapPin />
+                {job.location || "지역 미입력"}
+              </span>
+            </div>
+            <div className={styles.jobSection}>
+              <h3>주요 업무</h3>
+              {bullets(job.description)}
+            </div>
+            <div className={styles.jobSection}>
+              <h3>필수 요건</h3>
+              {bullets(job.requirements)}
+            </div>
+            <button
+              className={`${styles.outline} ${styles.changeJob}`}
+              onClick={() => showDialog("채용공고 변경", "", true)}
+            >
+              공고 변경
+            </button>
+          </section>
+          <section className={styles.card}>
+            <div className={styles.cardHeading}>
+              <ChartNoAxesColumnIncreasing />
+              <div>
+                <h2>요건별 분석</h2>
+                <p>
+                  {changed
+                    ? "자료가 변경됐어요. 실제 AI 분석은 아직 연결되지 않았습니다."
+                    : "공고의 주요 요건과 내 이력서를 비교한 예시예요."}
+                </p>
+              </div>
+            </div>
+            <div className={styles.results}>
+              {requirements.map((item, i) => {
+                const Icon = changed ? CircleHelp : item.icon;
+                const tone = changed ? "gray" : item.tone;
                 return (
-                  <div
-                    key={`${msg.id}-${index}`}
-                    id={`msg-${msg.id}`}
-                    className={isMine ? styles.myMessage : styles.theirMessage}
-                  >
-                    {!isMine && (
-                      <div className={styles.profileIcon}>
-                        {msg.sender_username?.[0]?.toUpperCase() || "?"}
-                      </div>
-                    )}
-                    <div className={styles.bubbleWrapper}>
-                      <div className={styles.messageBubble}>
-                        <div className={styles.messageText}>
-                          {msg.file_url && msg.file_name && (
-                            <div className={styles.filePreview}>
-                              {/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.file_name) ? (
-                                <img
-                                  src={getAbsoluteUrl(msg.file_url)}
-                                  alt={msg.file_name}
-                                  className={styles.chatImage}
-                                  onClick={() => window.open(getAbsoluteUrl(msg.file_url), '_blank', 'width=600,height=400')}
-                                />
-                              ) : (
-                                <button
-                                  className={styles.downBtn}
-                                  onClick={() => handleDownload(getAbsoluteUrl(msg.file_url))}
-                                >
-                                  {msg.file_name} ({formatBytes(msg.file_size || 0)})
-                                </button>
-                              )}
-                            </div>
-                          )}
-
-                          {msg.content && convertTextToLink(msg.content)}
-                        </div>
-                        <div className={styles.messageMeta}>
-                          <span className={styles.time}>
-                            {msg.time
-                              ? new Date(msg.time).toLocaleTimeString("ko-KR", {
-                                timeZone: "Asia/Seoul",
-                                year: "2-digit",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
-                              : ""}
-                          </span>
-                          {isMine && readStatus && (
-                            <span className={`${styles.readMark} ${readStatus === '읽음' ? styles.read : styles.unread}`}>
-                              {readStatus}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    {isMine && (
-                      <div className={styles.profileIcon}>
-                        {name?.[0]?.toUpperCase() || "?"}
-                      </div>
+                  <div className={styles.result} key={item.title}>
+                    <button
+                      className={styles.resultHeader}
+                      aria-expanded={!collapsed.includes(i)}
+                      aria-controls={`requirement-${i}`}
+                      onClick={() =>
+                        setCollapsed(
+                          collapsed.includes(i)
+                            ? collapsed.filter((n) => n !== i)
+                            : [...collapsed, i],
+                        )
+                      }
+                    >
+                      <strong>{item.title}</strong>
+                      <span className={`${styles.status} ${styles[tone]}`}>
+                        <Icon />
+                        {changed ? "분석 대기" : item.status}
+                      </span>
+                      <ChevronDown
+                        className={collapsed.includes(i) ? styles.rotated : ""}
+                      />
+                    </button>
+                    {!collapsed.includes(i) && (
+                      <p
+                        id={`requirement-${i}`}
+                        className={`${styles.explanation} ${styles[tone]}`}
+                      >
+                        {changed
+                          ? "선택한 자료의 내용을 아직 분석하지 않았습니다."
+                          : item.text}
+                      </p>
                     )}
                   </div>
                 );
               })}
-              <div ref={messagesEndRef} />
+            </div>
+          </section>
+        </div>
+        <section className={styles.guide}>
+          <div className={styles.guideTitle}>
+            <Sparkles />
+            <div>
+              <h2>AI 이력서 개선 제안</h2>
+              <p>분석 결과를 바탕으로, 이런 내용을 추가해 보세요.</p>
             </div>
           </div>
-
-          {/* 메시지 입력 영역 */}
-          <div className={styles.inputBox}>
-            <button
-              type="button"
-              className={styles.fileButton}
-              onClick={() => fileInputRef.current?.click()}
-              title="파일 첨부"
-              disabled={isSending}
-            >
-              <FaPaperclip size={20} />
-            </button>
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              style={{ display: "none" }}
-            />
-
-            {selectedFile && (
-              <div className={styles.selectedFile}>
-                📎 {selectedFile.name}
-                <button onClick={() => setSelectedFile(null)}>×</button>
-              </div>
-            )}
-
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              onPaste={handlePaste}
-              placeholder="메시지를 입력하세요"
-              disabled={isSending || !selectedUser}
-            />
-
-            <button
-              className={styles.submit}
-              onClick={handleSend}
-              disabled={(!input.trim() && !selectedFile) || !selectedUser || isSending}
-            >
-              {isSending ? "전송 중..." : "전송"}
-            </button>
+          <div className={styles.tip}>
+            <span>1</span>
+            <div>
+              <strong>프로젝트에서 맡은 역할을 구체적으로 적어보세요.</strong>
+              <p>
+                사용한 기술, 해결한 문제, 본인의 기여도를 함께 적으면 좋아요.
+              </p>
+            </div>
           </div>
+          <div className={styles.tip}>
+            <span>2</span>
+            <div>
+              <strong>성능 개선 전후의 수치를 추가해 보세요.</strong>
+              <p>구체적인 지표는 기술 역량을 더 효과적으로 보여줘요.</p>
+            </div>
+          </div>
+          <button
+            className={styles.primary}
+            onClick={() =>
+              showDialog(
+                "이력서 수정 초안 예시",
+                "React 기반 [프로젝트명]에서 [담당 기능]을 개발했습니다. [문제]를 해결하기 위해 [구체적인 행동]을 수행했고, [측정한 지표]를 [개선 전]에서 [개선 후]로 개선했습니다. 실제 경험과 확인 가능한 수치로 채워주세요.\n\n이 내용은 작성 예시이며 업로드한 이력서의 AI 분석 결과가 아닙니다.",
+              )
+            }
+          >
+            수정 초안 보기 <ArrowRight />
+          </button>
+        </section>
+        <p className={styles.notice}>
+          디자인 미리보기 · 공고와 분석 결과는 예시입니다. 선택한 파일은 서버로
+          전송되지 않으며, 변경 사항은 이 화면에서만 유지됩니다.
+        </p>
+      </main>
+      <dialog
+        ref={modal}
+        className={styles.dialog}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) modal.current.close();
+        }}
+      >
+        <div className={styles.dialogHeader}>
+          <h2>{dialog.title}</h2>
+          <button
+            className={styles.iconButton}
+            aria-label="닫기"
+            onClick={() => modal.current.close()}
+          >
+            <X />
+          </button>
         </div>
-      </div>
-
-      {/* 계정 설정 모달 */}
-      {showSettings && (
-        <AccountSetting onClose={() => setShowSettings(false)} />
-      )}
+        {dialog.edit ? (
+          <form onSubmit={saveJob}>
+            {[
+              ["company", "기업명"],
+              ["role", "직무"],
+              ["location", "지역"],
+              ["url", "공고 주소 (선택)"],
+            ].map(([key, label]) => (
+              <label key={key}>
+                {label}
+                <input
+                  required={key === "company" || key === "role"}
+                  value={draft[key]}
+                  onChange={(e) =>
+                    setDraft({ ...draft, [key]: e.target.value })
+                  }
+                />
+              </label>
+            ))}
+            {[
+              ["description", "주요 업무"],
+              ["requirements", "필수 요건"],
+            ].map(([key, label]) => (
+              <label key={key}>
+                {label}
+                <textarea
+                  rows={3}
+                  value={draft[key]}
+                  onChange={(e) =>
+                    setDraft({ ...draft, [key]: e.target.value })
+                  }
+                />
+              </label>
+            ))}
+            {urlError && (
+              <p className={styles.error} role="alert">
+                {urlError}
+              </p>
+            )}
+            <button
+              className={styles.primary}
+              disabled={!draft.company.trim() || !draft.role.trim()}
+            >
+              저장하기 <Check />
+            </button>
+          </form>
+        ) : (
+          <p className={styles.dialogText}>{dialog.text}</p>
+        )}
+      </dialog>
     </div>
   );
-};
-
-export default Section2;
+}

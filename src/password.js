@@ -1,11 +1,12 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./serverF/chatServer/css/password.module.css";
 import api from "./util/api.js";
-import { Lock } from 'lucide-react';
+import { ArrowLeft, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Password() {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -14,7 +15,9 @@ export default function Password() {
   const [devCode, setDevCode] = useState("");
   const [sendStatus, setSendStatus] = useState("");
   const [sending, setSending] = useState(false);
-  const showDevCode = process.env.NODE_ENV === "development" && window.location.hostname === "localhost";
+  const showDevCode =
+    process.env.NODE_ENV === "development" &&
+    window.location.hostname === "localhost";
   const [isVerified, setIsVerified] = useState(false);
   const [result, setResult] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -40,18 +43,27 @@ export default function Password() {
     setResetToken("");
     setSendStatus("인증번호 요청 중...");
     try {
-      const res = await api.post("/auth/send-code", { phone }, { timeout: 10000 });
+      const res = await api.post(
+        "/auth/send-code",
+        { phone },
+        { timeout: 10000 },
+      );
       setTimer(180);
       if (showDevCode && res.data.code) {
         setDevCode(String(res.data.code));
-        setSendStatus("아래 개발용 인증번호를 입력하세요. 실제 SMS는 발송되지 않습니다.");
+        setSendStatus(
+          "아래 개발용 인증번호를 입력하세요. 실제 SMS는 발송되지 않습니다.",
+        );
       } else {
         setSendStatus(res.data.message || "인증번호 요청이 완료됐습니다.");
       }
     } catch (err) {
-      setSendStatus(err.response?.data?.message || (err.code === "ECONNABORTED"
-        ? "요청 시간이 초과됐습니다. 백엔드 서버를 확인하세요."
-        : "인증번호 요청 실패: 백엔드 10000번 서버와 CORS 설정을 확인하세요."));
+      setSendStatus(
+        err.response?.data?.message ||
+          (err.code === "ECONNABORTED"
+            ? "요청 시간이 초과됐습니다. 백엔드 서버를 확인하세요."
+            : "인증번호 요청 실패: 백엔드 10000번 서버와 CORS 설정을 확인하세요."),
+      );
     } finally {
       setSending(false);
     }
@@ -60,7 +72,10 @@ export default function Password() {
   const handleVerify = async () => {
     if (!verificationCode) return alert("인증번호를 입력해주세요.");
     try {
-      const res = await api.post("/auth/verify-code", { phone, code: verificationCode });
+      const res = await api.post("/auth/verify-code", {
+        phone,
+        code: verificationCode,
+      });
       setIsVerified(true);
       alert("✅ 인증 성공");
     } catch (err) {
@@ -78,7 +93,7 @@ export default function Password() {
         name,
         phone1: phoneParts[0],
         phone2: phoneParts[1],
-        phone3: phoneParts[2]
+        phone3: phoneParts[2],
       });
       alert("인증 완료. 새 비밀번호를 입력하세요.");
       setResetToken(res.data.token);
@@ -89,11 +104,12 @@ export default function Password() {
   };
 
   const handleResetPassword = async () => {
-    if (!newPassword || !resetToken) return alert("새 비밀번호를 입력해주세요.");
+    if (!newPassword || !resetToken)
+      return alert("새 비밀번호를 입력해주세요.");
     try {
       const res = await api.post("/auth/reset-password", {
         token: resetToken,
-        newPassword
+        newPassword,
       });
       setResult(res.data.message);
     } catch (err) {
@@ -106,6 +122,13 @@ export default function Password() {
     <div className={styles.findID}>
       <div className={styles.IDform}>
         <div className={styles.IDarea}>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="뒤로가기"
+          >
+            <ArrowLeft className={styles.ArrowLeft} />
+          </button>
           <Lock className={styles.icon} />
           <h1>비밀번호 찾기</h1>
           <input
@@ -129,12 +152,18 @@ export default function Password() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
-          <button className={styles.sendBtn} onClick={handleSendCode} disabled={sending}>
+          <button
+            className={styles.sendBtn}
+            onClick={handleSendCode}
+            disabled={sending}
+          >
             {sending ? "요청 중..." : "인증번호 받기"}
           </button>
           <p role="status">{sendStatus}</p>
           {showDevCode && devCode && timer > 0 && !isVerified && (
-            <p>개발용 인증번호: <strong>{devCode}</strong></p>
+            <p>
+              개발용 인증번호: <strong>{devCode}</strong>
+            </p>
           )}
           {timer > 0 && <p>남은 시간: {timer}s</p>}
 
@@ -145,9 +174,13 @@ export default function Password() {
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
           />
-          <button className={styles.verifyBtn} onClick={handleVerify}>인증 확인</button>
+          <button className={styles.verifyBtn} onClick={handleVerify}>
+            인증 확인
+          </button>
 
-          <button className={styles.findBtn} onClick={handleFindPassword}>임시 비밀번호 받기</button>
+          <button className={styles.findBtn} onClick={handleFindPassword}>
+            임시 비밀번호 받기
+          </button>
 
           {resetToken && (
             <>
@@ -158,7 +191,12 @@ export default function Password() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
-              <button className={styles.verifyBtn} onClick={handleResetPassword}>비밀번호 재설정</button>
+              <button
+                className={styles.verifyBtn}
+                onClick={handleResetPassword}
+              >
+                비밀번호 재설정
+              </button>
             </>
           )}
 

@@ -1,9 +1,12 @@
-import { User } from 'lucide-react';
+import { User } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import api from "./util/api.js";
 import styles from "./serverF/chatServer/css/ID.module.css";
+import { useNavigate } from "react-router-dom";
+import { UserRoundPlus, ArrowLeft } from "lucide-react";
 
 export default function ID() {
+  const navigate = useNavigate();
   const [verificationCode, setVerificationCode] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [foundID, setFoundID] = useState("");
@@ -61,7 +64,7 @@ export default function ID() {
       });
 
       alert("✅ 인증 성공: " + res.data.message);
-      setIsVerified(true);  
+      setIsVerified(true);
     } catch (err) {
       console.error("❌ 인증 실패:", err);
       alert("❌ 인증 실패: " + (err.response?.data?.message || "오류 발생"));
@@ -89,6 +92,13 @@ export default function ID() {
   return (
     <div className={styles.findID}>
       <div className={styles.IDform}>
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="뒤로가기"
+        >
+          <ArrowLeft className={styles.ArrowLeft} />
+        </button>
         <User className={styles.icon} />
         <div className={styles.IDarea}>
           <h1>아이디 찾기</h1>
@@ -153,7 +163,9 @@ export default function ID() {
                 onChange={(e) => setVerificationCode(e.target.value)}
                 className={styles.verifyCode}
               />
-              <button onClick={handleVerifyCode} className={styles.verifyBtn}>인증번호 확인</button>
+              <button onClick={handleVerifyCode} className={styles.verifyBtn}>
+                인증번호 확인
+              </button>
             </>
           )}
 

@@ -90,7 +90,10 @@ button{
   border-radius: 8px;
   font-size: 10px;
   background-color: #a8d1ff;
-  color: var(--accent-text);
+  color: #fff;
+}
+.checkID:hover{
+  background-color: rgb(51, 146, 255);
 }
 
 .IDarea .IDname{
@@ -245,4 +248,7 @@ h9{
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+.submitBtn:hover{
+  background-color: rgb(51, 146, 255);
 }

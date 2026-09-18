@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./membership.module.css";
 import { useNavigate } from "react-router-dom";
+import { UserRoundPlus } from 'lucide-react';
 
 const Membership = () => {
   const navigate = useNavigate();
@@ -109,7 +110,10 @@ const Membership = () => {
     <div className={styles.findID}>
       <form className={styles.IDform} onSubmit={handleSubmit}>
         <div className={styles.IDarea}>
-          <h1>회원가입</h1>
+          <div className={styles.toparea}>
+            <UserRoundPlus  className={styles.icon} />
+            <h1>회원가입</h1>
+          </div>
           {errorMessage && (
             <div className={styles.errorMsg}>{errorMessage}</div>
           )}

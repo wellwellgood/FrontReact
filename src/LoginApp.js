@@ -85,7 +85,7 @@ function LoginPage() {
     <div className={styles.App}>
       <header className={styles["App-header"]}>
         <div className={styles.login}>
-          <div className={styles.logintext}><h1>Hello,</h1><h2>Guest</h2></div>
+          <div className={styles.logintext}><h1>Hello,</h1><h2>Every one</h2></div>
           <div className={styles.loginform}>
             <h1 className={styles.text}>LOGIN</h1>
             <div className={styles.loginbox}>

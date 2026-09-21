@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./section3.module.css";
 import Search from "../../search.js";
-import AccountSetting from '../../AccountSetting.js';
+import AccountSetting from "../../AccountSetting.js";
 import Logo from "../../image/logo.png";
-import api from '../../util/api.js';
+import api from "../../util/api.js";
 
 // const API = process.env.REACT_APP_API || "http://localhost:4000";
 
@@ -15,13 +15,15 @@ export default function FileUploadPage() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const inputRef = useRef(null);
   const navigate = useNavigate();
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light",
+  );
   const [searchResults, setSearchResults] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [uploadTime , setUploadTime] = useState(null);
+  const [uploadTime, setUploadTime] = useState(null);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -85,9 +87,12 @@ export default function FileUploadPage() {
 
   const handleDownload = async (file) => {
     try {
-      const response = await api.get(`/upload/files/${encodeURIComponent(file.id)}?download=1`, {
-        responseType: "blob",
-      });
+      const response = await api.get(
+        `/upload/files/${encodeURIComponent(file.id)}?download=1`,
+        {
+          responseType: "blob",
+        },
+      );
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
@@ -113,12 +118,30 @@ export default function FileUploadPage() {
     <div className={styles.body}>
       <nav>
         <div className={styles.nav}>
-        <div className={styles.logo1}><img src={Logo} className={styles.logo}></img></div>
+          <div className={styles.logo1}>
+            <img src={Logo} className={styles.logo}></img>
+          </div>
           <ul>
-            <li><button className={styles.button} onClick={gotoHome}>Home</button></li>
-            <li><button className={styles.button} onClick={gotoLink1}>Chat</button></li>
-            <li><button className={styles.button} onClick={gotoLink2}>File</button></li>
-            <li><button className={styles.button} onClick={gotoLink3}>Email</button></li>
+            <li>
+              <button className={styles.button} onClick={gotoHome}>
+                Home
+              </button>
+            </li>
+            <li>
+              <button className={styles.button} onClick={gotoLink1}>
+                Chat
+              </button>
+            </li>
+            <li>
+              <button className={styles.button} onClick={gotoLink2}>
+                File
+              </button>
+            </li>
+            <li>
+              <button className={styles.button} onClick={gotoLink3}>
+                Email
+              </button>
+            </li>
           </ul>
         </div>
       </nav>
@@ -139,7 +162,7 @@ export default function FileUploadPage() {
       <div className={styles.fileUpload}>
         <h2>파일 업로드 및 다운로드</h2>
         <div className={styles.upload}>
-          <input 
+          <input
             type="file"
             ref={inputRef}
             onChange={handleFileChange}
@@ -156,7 +179,7 @@ export default function FileUploadPage() {
               <span>업로드 시간</span>
               <span>다운로드</span>
             </div>
-        </div>
+          </div>
         </div>
         <div className={styles.fileList}>
           {uploadedFiles.length === 0 ? (
@@ -165,7 +188,8 @@ export default function FileUploadPage() {
             uploadedFiles.map((file, index) => (
               <div key={index} className={styles.fileItem}>
                 {file.type === "images" ? (
-                  <img src={file.url}
+                  <img
+                    src={file.url}
                     alt={file.file_name}
                     className={styles.previewImage}
                   />
@@ -173,8 +197,8 @@ export default function FileUploadPage() {
                   <span>{file.file_name}</span>
                 )}
                 <div className={styles.fileInfo}>
-                <p>{new Date(file.uploadedAt).toLocaleString()}</p>
-                <button onClick={() => handleDownload(file)}>다운로드</button>
+                  <p>{new Date(file.uploadedAt).toLocaleString()}</p>
+                  <button onClick={() => handleDownload(file)}>다운로드</button>
                 </div>
               </div>
             ))

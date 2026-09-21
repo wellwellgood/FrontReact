@@ -58,7 +58,7 @@
 .header {
     height: 76px;
     background: white;
-    border-bottom: 1px solid #e3eaf4;
+    border-bottom: 1px solid #e9eef6;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -69,15 +69,15 @@
 .brand {
     background: none;
     border: 0;
-    color: #101e40;
-    font-size: 28px !important;
+    color: #0c193c;
+    font-size: 27px !important;
     font-weight: 800 !important;
     white-space: nowrap
 }
 
 .tabs {
     display: flex;
-    gap: 20px;
+    gap: 28px;
     align-self: stretch
 }
 
@@ -85,23 +85,22 @@
     background: none;
     border: 0;
     border-bottom: 3px solid transparent;
-    padding: 0 14px;
-    color: #64738d;
+    padding: 0 12px;
+    color: #526078;
     font-weight: 700;
     white-space: nowrap
 }
 
 .tabs .active {
-    border-bottom-color: #0666ef;
-    color: #0666ef
+    border-bottom-color: #0065f4;
+    color: #0065f4
 }
 
 .account {
     position: relative;
-    margin-left: auto;
     display: flex;
     align-items: center;
-    gap: 24px
+    gap: 25px
 }
 
 .iconButton {
@@ -128,10 +127,10 @@
 .profile {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     border: 0;
     background: none;
-    color: #364665;
+    color: #526078;
     white-space: nowrap
 }
 
@@ -143,11 +142,11 @@
 .avatar {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
+    width: 37px;
+    height: 37px;
     border-radius: 50%;
-    background: linear-gradient(120deg, #8eaef0, #6589d3);
-    color: white;
+    background: #e1eeff;
+    color: #608dc7;
     font-size: 18px
 }
 
@@ -742,16 +741,11 @@
 
 @media(max-width:1250px) {
     .header {
-        gap: 115px
+        gap: 28px
     }
 
     .tabs {
-        gap: 5px
-    }
-
-    .tabs button {
-        padding: 0 9px;
-        font-size: 14px
+        gap: 4px
     }
 
     .brand {
@@ -759,7 +753,7 @@
     }
 
     .account {
-        gap: 10px
+        gap: 8px
     }
 
     .columns {
@@ -792,28 +786,44 @@
     }
 }
 
-@media(max-width:760px) {
+@media(max-width:900px) {
     .header {
         height: auto;
+        min-height: 72px;
         flex-wrap: wrap;
-        padding: 15px 20px 0;
-        gap: 12px
+        padding-top: 14px;
+        gap: 10px
     }
 
     .tabs {
         order: 3;
         width: 100%;
         justify-content: center;
-        height: 50px
+        height: 52px
     }
 
-    .tabs button {
-        font-size: 12px;
-        padding: 0 7px;
+    .account {
+        margin-left: auto
+    }
+}
+
+@media(max-width:760px) {
+    .header {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 14px 3.4% 0;
+        gap: 10px
+    }
+
+    .tabs {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        height: 52px
     }
 
     .brand {
-        font-size: 22px !important
+        font-size: 23px !important
     }
 
     .profile {
@@ -881,5 +891,16 @@
 
     .upload {
         min-height: 250px
+    }
+}
+
+@media(max-width:520px) {
+    .brand {
+        font-size: 20px !important
+    }
+
+    .tabs button {
+        font-size: 12px;
+        padding: 0 7px
     }
 }

@@ -21,19 +21,19 @@
 
 .header {
   height: 76px;
-  padding: 0 34px;
+  padding: 0 3.4%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 28px;
   background: #fff;
-  border-bottom: 1px solid #e7edf7
+  border-bottom: 1px solid #e9eef6
 }
 
 .dashboard .brand {
   border: 0;
   background: transparent;
-  color: #101e40;
+  color: #0c193c;
   padding: 0;
   font-size: 27px;
   font-weight: 800;
@@ -59,28 +59,33 @@
 .tabs span,
 .tabs button {
   border: 0;
+  border-bottom: 3px solid transparent;
   background: transparent;
   display: flex;
   align-items: center;
   padding: 0 12px;
-  color: #52617c;
-  font-size: 17px;
-  font-weight: 600;
+  color: #526078;
+  font-size: 16px;
+  font-weight: 700;
   white-space: nowrap
 }
 
 .tabs .active {
-  color: #1158d7;
-  border-bottom: 3px solid #1761e5
+  color: #0065f4;
+  border-bottom-color: #0065f4
 }
 
 .profile {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   white-space: nowrap;
-  color: #283550;
+  color: #526078;
   position: relative
+}
+
+.profile>svg:first-child {
+  margin-right: 15px
 }
 
 .profile>i {
@@ -97,11 +102,11 @@
 .avatar {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 37px;
+  height: 37px;
   border-radius: 50%;
-  background: #e7effd;
-  color: #2764c6;
+  background: #e1eeff;
+  color: #608dc7;
   font-weight: 700
 }
 
@@ -628,30 +633,59 @@
   }
 }
 
+@media(max-width:1250px) {
+  .tabs {
+    gap: 4px
+  }
+
+  .dashboard .brand {
+    font-size: 23px
+  }
+
+  .profile>svg:first-child {
+    margin-right: 0
+  }
+}
+
+@media(max-width:900px) {
+  .header {
+    height: auto;
+    min-height: 72px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    gap: 10px
+  }
+
+  .tabs {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    height: 52px
+  }
+
+  .profile {
+    margin-left: auto
+  }
+}
+
 @media(max-width:760px) {
   .header {
     height: auto;
-    min-height: 70px;
-    padding: 15px 18px;
+    min-height: 72px;
+    padding: 14px 3.4% 0;
     flex-wrap: wrap
   }
 
   .dashboard .brand {
-    font-size: 21px
+    font-size: 23px
   }
 
   .tabs {
     order: 3;
     width: 100%;
     overflow: auto;
-    gap: 12px;
-    height: 45px
-  }
-
-  .tabs span,
-  .tabs button {
-    font-size: 14px;
-    padding: 0 5px
+    gap: 4px;
+    height: 52px
   }
 
   .profile {
@@ -703,5 +737,17 @@
 
   .reminder button {
     display: none
+  }
+}
+
+@media(max-width:520px) {
+  .dashboard .brand {
+    font-size: 20px
+  }
+
+  .tabs button,
+  .tabs span {
+    font-size: 12px;
+    padding: 0 7px
   }
 }

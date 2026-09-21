@@ -25,3 +25,6 @@ Thumbs.db.env
 src/serverF/firebase.js
 # Local uploaded files and metadata
 /src/serverF/storage/
+
+# Create React App output
+/build/

@@ -217,7 +217,7 @@ export default function FileUploadPage() {
           <button type="button" onClick={() => navigate("/main")}>종합 현황</button>
           <button type="button" onClick={() => navigate("/ChatApp")}>공고·이력서 분석</button>
           <button type="button" className={styles.active} aria-current="page">지원 관리</button>
-          <span>면접 준비</span>
+          <button type="button" onClick={() => navigate("/sendEmail")}>면접 준비</button>
         </nav>
         <div className={styles.profile}>
           <Bell size={23} />

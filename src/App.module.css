@@ -51,7 +51,14 @@
   padding: 0;
   box-sizing: border-box;
   user-select: none;
-  caret-color: transparent;
+}
+
+input,
+textarea,
+[contenteditable]:not([contenteditable="false"]) {
+  user-select: text;
+  -webkit-user-select: text;
+  caret-color: currentColor;
 }
 
 body {

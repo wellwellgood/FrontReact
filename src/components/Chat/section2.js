@@ -143,8 +143,7 @@ export default function Section2() {
                     ? navigate("/main")
                     : i === 2
                       ? navigate("/file")
-                      : i > 2 &&
-                      showDialog(tab, "해당 화면은 아직 연결되지 않았습니다.")
+                      : i === 3 && navigate("/sendEmail")
                 }
               >
                 {tab}

@@ -31,6 +31,9 @@
 }
 
 .brand {
+  border: 0;
+  background: transparent;
+  color: inherit;
   font-size: 24px;
   font-weight: 800;
   white-space: nowrap;
@@ -44,7 +47,10 @@
   align-items: stretch
 }
 
-.tabs span {
+.tabs span,
+.tabs button {
+  border: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   padding: 0 12px;
@@ -633,7 +639,8 @@
     height: 45px
   }
 
-  .tabs span {
+  .tabs span,
+  .tabs button {
     font-size: 14px;
     padding: 0 5px
   }

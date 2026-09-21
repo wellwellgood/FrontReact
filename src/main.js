@@ -89,7 +89,7 @@ export default function Main() {
                 key={tab}
                 className={i === 0 ? styles.activeTab : ""}
                 onClick={() =>
-                  i === 1 ? navigate("/ChatApp") : i
+                  i === 1 ? navigate("/ChatApp") : i === 2 ? navigate("/file") : i
                     ? open(
                         tab,
                         "이 화면은 디자인 미리보기입니다. 해당 기능은 아직 연결되지 않았습니다.",

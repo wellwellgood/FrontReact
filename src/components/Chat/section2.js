@@ -141,7 +141,9 @@ export default function Section2() {
                 onClick={() =>
                   i === 0
                     ? navigate("/main")
-                    : i > 1 &&
+                    : i === 2
+                      ? navigate("/file")
+                      : i > 2 &&
                       showDialog(tab, "해당 화면은 아직 연결되지 않았습니다.")
                 }
               >

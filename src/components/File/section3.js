@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   Bookmark,
@@ -143,6 +144,7 @@ function Card({ job, onClick }) {
   );
 }
 export default function FileUploadPage() {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState(readJobs);
   const [query, setQuery] = useState("");
   const [urgent, setUrgent] = useState(false);
@@ -210,11 +212,11 @@ export default function FileUploadPage() {
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
-        <div className={styles.brand}>취업 대시보드</div>
+        <button type="button" className={styles.brand} onClick={() => navigate("/main")}>취업 대시보드</button>
         <nav className={styles.tabs} aria-label="대시보드 메뉴">
-          <span>종합 현황</span>
-          <span>공고·이력서 분석</span>
-          <span className={styles.active}>지원 관리</span>
+          <button type="button" onClick={() => navigate("/main")}>종합 현황</button>
+          <button type="button" onClick={() => navigate("/ChatApp")}>공고·이력서 분석</button>
+          <button type="button" className={styles.active} aria-current="page">지원 관리</button>
           <span>면접 준비</span>
         </nav>
         <div className={styles.profile}>

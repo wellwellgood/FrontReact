@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Bell,
   ChevronDown,
   Check,
   CircleCheck,
@@ -18,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./section2.module.css";
+import AccountMenu from "../account/AccountMenu.jsx";
 
 const requirements = [
   {
@@ -65,7 +65,6 @@ export default function Section2() {
   const input = useRef(null);
   const modal = useRef(null);
   const [dialog, setDialog] = useState({ title: "", text: "" });
-  const [profileOpen, setProfileOpen] = useState(false);
   const [resume, setResume] = useState(null);
   const [fileError, setFileError] = useState("");
   const [job, setJob] = useState(initialJob);
@@ -73,10 +72,6 @@ export default function Section2() {
   const [changed, setChanged] = useState(false);
   const [collapsed, setCollapsed] = useState([]);
   const [urlError, setUrlError] = useState("");
-  const name =
-    sessionStorage.getItem("name") ||
-    sessionStorage.getItem("username") ||
-    "사용자";
   const showDialog = (title, text, edit = false) => {
     setDialog({ title, text, edit });
     setDraft(job);
@@ -151,38 +146,7 @@ export default function Section2() {
             ),
           )}
         </div>
-        <div className={styles.account}>
-          <button
-            className={styles.iconButton}
-            aria-label="알림"
-            onClick={() => showDialog("알림", "새로운 알림이 없습니다.")}
-          >
-            <Bell />
-            <i />
-          </button>
-          <button
-            className={styles.profile}
-            aria-expanded={profileOpen}
-            onClick={() => setProfileOpen(!profileOpen)}
-          >
-            <span className={styles.avatar}>{name.slice(0, 1)}</span>
-            {name}
-            <ChevronDown />
-          </button>
-          {profileOpen && (
-            <div className={styles.menu}>
-              <button onClick={() => navigate("/settings")}>계정 설정</button>
-              <button
-                onClick={() => {
-                  sessionStorage.clear();
-                  navigate("/login");
-                }}
-              >
-                로그아웃
-              </button>
-            </div>
-          )}
-        </div>
+        <AccountMenu />
       </header>
       <main className={styles.content}>
         <section className={styles.hero}>

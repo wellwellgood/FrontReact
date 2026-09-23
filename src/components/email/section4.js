@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Bell,
   Building2,
   Check,
   CheckCircle2,
@@ -11,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./SendEmail.module.css";
+import AccountMenu from "../account/AccountMenu.jsx";
 
 // 서버에 사람인 키를 설정하고 공고 조회 경로를 만든 뒤 이 값을 채우세요.
 // 키 자체는 이 파일이나 브라우저 환경 변수에 넣지 않습니다.
@@ -60,12 +60,7 @@ export default function Section4() {
   const [jobId, setJobId] = useState("demo");
   const [feedback, setFeedback] = useState(null);
   const [notice, setNotice] = useState("");
-  const [profileOpen, setProfileOpen] = useState(false);
   const recognition = useRef(null);
-  const name =
-    sessionStorage.getItem("name") ||
-    sessionStorage.getItem("username") ||
-    "김지원";
   const job = jobs.find((item) => item.id === jobId) || jobs[0];
   const answerKey = `${jobId}:${selected}`;
   const answer = answers[answerKey] || "";
@@ -190,40 +185,7 @@ export default function Section4() {
             ),
           )}
         </nav>
-        <div className={styles.account}>
-          <button
-            className={styles.iconButton}
-            aria-label="알림"
-            onClick={() => setNotice("새로운 알림이 없습니다.")}
-          >
-            <Bell size={22} />
-            <i />
-          </button>
-          <div className={styles.profileWrap}>
-            <button
-              className={styles.profile}
-              aria-expanded={profileOpen}
-              onClick={() => setProfileOpen(!profileOpen)}
-            >
-              <span className={styles.avatar}>{name.slice(0, 1)}</span>
-              <span>{name}</span>
-              <ChevronDown size={17} />
-            </button>
-            {profileOpen && (
-              <div className={styles.profileMenu}>
-                <button onClick={() => navigate("/settings")}>계정 설정</button>
-                <button
-                  onClick={() => {
-                    sessionStorage.clear();
-                    navigate("/login");
-                  }}
-                >
-                  로그아웃
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <AccountMenu onNotify={() => setNotice("알림 설정에서 받을 알림을 변경할 수 있습니다.")} />
       </header>
       <main className={styles.main}>
         <div className={styles.intro}>

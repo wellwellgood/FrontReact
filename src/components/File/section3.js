@@ -1,10 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Bell,
   Bookmark,
   CalendarDays,
-  ChevronDown,
   ChevronRight,
   Heart,
   Megaphone,
@@ -16,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./section3.module.css";
+import AccountMenu from "../account/AccountMenu.jsx";
 
 const KEY = "job-application-board-v1";
 const columns = [
@@ -219,13 +218,7 @@ export default function FileUploadPage() {
           <button type="button" className={styles.active} aria-current="page">지원 관리</button>
           <button type="button" onClick={() => navigate("/sendEmail")}>면접 준비</button>
         </nav>
-        <div className={styles.profile}>
-          <Bell size={23} />
-          <i />
-          <span className={styles.avatar}>김</span>
-          <span>김지원</span>
-          <ChevronDown size={16} />
-        </div>
+        <AccountMenu />
       </header>
       <main className={styles.main}>
         <div className={styles.top}>

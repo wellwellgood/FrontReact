@@ -9,7 +9,9 @@ import Main from './main';
 import Section2 from './components/Chat/section2';
 import File from './components/File/section3';
 import Section4SendEmail from './components/email/section4';
-import AccountSetting from './AccountSetting';
+import ProfileSettings from './components/account/ProfileSettings.jsx';
+import AccountSettings from './components/account/AccountSettings.jsx';
+import NotificationSettings from './components/account/NotificationSettings.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import SearchPage from './SearchPage';
 // import SearchResult from './serverF/routes/searchRoute';   // ✅ 검색 결과 컴포넌트
@@ -68,9 +70,17 @@ function App() {
           path="/settings"
           element={
             <ProtectedRoute>
-              <AccountSetting />
+              <AccountSettings />
             </ProtectedRoute>
           }
+        />
+        <Route
+          path="/account/profile"
+          element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>}
+        />
+        <Route
+          path="/account/notifications"
+          element={<ProtectedRoute><NotificationSettings /></ProtectedRoute>}
         />
       </Routes>
     </Router>

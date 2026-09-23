@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Bell,
-  UserRound,
-  ChevronDown,
   ChevronRight,
   Plus,
   FileText,
@@ -19,6 +16,7 @@ import {
   ChartNoAxesCombined,
 } from "lucide-react";
 import styles from "./main.module.css";
+import AccountMenu from "./components/account/AccountMenu.jsx";
 
 const jobs = [
   {
@@ -61,14 +59,9 @@ export default function Main() {
   const [saved, setSaved] = useState([]);
   const [period, setPeriod] = useState("이번 주");
   const [dialog, setDialog] = useState(null);
-  const [account, setAccount] = useState(false);
   const [added, setAdded] = useState([]);
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
-  const name =
-    sessionStorage.getItem("name") ||
-    sessionStorage.getItem("username") ||
-    "사용자";
   const values =
     period === "이번 주" ? [2, 4, 3, 6, 5, 2, 1] : [1, 3, 2, 4, 2, 1, 0];
   const toggle = (setter, list, item) =>
@@ -97,43 +90,7 @@ export default function Main() {
             ),
           )}
         </div>
-        <div className={styles.accountArea}>
-          <button
-            className={styles.iconButton}
-            aria-label="알림"
-            onClick={() => open("알림", "새로운 알림이 없습니다.")}
-          >
-            <Bell />
-            <span className={styles.dot} />
-          </button>
-          <button
-            className={styles.profile}
-            aria-expanded={account}
-            onClick={() => setAccount(!account)}
-          >
-            <span className={styles.avatar}>
-              <UserRound />
-            </span>
-            <span>{name}</span>
-            <ChevronDown size={16} />
-          </button>
-          {account && (
-            <div className={styles.accountMenu}>
-              <button onClick={() => navigate("/settings")}>계정 설정</button>
-              <button onClick={() => navigate("/ChatApp")}>공고·이력서 분석</button>
-              <button onClick={() => navigate("/file")}>파일</button>
-              <button onClick={() => navigate("/sendEmail")}>이메일</button>
-              <button
-                onClick={() => {
-                  sessionStorage.clear();
-                  navigate("/login");
-                }}
-              >
-                로그아웃
-              </button>
-            </div>
-          )}
-        </div>
+        <AccountMenu />
       </header>
       <main className={styles.content}>
         <section className={styles.heading}>

@@ -49,10 +49,10 @@
     border: 0;
     background: transparent;
     color: #0c193c;
+    padding: 0;
     font-size: 27px !important;
     font-weight: 800 !important;
-    white-space: nowrap;
-    letter-spacing: -.04em
+    white-space: nowrap
 }
 
 .tabs {
@@ -564,7 +564,7 @@
     border: 0
 }
 
-@media(max-width:1200px) {
+@media(max-width:1250px) {
     .grid {
         grid-template-columns: minmax(260px, 1fr) minmax(420px, 1.6fr)
     }
@@ -575,35 +575,32 @@
     }
 
     .header {
-        gap: 12px
+        gap: 28px
     }
 
     .tabs {
-        gap: 8px
+        gap: 4px
     }
 
-    .tabs button {
-        padding: 0 7px
+    .brand {
+        font-size: 23px !important
     }
 }
 
 @media(max-width:900px) {
     .header {
         height: auto;
-        min-height: 76px;
+        min-height: 72px;
         flex-wrap: wrap;
-        padding-top: 13px
-    }
-
-    .brand {
-        font-size: 23px !important
+        padding-top: 14px;
+        gap: 10px
     }
 
     .tabs {
         order: 3;
         width: 100%;
-        height: 48px;
-        overflow-x: auto
+        justify-content: center;
+        height: 52px
     }
 
     .main {

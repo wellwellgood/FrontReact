@@ -13,7 +13,7 @@ import {
   BriefcaseBusiness,
   X,
 } from "lucide-react";
-import styles from "./section3.module.css";
+import styles from "./ApplicationManagement.module.css";
 import AccountMenu from "../account/AccountMenu.jsx";
 
 const KEY = "job-application-board-v1";
@@ -142,7 +142,7 @@ function Card({ job, onClick }) {
     </button>
   );
 }
-export default function FileUploadPage() {
+export default function ApplicationManagement() {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState(readJobs);
   const [query, setQuery] = useState("");

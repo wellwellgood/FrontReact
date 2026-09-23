@@ -9,7 +9,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import styles from "./SendEmail.module.css";
+import styles from "./InterviewPreparation.module.css";
 import AccountMenu from "../account/AccountMenu.jsx";
 import api from "../../util/api.js";
 
@@ -43,7 +43,7 @@ const questions = [
 const demoJob = { id: "demo", company: "루미랩", role: "프론트엔드 개발자" };
 const storageKey = "interview-practice-answers-v1";
 
-export default function Section4() {
+export default function InterviewPreparation() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("전체");
   const [selected, setSelected] = useState(0);
@@ -167,7 +167,7 @@ export default function Section4() {
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
-        <button className={styles.brand} onClick={() => navigate("/main")}>
+        <button type="button" className={styles.brand} onClick={() => navigate("/main")}>
           취업 대시보드
         </button>
         <nav className={styles.tabs} aria-label="주요 메뉴">
@@ -186,7 +186,7 @@ export default function Section4() {
             ),
           )}
         </nav>
-        <AccountMenu onNotify={() => setNotice("알림 설정에서 받을 알림을 변경할 수 있습니다.")} />
+        <AccountMenu />
       </header>
       <main className={styles.main}>
         <div className={styles.intro}>

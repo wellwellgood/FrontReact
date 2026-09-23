@@ -16,7 +16,7 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
-import styles from "./section2.module.css";
+import styles from "./JobResumeAnalysis.module.css";
 import AccountMenu from "../account/AccountMenu.jsx";
 
 const requirements = [
@@ -60,7 +60,7 @@ const initialJob = {
   url: "",
 };
 
-export default function Section2() {
+export default function JobResumeAnalysis() {
   const navigate = useNavigate();
   const input = useRef(null);
   const modal = useRef(null);

@@ -95,7 +95,9 @@ export default function Section4() {
   useEffect(() => {
     let active = true;
     api
-      .get("/work24/jobs", { params: { keyword: "개발자", display: 30 } })
+      .get("/careerjet/jobs", {
+        params: { keyword: "개발자", pageSize: 30, sort: "date" },
+      })
       .then(({ data }) => {
         if (active && Array.isArray(data.jobs) && data.jobs.length) {
           const nextJobs = data.jobs.filter((item) => item.id && item.company && item.role);
@@ -104,7 +106,7 @@ export default function Section4() {
             setJobId(String(nextJobs[0].id));
           }
         } else if (active && data.configured === false) {
-          setNotice("고용24 인증키가 없어 예시 공고를 표시합니다.");
+          setNotice("Careerjet 인증키가 없어 예시 공고를 표시합니다.");
         }
       })
       .catch(() => {

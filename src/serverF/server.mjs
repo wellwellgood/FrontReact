@@ -21,13 +21,17 @@ try {
 
 const app = express();
 
+const configuredOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: [
+  origin: [...new Set([
     "https://dashboardkky.netlify.app",
-    ...(process.env.NODE_ENV !== "production"
-      ? [3000, 3001, 3002, 3003].map(port => `http://localhost:${port}`)
-      : []),
-  ],
+    ...[3000, 3001, 3002, 3003].map(port => `http://localhost:${port}`),
+    ...configuredOrigins,
+  ])],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [
@@ -60,8 +64,8 @@ try {
   const healthCheck = await import("./routes/Health.js");
   app.use("/api/health", healthCheck.default);
 
-  const work24Routes = await import("./routes/work24.js");
-  app.use("/api/work24", work24Routes.default);
+  const careerjetRoutes = await import("./routes/careerjet.js");
+  app.use("/api/careerjet", careerjetRoutes.default);
 
   const messageRoute = await import("./routes/message.js");
   app.use("/api/messages", messageRoute.default);

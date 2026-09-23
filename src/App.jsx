@@ -5,10 +5,10 @@ import LinkPage from './membership';
 import Id from './ID';
 import Password from './password';
 import CustomCalendar from './calender/calender';
-import Main from './main';
-import Section2 from './components/Chat/section2';
-import File from './components/File/section3';
-import Section4SendEmail from './components/email/section4';
+import DashboardOverview from './components/dashboard/DashboardOverview.jsx';
+import JobResumeAnalysis from './components/jobAnalysis/JobResumeAnalysis.jsx';
+import ApplicationManagement from './components/applications/ApplicationManagement.jsx';
+import InterviewPreparation from './components/interview/InterviewPreparation.jsx';
 import ProfileSettings from './components/account/ProfileSettings.jsx';
 import AccountSettings from './components/account/AccountSettings.jsx';
 import NotificationSettings from './components/account/NotificationSettings.jsx';
@@ -38,7 +38,7 @@ function App() {
           path="/main"
           element={
             <ProtectedRoute>
-              <Main setTheme={setTheme} />
+              <DashboardOverview setTheme={setTheme} />
             </ProtectedRoute>
           }
         />
@@ -46,7 +46,7 @@ function App() {
           path="/ChatApp"
           element={
             <ProtectedRoute>
-              <Section2 />
+              <JobResumeAnalysis />
             </ProtectedRoute>
           }
         />
@@ -54,7 +54,7 @@ function App() {
           path="/file"
           element={
             <ProtectedRoute>
-              <File />
+              <ApplicationManagement />
             </ProtectedRoute>
           }
         />
@@ -62,7 +62,7 @@ function App() {
           path="/sendEmail"
           element={
             <ProtectedRoute>
-              <Section4SendEmail />
+              <InterviewPreparation />
             </ProtectedRoute>
           }
         />

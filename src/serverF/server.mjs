@@ -60,6 +60,9 @@ try {
   const healthCheck = await import("./routes/Health.js");
   app.use("/api/health", healthCheck.default);
 
+  const work24Routes = await import("./routes/work24.js");
+  app.use("/api/work24", work24Routes.default);
+
   const messageRoute = await import("./routes/message.js");
   app.use("/api/messages", messageRoute.default);
 

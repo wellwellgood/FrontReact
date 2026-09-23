@@ -11,10 +11,8 @@ import {
 } from "lucide-react";
 import styles from "./SendEmail.module.css";
 import AccountMenu from "../account/AccountMenu.jsx";
+import api from "../../util/api.js";
 
-// 서버에 사람인 키를 설정하고 공고 조회 경로를 만든 뒤 이 값을 채우세요.
-// 키 자체는 이 파일이나 브라우저 환경 변수에 넣지 않습니다.
-const SARAMIN_JOBS_ENDPOINT = "";
 const questions = [
   {
     title: "프로젝트에서 어떤 역할을 맡았나요?",
@@ -95,17 +93,18 @@ export default function Section4() {
     localStorage.setItem(storageKey, JSON.stringify(answers));
   }, [answers]);
   useEffect(() => {
-    if (!SARAMIN_JOBS_ENDPOINT) return;
     let active = true;
-    fetch(SARAMIN_JOBS_ENDPOINT, { credentials: "include" })
-      .then((response) => {
-        if (!response.ok) throw new Error("공고를 불러오지 못했습니다.");
-        return response.json();
-      })
-      .then((data) => {
+    api
+      .get("/work24/jobs", { params: { keyword: "개발자", display: 30 } })
+      .then(({ data }) => {
         if (active && Array.isArray(data.jobs) && data.jobs.length) {
-          setJobs(data.jobs);
-          setJobId(String(data.jobs[0].id));
+          const nextJobs = data.jobs.filter((item) => item.id && item.company && item.role);
+          if (nextJobs.length) {
+            setJobs(nextJobs);
+            setJobId(String(nextJobs[0].id));
+          }
+        } else if (active && data.configured === false) {
+          setNotice("고용24 인증키가 없어 예시 공고를 표시합니다.");
         }
       })
       .catch(() => {

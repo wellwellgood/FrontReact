@@ -26,14 +26,7 @@ const connectDB = async () => {
   }
 };
 
-// 4분 30초마다 연결 확인
-setInterval(async () => {
-  try {
-    await dbPool.query("SELECT 1");
-  } catch (err) {
-    console.log("🔁 DB ping 실패:", err.message);
-  }
-}, 1000 * 60 * 4.5);
+// 주기적인 ping 없이 실제 요청에서 풀의 연결을 사용합니다.
 
 export default dbPool;
 export { connectDB };

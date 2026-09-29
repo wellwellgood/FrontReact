@@ -9,8 +9,8 @@ export const initialPortfolio = () => ({ version: 1, cash: 5000000, holdings: [
   { symbol: '000660', quantity: 10, averageCost: 190000 },
   { symbol: '069500', quantity: 50, averageCost: 32000 },
 ], watchlist: ['005930', '035420'], transactions: [] });
-export function summarize(portfolio) {
-  const holdings = portfolio.holdings.map(h => { const stock = instruments.find(s => s.symbol === h.symbol); return { ...h, ...stock, value: h.quantity * stock.price, cost: h.quantity * h.averageCost }; });
+export function summarize(portfolio, prices = instruments) {
+  const holdings = portfolio.holdings.map(h => { const stock = prices.find(s => s.symbol === h.symbol); return { ...h, ...stock, value: h.quantity * stock.price, cost: h.quantity * h.averageCost }; });
   const investment = holdings.reduce((n, h) => n + h.value, 0);
   const cost = holdings.reduce((n, h) => n + h.cost, 0);
   return { holdings, investment, total: investment + portfolio.cash, profit: investment - cost, returnRate: cost ? (investment - cost) / cost * 100 : 0 };

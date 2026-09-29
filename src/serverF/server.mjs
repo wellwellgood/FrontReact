@@ -10,6 +10,7 @@ import { connectDB } from "./DB.mjs";
 import initDB from "./initDB.js";
 import corsMiddleware from "./middlewares/cors.js";
 import authRouter from "./routes/auth.js";
+import marketRouter from "./routes/market.js";
 import chatUploadRouter from './routes/upload.js';
 
 try {
@@ -28,6 +29,7 @@ const configuredOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL
 
 app.use(cors({
   origin: [...new Set([
+    "https://dashboardky.netlify.app",
     "https://dashboardkky.netlify.app",
     ...[3000, 3001, 3002, 3003].map(port => `http://localhost:${port}`),
     ...configuredOrigins,
@@ -45,6 +47,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.use("/api/market", marketRouter);
 
 try {
   console.log("라우트 등록 시작");

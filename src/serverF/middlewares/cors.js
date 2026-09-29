@@ -2,6 +2,7 @@
 import cors from "cors";
 
 const allowedOrigins = [
+  "https://dashboardky.netlify.app",
   "https://dashboardkky.netlify.app",
   "http://localhost:3000",
   "http://localhost:10000",

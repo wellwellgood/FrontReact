@@ -28,3 +28,8 @@ src/serverF/firebase.js
 
 # Create React App output
 /build/
+
+# Server secrets
+.env
+.env.*
+!.env.example

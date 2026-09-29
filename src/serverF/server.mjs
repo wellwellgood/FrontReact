@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-dotenv.config({ path: new URL("./.env.kis.local", import.meta.url).pathname });
+dotenv.config({ path: new URL("./.env.github.local", import.meta.url).pathname });
 
 import http from "http";
 import express from "express";
@@ -9,9 +9,11 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./DB.mjs";
 import initDB from "./initDB.js";
-import corsMiddleware from "./middlewares/cors.js";
 import authRouter from "./routes/auth.js";
-import marketRouter from "./routes/market.js";
+import pool from "./DB.mjs";
+import { postgresStore } from "./github/store.js";
+import { githubClient } from "./github/client.js";
+import { createGithubRouter } from "./github/router.js";
 import chatUploadRouter from './routes/upload.js';
 
 try {
@@ -32,7 +34,7 @@ app.use(cors({
   origin: [...new Set([
     "https://dashboardky.netlify.app",
     "https://dashboardkky.netlify.app",
-    ...[3000, 3001, 3002, 3003].map(port => `http://localhost:${port}`),
+    ...[3000, 3001, 3002, 3003].flatMap(port => [`http://localhost:${port}`, `http://127.0.0.1:${port}`]),
     ...configuredOrigins,
   ])],
   credentials: true,
@@ -48,7 +50,10 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/market", marketRouter);
+const githubStore = postgresStore(pool);
+await initDB();
+await githubStore.init();
+app.use("/api/github", createGithubRouter({ store: githubStore, client: githubClient() }));
 
 try {
   console.log("라우트 등록 시작");
@@ -108,7 +113,6 @@ try {
 
 server.listen(PORT, async () => {
   try {
-    await initDB();
     console.log(`✅ 기본 서버 실행됨: http://localhost:${PORT}`);
   } catch (err) {
     console.error("❌ 서버 시작 실패:", err.message);

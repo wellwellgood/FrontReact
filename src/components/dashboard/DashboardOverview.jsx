@@ -1,57 +1,83 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Wallet, ChartNoAxesCombined, Landmark, TrendingUp, Star } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { CodeXml as Github, FolderGit2, GitPullRequest, CircleDot, Star, RefreshCw, ExternalLink, Unplug, Activity } from 'lucide-react';
 import DashboardHeader from '../navigation/DashboardHeader.jsx';
-import { instruments, initialPortfolio, summarize, recordTrade } from '../portfolio/model.js';
+import { githubRequest, connectGithub } from '../github/api';
+import { demoData } from '../github/demo';
 import styles from './DashboardOverview.module.css';
-import api from '../../util/api.js';
-const money = n => `${Math.round(n).toLocaleString('ko-KR')}원`;
-const percent = n => `${n > 0 ? '+' : ''}${n.toFixed(2)}%`;
-export default function DashboardOverview({ view = 'overview', demo = false }) {
-  const key = `portfolio-v1:${demo ? 'demo' : sessionStorage.getItem('username')}`;
-  const [portfolio, setPortfolio] = useState(() => { try { const p = JSON.parse(localStorage.getItem(key)); return p?.version === 1 && Array.isArray(p.holdings) && Array.isArray(p.watchlist) && Array.isArray(p.transactions) && Number.isFinite(p.cash) ? p : initialPortfolio(); } catch { return initialPortfolio(); } });
-  const [message, setMessage] = useState('');
-  const [query, setQuery] = useState('');
-  const [form, setForm] = useState({ symbol: '005930', side: 'buy', quantity: '1', price: '74000', date: new Date().toLocaleDateString('en-CA') });
-  const [market, setMarket] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [marketError, setMarketError] = useState('');
-  const prices = market ? instruments.map(s => ({ ...s, price: market.quotes.find(q => q.symbol === s.symbol).price })) : instruments;
-  const loadQuotes = async () => {
-    setLoading(true); setMarketError('');
-    try {
-      const { data: result } = await api.get('/market/quotes', { timeout: 65000, headers: { Authorization: `Bearer ${sessionStorage.getItem('userToken') || ''}` } });
-      if (result.source !== 'KIS' || !Number.isFinite(Date.parse(result.fetchedAt)) || !Array.isArray(result.quotes) || !instruments.every(s => result.quotes.some(q => q.symbol === s.symbol && Number.isFinite(q.price) && q.price > 0))) throw new Error('invalid quotes');
-      setMarket(result);
-    } catch (err) { setMarketError(err.response?.data?.message || '시세를 가져오지 못했습니다. 서버 연결을 확인해 주세요.'); }
-    finally { setLoading(false); }
+const date = value => value ? new Date(value).toLocaleDateString('ko-KR') : '—';
+const eventNames = { PushEvent:'코드 푸시', PullRequestEvent:'PR 활동', IssuesEvent:'이슈 활동', IssueCommentEvent:'댓글 작성', CreateEvent:'브랜치·저장소 생성', DeleteEvent:'브랜치·태그 삭제', WatchEvent:'스타 추가', ForkEvent:'저장소 포크', ReleaseEvent:'릴리스', PullRequestReviewEvent:'코드 리뷰' };
+function External({url,children}) { return url && /^https:\/\/github\.com\//.test(url) ? <a href={url} target="_blank" rel="noreferrer">{children}<ExternalLink size={14}/></a> : <span>{children}</span>; }
+export default function DashboardOverview({ view='overview', demo=false }) {
+  const location=useLocation();
+  const [data,setData]=useState(demo?demoData:null);
+  const [connection,setConnection]=useState(demo?{connected:true,configured:true}:null);
+  const [busy,setBusy]=useState(!demo);
+  const [error,setError]=useState('');
+  const [query,setQuery]=useState('');
+  const [language,setLanguage]=useState('all');
+  const [onlyFavorites,setOnlyFavorites]=useState(false);
+  const [revision,setRevision]=useState(0);
+  const userKey=sessionStorage.getItem('username');
+  useEffect(()=> {
+    if(demo) {setData(demoData);setConnection({connected:true,configured:true});setBusy(false);return;}
+    let active=true;setBusy(true);setError('');setData(null);
+    (async()=> {
+      try {
+        const status=await githubRequest('get','/status');if(!active)return;setConnection(status.data);
+        if(status.data.connected) {const result=await githubRequest('get','/dashboard');if(active)setData(result.data);}
+      } catch(err) {if(active)setError(err.response?.data?.message || '서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.');}
+      finally {if(active)setBusy(false);}
+    })();
+    return()=>{active=false;};
+  },[demo,revision,userKey]);
+  const connect=async()=>{setBusy(true);setError('');try {await connectGithub();}catch(err){setError(err.response?.data?.message||'GitHub 연결을 시작하지 못했습니다.');setBusy(false);}};
+  const disconnect=async()=>{
+    if(!window.confirm('이 사이트의 GitHub 연결과 프로젝트 즐겨찾기를 해제할까요? GitHub 저장소는 삭제되지 않습니다.'))return;
+    setBusy(true);setError('');try{await githubRequest('delete','/connection');setData(null);setConnection(c=>({...c,connected:false}));}catch(err){setError(err.response?.data?.message||'연결을 해제하지 못했습니다.');}finally{setBusy(false);}
   };
-  const data = summarize(portfolio, prices);
-  const save = next => { try { localStorage.setItem(key, JSON.stringify(next)); setPortfolio(next); setMessage('이 브라우저에 저장되었습니다.'); } catch { setMessage('저장 공간을 사용할 수 없습니다. 브라우저 설정을 확인해 주세요.'); } };
-  const watch = symbol => save({ ...portfolio, watchlist: portfolio.watchlist.includes(symbol) ? portfolio.watchlist.filter(s => s !== symbol) : [...portfolio.watchlist, symbol] });
-  const show = name => view === 'overview' || view === name;
-  const title = { overview: '내 자산의 흐름을 한눈에', holdings: '보유종목', transactions: '거래내역', watchlist: '관심종목' }[view];
-  const stats = [['총자산', data.total, Wallet, 'blue'], ['투자자산', data.investment, ChartNoAxesCombined, 'green'], ['현금성자산', portfolio.cash, Landmark, 'purple'], ['평가손익', data.profit, TrendingUp, 'orange']];
+  const favorite=async(id)=>{
+    const enabled=!data.favorites.includes(id);
+    if(demo){setData(d=>({...d,favorites:enabled?[...d.favorites,id]:d.favorites.filter(x=>x!==id)}));return;}
+    setBusy(true);setError('');try{const result=await githubRequest('put',`/favorites/${id}`,{enabled});setData(d=>({...d,favorites:result.data.favorites}));}catch(err){setError(err.response?.data?.message||'즐겨찾기를 저장하지 못했습니다.');}finally{setBusy(false);}
+  };
+  const titles={overview:'내 프로젝트의 흐름을 한눈에',projects:'내 프로젝트',issues:'이슈 · Pull Requests',activity:'최근 개발 활동'};
+  const repos=data?.repos||[];
+  const filtered=repos.filter(r=>(`${r.name} ${r.description||''}`).toLowerCase().includes(query.toLowerCase())&&(language==='all'||r.language===language)&&(!onlyFavorites||data.favorites.includes(r.id)));
+  const languages=repos.reduce((acc,r)=>{const l=r.language||'미분류';acc[l]=(acc[l]||0)+1;return acc;},{});
+  const cards=data?[['공개 프로젝트',repos.length,FolderGit2,'blue'],['작성한 열린 이슈',data.issueCount??'—',CircleDot,'green'],['작성한 열린 PR',data.prCount??'—',GitPullRequest,'purple'],['받은 스타',repos.reduce((sum,r)=>sum+r.stars,0),Star,'orange']]:[];
+  const show=name=>view==='overview'||view===name;
   return <div className={styles.dashboard}>
-    {demo ? <header className={styles.header}><strong>자산 대시보드 · 데모</strong><Link to="/login">로그인</Link></header> : <DashboardHeader active={view} />}
+    {demo?<header className={styles.header}><strong>DEV DASHBOARD · 데모</strong><Link to="/login">로그인</Link></header>:<DashboardHeader active={view}/>}
     <main className={styles.content}>
-      <section className={styles.heading}><div><h1>{title}</h1><p>자산을 기록하고 투자 현황을 확인하세요.</p></div><span className={styles.badge}>{market ? 'KIS 조회 시세 · KRW' : '예시 시세 · KRW'}</span></section>
-      <p className={styles.sourceNote}>초기 잔고는 Mock 데이터입니다. {market ? '현재 가격은 KIS 조회 결과입니다.' : '현재 가격은 예시 데이터입니다.'} 거래 입력은 실제 주문 없이 이 브라우저의 사용자별 기록에만 반영됩니다. 실제 계좌 잔고는 연결되지 않았습니다. 시세 조회 후에도 보유 수량과 현금은 예시·수동 기록입니다.</p>
-      {!demo && <div className={styles.cardTitle}><button className={styles.primary} disabled={loading} onClick={loadQuotes}>{loading ? '시세 조회 중…' : 'KIS 시세 조회'}</button><span>{market ? `조회 시각: ${new Date(market.fetchedAt).toLocaleString('ko-KR')} · 자동 갱신 없음` : '조회 전에는 예시 시세가 표시됩니다.'}</span></div>}
-      {marketError && <p role="alert" className={styles.sourceNote}>{marketError} {market ? '이전 조회 시세를 유지합니다.' : '예시 시세를 유지합니다.'}</p>}
-      <section className={styles.stats} aria-label="자산 요약">{stats.map(([label, value, Icon, tone]) => <article className={styles.stat} key={label}><span className={`${styles.statIcon} ${styles[tone]}`}><Icon /></span><div className={styles.statText}><span>{label}</span><strong>{money(value)}</strong></div></article>)}</section>
-      <p role="status" className={styles.feedback}>{message}</p>
-      <div className={styles.grid}>
-        {view === 'overview' && <><section className={styles.card}><div className={styles.cardTitle}><h2>보유자산 수익률</h2><strong className={data.profit >= 0 ? styles.positive : styles.negative}>{percent(data.returnRate)}</strong></div><p>현재 보유분의 매입원금 대비 평가손익 · 실현손익·세금·수수료 제외</p><div className={styles.returnList}>{data.holdings.map(h => <div key={h.symbol}><span>{h.name}</span><strong className={h.value >= h.cost ? styles.positive : styles.negative}>{percent((h.value - h.cost) / h.cost * 100)}</strong></div>)}</div></section>
-        <section className={styles.card}><div className={styles.cardTitle}><h2>자산배분</h2><span>총자산 기준</span></div>{['국내주식', 'ETF', '현금성자산'].map(category => { const amount = category === '현금성자산' ? portfolio.cash : data.holdings.filter(h => h.category === category).reduce((sum,h) => sum + h.value,0); const ratio = data.total ? amount / data.total * 100 : 0; return <div className={styles.allocation} key={category}><div><span>{category}</span><span>{money(amount)} · {ratio.toFixed(1)}%</span></div><progress max="100" value={ratio} aria-label={`${category} 비중`} /></div>; })}</section></>}
-        {show('holdings') && <section className={`${styles.card} ${view !== 'overview' ? styles.full : ''}`}><div className={styles.cardTitle}><h2>보유종목</h2><span>{data.holdings.length}종목</span></div><div className={styles.tableWrap}><table><thead><tr><th>종목</th><th>수량</th><th>평균매입가</th><th>{market ? '조회 현재가' : '예시 현재가'}</th><th>평가손익</th></tr></thead><tbody>{data.holdings.map(h => <tr key={h.symbol}><th>{h.name}<small>{h.symbol}</small></th><td>{h.quantity}주</td><td>{money(h.averageCost)}</td><td>{money(h.price)}</td><td className={h.value >= h.cost ? styles.positive : styles.negative}>{money(h.value-h.cost)}</td></tr>)}</tbody></table></div>{!data.holdings.length && <p>보유종목이 없습니다. 거래를 기록해 주세요.</p>}</section>}
-        {show('watchlist') && <section className={styles.card}><div className={styles.cardTitle}><h2>관심종목</h2><span>{portfolio.watchlist.length}종목</span></div><label className={styles.search}>종목 검색<input value={query} onChange={e => setQuery(e.target.value)} placeholder="종목명 또는 코드" /></label>{prices.filter(s => query ? `${s.name}${s.symbol}`.toLowerCase().includes(query.toLowerCase()) : portfolio.watchlist.includes(s.symbol)).map(s => <div className={styles.stockRow} key={s.symbol}><div><strong>{s.name}</strong><small>{s.symbol} · {money(s.price)} · {market ? 'KIS' : '예시'}</small></div><button className={styles.bookmark} onClick={() => watch(s.symbol)} aria-label={`${s.name} 관심종목 ${portfolio.watchlist.includes(s.symbol) ? '해제' : '추가'}`} aria-pressed={portfolio.watchlist.includes(s.symbol)}><Star fill={portfolio.watchlist.includes(s.symbol) ? 'currentColor' : 'none'} /></button></div>)}<p className={styles.demoNote}>검색하여 관심종목을 추가할 수 있습니다. 검색 대상은 예시 4종목입니다.</p></section>}
-        {show('transactions') && <><section className={styles.card}><div className={styles.cardTitle}><h2>거래 기록</h2><span>수동 입력</span></div><form className={styles.tradeForm} onSubmit={e => { e.preventDefault(); try { save(recordTrade(portfolio, { ...form, quantity: Number(form.quantity), price: Number(form.price) })); } catch (err) { setMessage(err.message); } }}>
-          <label>종목<select value={form.symbol} onChange={e => setForm({...form, symbol:e.target.value, price:String(prices.find(s => s.symbol === e.target.value).price)})}>{instruments.map(s => <option value={s.symbol} key={s.symbol}>{s.name}</option>)}</select></label>
-          <label>구분<select value={form.side} onChange={e => setForm({...form,side:e.target.value})}><option value="buy">매수</option><option value="sell">매도</option></select></label>
-          {[['quantity','수량 (주)','number'],['price','거래단가 (원)','number'],['date','거래일','date']].map(([field,label,type]) => <label key={field}>{label}<input required type={type} min={type === 'number' ? 1 : undefined} step={type === 'number' ? 1 : undefined} max={type === 'date' ? new Date().toLocaleDateString('en-CA') : undefined} value={form[field]} onChange={e => setForm({...form,[field]:e.target.value})} /></label>)}<button className={styles.primary}>거래 저장</button></form><p className={styles.demoNote}>입력 순서로 잔고에 반영합니다. 과거 시점의 잔고를 재계산하지 않습니다.</p></section>
-          <section className={styles.card}><div className={styles.cardTitle}><h2>최근 거래</h2><span>{portfolio.transactions.length}건</span></div>{!portfolio.transactions.length && <p>기록한 거래가 없습니다. 초기 보유분은 예시 잔고입니다.</p>}<div className={styles.transactionList}>{portfolio.transactions.slice(0,view === 'overview' ? 5 : 100).map(t => <div className={styles.stockRow} key={t.id}><div><strong>{instruments.find(s => s.symbol === t.symbol)?.name} · {t.side === 'buy' ? '매수' : '매도'}</strong><small>{t.date} · {t.quantity}주 × {money(t.price)}</small></div><span>{money(t.quantity*t.price)}</span></div>)}</div></section></>}
-      </div>
+      <section className={styles.heading}><div><h1>{titles[view]}</h1><p>{data?`${data.profile.name||data.profile.login}님의 프로젝트와 개발 활동입니다.`:'GitHub를 연결하고 나만의 개발 현황을 확인하세요.'}</p></div><span className={styles.badge}>{demo?'예시 데이터':data?'GitHub 연동':'GitHub 연결'}</span></section>
+      {demo&&<nav className={styles.demoNav} aria-label="데모 메뉴">{[['overview','종합 현황'],['projects','프로젝트'],['issues','이슈 · PR'],['activity','활동']].map(([id,label])=><Link key={id} to={id==='overview'?'/demo':`/demo/${id}`} aria-current={view===id?'page':undefined}>{label}</Link>)}</nav>}
+      {error&&<div className={styles.sourceNote} role="alert">{error} <Link to="/login">로그인</Link></div>}
+      {busy&&<p className={styles.feedback} role="status">불러오는 중…</p>}
+      {!demo&&<section className={`${styles.card} ${styles.connection}`}>
+        <div><h2><Github/> {connection?.connected?`@${connection.login} 연결됨`:'GitHub 계정 연결'}</h2><p>본인 소유 공개 저장소와 작성한 공개 이슈·PR을 조회합니다.</p>{connection?.configured===false&&<p>관리자의 GitHub 앱 설정이 아직 완료되지 않았습니다.</p>}</div>
+        <div className={styles.buttonGroup}><button className={styles.primary} disabled={busy||connection?.configured===false} onClick={connect}><Github/>{connection?.connected?'다시 연결':'GitHub 연결'}</button>{connection?.connected&&<><button className={styles.outline} disabled={busy} onClick={()=>setRevision(n=>n+1)}><RefreshCw/>새로고침</button><button className={styles.outline} disabled={busy} onClick={disconnect}><Unplug/>연결 해제</button></>}</div>
+      </section>}
+      {!data&&!busy&&<section className={`${styles.card} ${styles.empty}`}><Github size={42}/><h2>{connection?.connected?'데이터를 불러오지 못했습니다':'아직 연결된 프로젝트가 없습니다'}</h2><p>{connection?.connected?'새로고침하거나 GitHub 계정을 다시 연결해 주세요.':'GitHub에서 접근을 허용하면 내 저장소와 활동이 여기에 표시됩니다.'}</p><Link to="/demo">예시 화면 둘러보기</Link></section>}
+      {data&&<>
+        <p className={styles.sourceNote}>{demo?'데모 전용 가상 데이터입니다. 연결한 계정에는 예시 데이터를 섞지 않습니다.':`조회 시각 ${new Date(data.fetchedAt).toLocaleString('ko-KR')} · 최대 60초 캐시 · 비공개·조직 소유 저장소 제외`}</p>
+        {data.warnings.map(w=><p key={w} role="status" className={styles.sourceNote}>{w}</p>)}
+        {data.truncated&&<p className={styles.sourceNote}>저장소는 최근 갱신 순 최대 500개이며, 프로젝트·스타·언어 통계는 조회된 범위 기준입니다.</p>}
+        {data.searchIncomplete&&<p className={styles.sourceNote}>GitHub 검색 결과가 일부 누락될 수 있습니다. 이슈·PR 통계는 잠시 후 다시 확인해 주세요.</p>}
+        <section className={styles.stats} aria-label="GitHub 현황">{cards.map(([label,value,Icon,tone])=><article className={styles.stat} key={label}><span className={`${styles.statIcon} ${styles[tone]}`}><Icon/></span><div className={styles.statText}><span>{label}</span><strong>{typeof value==='number'?value.toLocaleString():value}</strong></div></article>)}</section>
+        <div className={styles.grid}>
+          {show('projects')&&<section className={`${styles.card} ${view==='projects'?styles.full:''}`}><div className={styles.cardTitle}><h2><FolderGit2/> 프로젝트</h2><span>{filtered.length}개</span></div>
+            <div className={styles.filters}><label className={styles.search}>프로젝트 검색<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="이름 또는 설명"/></label><label className={styles.search}>주요 언어<select value={language} onChange={e=>setLanguage(e.target.value)}><option value="all">전체 언어</option>{Object.keys(languages).filter(l=>l!=='미분류').map(l=><option key={l}>{l}</option>)}</select></label><label className={styles.favoriteFilter}><input type="checkbox" checked={onlyFavorites} onChange={e=>setOnlyFavorites(e.target.checked)}/>즐겨찾기만</label></div>
+            {!filtered.length&&<p className={styles.empty}>조건에 맞는 공개 프로젝트가 없습니다.</p>}
+            <div className={styles.repoList}>{filtered.map(r=><article className={styles.repoRow} key={r.id}><div><h3><External url={r.url}>{r.name}</External></h3><p>{r.description||'등록된 설명이 없습니다.'}</p><div className={styles.tags}><span>{r.language||'언어 미분류'}</span><span>★ {r.stars}</span><span>포크 {r.forks}</span>{r.archived&&<span>보관됨</span>}</div><small>최근 갱신 {date(r.updatedAt)}</small></div><button disabled={busy} className={styles.bookmark} aria-label={`${r.name} 즐겨찾기`} aria-pressed={data.favorites.includes(r.id)} onClick={()=>favorite(r.id)}><Star fill={data.favorites.includes(r.id)?'currentColor':'none'}/></button></article>)}</div>
+          </section>}
+          {view==='overview'&&<section className={styles.card}><div className={styles.cardTitle}><h2>프로젝트 언어 분포</h2><span>주요 언어 기준</span></div>{!repos.length?<p>공개 저장소가 생기면 언어 분포가 표시됩니다.</p>:Object.entries(languages).sort((a,b)=>b[1]-a[1]).map(([name,count])=><div className={styles.allocation} key={name}><div><span>{name}</span><span>{count}개 · {(count/repos.length*100).toFixed(1)}%</span></div><progress value={count} max={repos.length} aria-label={`${name} 프로젝트 수`}/></div>)}<p className={styles.demoNote}>코드 줄 수나 개발 숙련도 비율이 아닙니다.</p></section>}
+          {show('issues')&&[['작성한 열린 이슈',data.issues,data.issueCount],['작성한 열린 PR',data.pullRequests,data.prCount]].map(([label,items,count])=><section className={styles.card} key={label}><div className={styles.cardTitle}><h2>{label}</h2><span>{count??'조회 실패'}{count!==null?'건':''}</span></div>{!items.length&&<p>{count===null?'데이터를 불러오지 못했습니다.':'작성한 공개 항목이 없습니다.'}</p>}{items.map(i=><article className={styles.stockRow} key={i.id}><div><h3><External url={i.url}>{i.title}</External></h3><small>{i.repository} · #{i.number} · {date(i.updatedAt)}</small></div></article>)}<p className={styles.demoNote}>최근 갱신 순 최대 30건 · 작성자 기준 · 다른 공개 저장소에 기여한 항목 포함</p></section>)}
+          {show('activity')&&<section className={`${styles.card} ${styles.full}`}><div className={styles.cardTitle}><h2><Activity/> 최근 공개 활동</h2><span>최대 30개 이벤트</span></div>{!data.events.length&&<p>조회된 공개 활동이 없습니다.</p>}{data.events.map(e=><article className={styles.stockRow} key={e.id}><div><strong>{eventNames[e.type]||'GitHub 활동'}</strong><small>{e.repo}</small></div><time dateTime={e.createdAt}>{date(e.createdAt)}</time></article>)}<p className={styles.demoNote}>GitHub 공개 이벤트 API 기준이며 지연·조회 범위 제한이 있습니다. 전체 커밋 수가 아닙니다.</p></section>}
+        </div>
+      </>}
+      {!demo&&connection?.connected&&<p className={styles.demoNote}>연결 해제는 이 사이트에 저장한 연결을 삭제합니다. GitHub의 앱 승인도 철회하려면 <a href="https://github.com/settings/applications" target="_blank" rel="noreferrer">GitHub 설정</a>에서 해제해 주세요.</p>}
+      <span className={styles.demoNote}>{location.pathname.startsWith('/demo')?'데모 변경 사항은 현재 화면에서만 유지됩니다.':''}</span>
     </main>
   </div>;
 }

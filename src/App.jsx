@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './LoginApp';
 import LinkPage from './membership';
@@ -10,18 +10,23 @@ import ProfileSettings from './components/account/ProfileSettings.jsx';
 import AccountSettings from './components/account/AccountSettings.jsx';
 import NotificationSettings from './components/account/NotificationSettings.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
-// import SearchResult from './serverF/routes/searchRoute';   // ✅ 검색 결과 컴포넌트
+import GitHubCallback from './components/github/GitHubCallback';
 
 function App() {
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-
   return (
     <Router>
       <Routes>
+        <Route path="/github/callback" element={<GitHubCallback />} />
+        <Route path="/demo/projects" element={<DashboardOverview demo view="projects" />} />
+        <Route path="/demo/issues" element={<DashboardOverview demo view="issues" />} />
+        <Route path="/demo/activity" element={<DashboardOverview demo view="activity" />} />
+        <Route path="/holdings" element={<Navigate to="/projects" replace />} />
+        <Route path="/transactions" element={<Navigate to="/issues" replace />} />
+        <Route path="/watchlist" element={<Navigate to="/projects" replace />} />
         <Route path="/demo" element={<DashboardOverview demo />} />
-        <Route path="/job-analysis" element={<Navigate to="/holdings" replace />} />
-        <Route path="/applications" element={<Navigate to="/transactions" replace />} />
-        <Route path="/interview-preparation" element={<Navigate to="/watchlist" replace />} />
+        <Route path="/job-analysis" element={<Navigate to="/projects" replace />} />
+        <Route path="/applications" element={<Navigate to="/issues" replace />} />
+        <Route path="/interview-preparation" element={<Navigate to="/activity" replace />} />
         {/* 기본 페이지 */}
         <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -30,39 +35,39 @@ function App() {
         <Route path="/password" element={<Password />} />
         <Route path="/customCalendar" element={<CustomCalendar />} />
 
-        {/* ✅ 검색 라우트만 추가 */}
-        <Route path="/search" element={<Navigate to="/watchlist" replace />} />
+        {/* 프로젝트 검색 */}
+        <Route path="/search" element={<Navigate to="/projects" replace />} />
 
         {/* 보호된 라우트 */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardOverview setTheme={setTheme} />
+              <DashboardOverview />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/holdings"
+          path="/projects"
           element={
             <ProtectedRoute>
-              <DashboardOverview view="holdings" />
+              <DashboardOverview view="projects" />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/transactions"
+          path="/issues"
           element={
             <ProtectedRoute>
-              <DashboardOverview view="transactions" />
+              <DashboardOverview view="issues" />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/watchlist"
+          path="/activity"
           element={
             <ProtectedRoute>
-              <DashboardOverview view="watchlist" />
+              <DashboardOverview view="activity" />
             </ProtectedRoute>
           }
         />
@@ -86,6 +91,7 @@ function App() {
         <Route path="/ChatApp" element={<Navigate to="/job-analysis" replace />} />
         <Route path="/file" element={<Navigate to="/applications" replace />} />
         <Route path="/sendEmail" element={<Navigate to="/interview-preparation" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </Router>
   );

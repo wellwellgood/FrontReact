@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "./AccountMenu.module.css";
 
 const notifications = [
-  { id: 1, icon: Bell, title: "예시 데이터로 시작합니다", detail: "시세와 초기 잔고는 Mock 데이터입니다.", time: "안내" },
-  { id: 2, icon: CheckCircle2, title: "거래를 직접 기록하세요", detail: "실제 주문 없이 브라우저에 저장합니다.", time: "안내" },
+  { id: 1, icon: Bell, title: "GitHub 계정을 연결하세요", detail: "본인의 공개 프로젝트와 활동을 확인할 수 있습니다.", time: "안내" },
+  { id: 2, icon: CheckCircle2, title: "프로젝트를 즐겨찾기에 저장하세요", detail: "연결한 사용자 계정별로 서버에 저장됩니다.", time: "안내" },
 ];
 
 export default function AccountMenu() {

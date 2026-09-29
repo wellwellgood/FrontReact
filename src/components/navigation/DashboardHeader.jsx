@@ -4,9 +4,9 @@ import styles from "./DashboardHeader.module.css";
 
 const tabs = [
   ["overview", "종합 현황", "/dashboard"],
-  ["holdings", "보유종목", "/holdings"],
-  ["transactions", "거래내역", "/transactions"],
-  ["watchlist", "관심종목", "/watchlist"],
+  ["projects", "프로젝트", "/projects"],
+  ["issues", "이슈 · PR", "/issues"],
+  ["activity", "활동", "/activity"],
 ];
 
 export default function DashboardHeader({ active }) {
@@ -15,7 +15,7 @@ export default function DashboardHeader({ active }) {
   return (
     <header className={styles.header}>
       <button type="button" className={styles.brand} onClick={() => navigate("/dashboard")}>
-        자산 대시보드
+        DEV DASHBOARD
       </button>
       <nav className={styles.tabs} aria-label="주요 메뉴">
         {tabs.map(([id, label, path]) => (

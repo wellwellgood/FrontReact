@@ -1,374 +1,41 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  ChevronRight,
-  Plus,
-  FileText,
-  Send,
-  CalendarDays,
-  Clock3,
-  Bookmark,
-  MapPin,
-  BriefcaseBusiness,
-  Sparkles,
-  ArrowRight,
-  X,
-  ChartNoAxesCombined,
-} from "lucide-react";
-import styles from "./DashboardOverview.module.css";
-import AccountMenu from "../account/AccountMenu.jsx";
-
-const jobs = [
-  {
-    company: "루미랩",
-    role: "프론트엔드 개발자",
-    desc: "사람의 가능성을 밝히는 기술, 루미랩과 함께하세요.",
-    location: "서울 강남구",
-    career: "경력 무관",
-    tags: ["React", "TypeScript", "Next.js", "웹 성능"],
-    logo: "L",
-  },
-  {
-    company: "모아테크",
-    role: "웹 개발자",
-    desc: "더 나은 일상을 만드는 서비스를 함께 만듭니다.",
-    location: "서울 마포구",
-    career: "경력 1년 이상",
-    tags: ["React", "TypeScript", "Tailwind CSS", "REST API"],
-    logo: "M",
-  },
-];
-const todos = [
-  ["이력서 프로젝트 경험 보완", "구체적인 성과와 수치를 추가해보세요."],
-  ["프론트엔드 면접 준비", "자주 묻는 질문을 정리하고 답변을 연습해보세요."],
-  [
-    "관심 공고 2건 검토",
-    "마감일과 담당 업무를 확인하고 지원 여부를 결정하세요.",
-  ],
-];
-const stats = [
-  ["관심 공고", 12, FileText, "blue"],
-  ["지원 완료", 8, Send, "green"],
-  ["면접 예정", 2, CalendarDays, "purple"],
-  ["이번 주 마감", 3, Clock3, "orange"],
-];
-
-export default function DashboardOverview() {
-  const navigate = useNavigate();
-  const [done, setDone] = useState([]);
-  const [saved, setSaved] = useState([]);
-  const [period, setPeriod] = useState("이번 주");
-  const [dialog, setDialog] = useState(null);
-  const [added, setAdded] = useState([]);
-  const [company, setCompany] = useState("");
-  const [role, setRole] = useState("");
-  const values =
-    period === "이번 주" ? [2, 4, 3, 6, 5, 2, 1] : [1, 3, 2, 4, 2, 1, 0];
-  const toggle = (setter, list, item) =>
-    setter(
-      list.includes(item) ? list.filter((x) => x !== item) : [...list, item],
-    );
-  const open = (title, text) => setDialog({ title, text });
-  return (
-    <div className={styles.dashboard}>
-      <header className={styles.header}>
-        <button className={styles.brand} onClick={() => setDialog(null)}>
-          취업 대시보드
-        </button>
-        <div className={styles.tabs} aria-label="주요 메뉴">
-          {["종합 현황", "공고·이력서 분석", "지원 관리", "면접 준비"].map(
-            (tab, i) => (
-              <button
-                key={tab}
-                className={i === 0 ? styles.activeTab : ""}
-                onClick={() =>
-                  i === 1 ? navigate("/ChatApp") : i === 2 ? navigate("/file") : i === 3 ? navigate("/sendEmail") : setDialog(null)
-                }
-              >
-                {tab}
-              </button>
-            ),
-          )}
-        </div>
-        <AccountMenu />
-      </header>
-      <main className={styles.content}>
-        <section className={styles.heading}>
-          <div>
-            <h1>지원의 흐름을 한눈에</h1>
-            <p>오늘의 준비가 다음 기회로 이어집니다.</p>
-          </div>
-          <button
-            className={styles.primary}
-            onClick={() => setDialog({ title: "공고 추가", add: true })}
-          >
-            <Plus />
-            공고 추가
-          </button>
-        </section>
-        <section className={styles.stats} aria-label="지원 현황 예시">
-          {stats.map(([label, number, Icon, tone], i) => (
-            <button
-              className={styles.stat}
-              key={label}
-              onClick={() =>
-                open(
-                  label,
-                  "예시 데이터입니다. 실제 지원 현황 연동은 준비 중입니다.",
-                )
-              }
-            >
-              <span className={`${styles.statIcon} ${styles[tone]}`}>
-                <Icon />
-              </span>
-              <span className={styles.statText}>
-                <span>{label}</span>
-                <strong>{number + (i === 0 ? added.length : 0)}</strong>
-              </span>
-              <ChevronRight className={styles.chevron} />
-            </button>
-          ))}
-        </section>
-        <div className={styles.grid}>
-          <section className={styles.card}>
-            <div className={styles.cardTitle}>
-              <h2>주간 지원 활동</h2>
-              <select
-                aria-label="활동 조회 기간"
-                value={period}
-                onChange={(e) => setPeriod(e.target.value)}
-              >
-                <option>이번 주</option>
-                <option>지난 주</option>
-              </select>
-            </div>
-            <div
-              className={styles.chart}
-              role="img"
-              aria-label={`${period} 지원 수 예시: ${values.join(", ")}`}
-            >
-              <span className={styles.axisTitle}>지원 수</span>
-              <div className={styles.ticks}>
-                {[8, 6, 4, 2, 0].map((n) => (
-                  <span key={n}>{n}</span>
-                ))}
-              </div>
-              <div className={styles.plot}>
-                {values.map((v, i) => (
-                  <div className={styles.barColumn} key={i}>
-                    <div
-                      className={styles.bar}
-                      style={{ height: `${(v / 8) * 100}%` }}
-                    >
-                      <span>{v}</span>
-                    </div>
-                    <span className={styles.day}>{"월화수목금토일"[i]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-          <section className={styles.card}>
-            <div className={styles.cardTitle}>
-              <h2>오늘 할 일</h2>
-              <span className={styles.date}>
-                {new Date().toLocaleDateString("ko-KR", {
-                  month: "long",
-                  day: "numeric",
-                  weekday: "short",
-                })}
-              </span>
-            </div>
-            <div className={styles.todos}>
-              {todos.map(([title, desc], i) => (
-                <label
-                  className={`${styles.todo} ${done.includes(i) ? styles.completed : ""}`}
-                  key={title}
-                >
-                  <input
-                    type="checkbox"
-                    checked={done.includes(i)}
-                    onChange={() => toggle(setDone, done, i)}
-                  />
-                  <span>
-                    <strong>{title}</strong>
-                    <small>{desc}</small>
-                  </span>
-                </label>
-              ))}
-            </div>
-          </section>
-          <section className={styles.card}>
-            <div className={styles.cardTitle}>
-              <h2>추천 공고</h2>
-              <button
-                className={styles.textButton}
-                onClick={() =>
-                  open(
-                    "추천 공고",
-                    "현재 표시된 공고는 디자인을 위한 가상 기업의 예시입니다.",
-                  )
-                }
-              >
-                더보기 <ChevronRight size={16} />
-              </button>
-            </div>
-            {[...jobs, ...added].map((job, i) => (
-              <article className={styles.job} key={i}>
-                <div
-                  className={`${styles.companyLogo} ${i === 1 ? styles.darkLogo : ""}`}
-                >
-                  {job.logo}
-                </div>
-                <div className={styles.jobBody}>
-                  <h3>
-                    {job.company} · {job.role}
-                  </h3>
-                  <p>{job.desc}</p>
-                  <div className={styles.tags}>
-                    {job.tags.map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
-                  </div>
-                </div>
-                <div className={styles.jobMeta}>
-                  <span>
-                    <MapPin />
-                    {job.location}
-                  </span>
-                  <span>
-                    <BriefcaseBusiness />
-                    {job.career}
-                  </span>
-                </div>
-                <button
-                  className={`${styles.bookmark} ${saved.includes(i) ? styles.saved : ""}`}
-                  aria-label={`${job.company} 공고 저장`}
-                  aria-pressed={saved.includes(i)}
-                  onClick={() => toggle(setSaved, saved, i)}
-                >
-                  <Bookmark />
-                </button>
-              </article>
-            ))}
-          </section>
-          <section className={`${styles.card} ${styles.guide}`}>
-            <div className={styles.guideLabel}>
-              <Sparkles />
-              AI 준비 가이드
-            </div>
-            <div className={styles.guideContent}>
-              <div>
-                <h2>프로젝트 성과를 수치로 보완해 보세요.</h2>
-                <p>
-                  구체적인 수치는 경험을 더 명확하고
-                  <br />
-                  신뢰감 있게 전달할 수 있습니다.
-                  <br />
-                  예를 들어, 사용자 수, 성능 개선률, 처리 시간 등을
-                  <br />
-                  활용해 보세요.
-                </p>
-                <button
-                  className={styles.outline}
-                  onClick={() =>
-                    open(
-                      "프로젝트 경험 작성 가이드",
-                      "문제 → 맡은 역할 → 해결 과정 → 결과 순서로 작성해 보세요. 직접 측정한 처리 시간이나 사용자 수를 근거와 함께 적으면 좋습니다. 이 안내는 예시이며 AI 분석 결과가 아닙니다.",
-                    )
-                  }
-                >
-                  자세히 보기 <ArrowRight size={18} />
-                </button>
-              </div>
-              <div className={styles.illustration} aria-hidden="true">
-                <span>AI</span>
-                <ChartNoAxesCombined />
-              </div>
-            </div>
-          </section>
-        </div>
-        <p className={styles.demoNote}>
-          디자인 미리보기 · 통계와 추천 공고는 예시 데이터이며, 추가·체크·저장은
-          현재 화면에서만 유지됩니다.
-        </p>
-      </main>
-      {dialog && (
-        <div
-          className={styles.overlay}
-          onClick={() => setDialog(null)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setDialog(null);
-          }}
-        >
-          <section
-            className={styles.dialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="dashboard-dialog-title"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.cardTitle}>
-              <h2 id="dashboard-dialog-title">{dialog.title}</h2>
-              <button
-                autoFocus
-                className={styles.iconButton}
-                aria-label="닫기"
-                onClick={() => setDialog(null)}
-              >
-                <X />
-              </button>
-            </div>
-            {dialog.add ? (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setAdded([
-                    ...added,
-                    {
-                      company: company.trim(),
-                      role: role.trim(),
-                      logo: company.trim().slice(0, 1),
-                      desc: "직접 추가한 관심 공고",
-                      location: "지역 미입력",
-                      career: "경력 미입력",
-                      tags: ["관심 공고"],
-                    },
-                  ]);
-                  setCompany("");
-                  setRole("");
-                  setDialog(null);
-                }}
-              >
-                <label>
-                  기업명
-                  <input
-                    required
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                  />
-                </label>
-                <label>
-                  직무
-                  <input
-                    required
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                  />
-                </label>
-                <button
-                  className={styles.primary}
-                  disabled={!company.trim() || !role.trim()}
-                >
-                  추가하기
-                </button>
-              </form>
-            ) : (
-              <p>{dialog.text}</p>
-            )}
-          </section>
-        </div>
-      )}
-    </div>
-  );
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Wallet, ChartNoAxesCombined, Landmark, TrendingUp, Star } from 'lucide-react';
+import DashboardHeader from '../navigation/DashboardHeader.jsx';
+import { instruments, initialPortfolio, summarize, recordTrade } from '../portfolio/model.js';
+import styles from './DashboardOverview.module.css';
+const money = n => `${Math.round(n).toLocaleString('ko-KR')}원`;
+const percent = n => `${n > 0 ? '+' : ''}${n.toFixed(2)}%`;
+export default function DashboardOverview({ view = 'overview', demo = false }) {
+  const key = `portfolio-v1:${demo ? 'demo' : sessionStorage.getItem('username')}`;
+  const [portfolio, setPortfolio] = useState(() => { try { const p = JSON.parse(localStorage.getItem(key)); return p?.version === 1 && Array.isArray(p.holdings) && Array.isArray(p.watchlist) && Array.isArray(p.transactions) && Number.isFinite(p.cash) ? p : initialPortfolio(); } catch { return initialPortfolio(); } });
+  const [message, setMessage] = useState('');
+  const [query, setQuery] = useState('');
+  const [form, setForm] = useState({ symbol: '005930', side: 'buy', quantity: '1', price: '74000', date: new Date().toLocaleDateString('en-CA') });
+  const data = summarize(portfolio);
+  const save = next => { try { localStorage.setItem(key, JSON.stringify(next)); setPortfolio(next); setMessage('이 브라우저에 저장되었습니다.'); } catch { setMessage('저장 공간을 사용할 수 없습니다. 브라우저 설정을 확인해 주세요.'); } };
+  const watch = symbol => save({ ...portfolio, watchlist: portfolio.watchlist.includes(symbol) ? portfolio.watchlist.filter(s => s !== symbol) : [...portfolio.watchlist, symbol] });
+  const show = name => view === 'overview' || view === name;
+  const title = { overview: '내 자산의 흐름을 한눈에', holdings: '보유종목', transactions: '거래내역', watchlist: '관심종목' }[view];
+  const stats = [['총자산', data.total, Wallet, 'blue'], ['투자자산', data.investment, ChartNoAxesCombined, 'green'], ['현금성자산', portfolio.cash, Landmark, 'purple'], ['평가손익', data.profit, TrendingUp, 'orange']];
+  return <div className={styles.dashboard}>
+    {demo ? <header className={styles.header}><strong>자산 대시보드 · 데모</strong><Link to="/login">로그인</Link></header> : <DashboardHeader active={view} />}
+    <main className={styles.content}>
+      <section className={styles.heading}><div><h1>{title}</h1><p>자산을 기록하고 투자 현황을 확인하세요.</p></div><span className={styles.badge}>예시 시세 · KRW</span></section>
+      <p className={styles.sourceNote}>초기 잔고와 시세는 Mock 데이터입니다. 거래 입력은 실제 주문 없이 이 브라우저의 사용자별 기록에만 반영됩니다. 실제 계좌·시세 API는 연결되지 않았습니다.</p>
+      <section className={styles.stats} aria-label="자산 요약">{stats.map(([label, value, Icon, tone]) => <article className={styles.stat} key={label}><span className={`${styles.statIcon} ${styles[tone]}`}><Icon /></span><div className={styles.statText}><span>{label}</span><strong>{money(value)}</strong></div></article>)}</section>
+      <p role="status" className={styles.feedback}>{message}</p>
+      <div className={styles.grid}>
+        {view === 'overview' && <><section className={styles.card}><div className={styles.cardTitle}><h2>보유자산 수익률</h2><strong className={data.profit >= 0 ? styles.positive : styles.negative}>{percent(data.returnRate)}</strong></div><p>현재 보유분의 매입원금 대비 평가손익 · 실현손익·세금·수수료 제외</p><div className={styles.returnList}>{data.holdings.map(h => <div key={h.symbol}><span>{h.name}</span><strong className={h.value >= h.cost ? styles.positive : styles.negative}>{percent((h.value - h.cost) / h.cost * 100)}</strong></div>)}</div></section>
+        <section className={styles.card}><div className={styles.cardTitle}><h2>자산배분</h2><span>총자산 기준</span></div>{['국내주식', 'ETF', '현금성자산'].map(category => { const amount = category === '현금성자산' ? portfolio.cash : data.holdings.filter(h => h.category === category).reduce((sum,h) => sum + h.value,0); const ratio = data.total ? amount / data.total * 100 : 0; return <div className={styles.allocation} key={category}><div><span>{category}</span><span>{money(amount)} · {ratio.toFixed(1)}%</span></div><progress max="100" value={ratio} aria-label={`${category} 비중`} /></div>; })}</section></>}
+        {show('holdings') && <section className={`${styles.card} ${view !== 'overview' ? styles.full : ''}`}><div className={styles.cardTitle}><h2>보유종목</h2><span>{data.holdings.length}종목</span></div><div className={styles.tableWrap}><table><thead><tr><th>종목</th><th>수량</th><th>평균매입가</th><th>예시 현재가</th><th>평가손익</th></tr></thead><tbody>{data.holdings.map(h => <tr key={h.symbol}><th>{h.name}<small>{h.symbol}</small></th><td>{h.quantity}주</td><td>{money(h.averageCost)}</td><td>{money(h.price)}</td><td className={h.value >= h.cost ? styles.positive : styles.negative}>{money(h.value-h.cost)}</td></tr>)}</tbody></table></div>{!data.holdings.length && <p>보유종목이 없습니다. 거래를 기록해 주세요.</p>}</section>}
+        {show('watchlist') && <section className={styles.card}><div className={styles.cardTitle}><h2>관심종목</h2><span>{portfolio.watchlist.length}종목</span></div><label className={styles.search}>종목 검색<input value={query} onChange={e => setQuery(e.target.value)} placeholder="종목명 또는 코드" /></label>{instruments.filter(s => query ? `${s.name}${s.symbol}`.toLowerCase().includes(query.toLowerCase()) : portfolio.watchlist.includes(s.symbol)).map(s => <div className={styles.stockRow} key={s.symbol}><div><strong>{s.name}</strong><small>{s.symbol} · {money(s.price)} · 예시</small></div><button className={styles.bookmark} onClick={() => watch(s.symbol)} aria-label={`${s.name} 관심종목 ${portfolio.watchlist.includes(s.symbol) ? '해제' : '추가'}`} aria-pressed={portfolio.watchlist.includes(s.symbol)}><Star fill={portfolio.watchlist.includes(s.symbol) ? 'currentColor' : 'none'} /></button></div>)}<p className={styles.demoNote}>검색하여 관심종목을 추가할 수 있습니다. 검색 대상은 예시 4종목입니다.</p></section>}
+        {show('transactions') && <><section className={styles.card}><div className={styles.cardTitle}><h2>거래 기록</h2><span>수동 입력</span></div><form className={styles.tradeForm} onSubmit={e => { e.preventDefault(); try { save(recordTrade(portfolio, { ...form, quantity: Number(form.quantity), price: Number(form.price) })); } catch (err) { setMessage(err.message); } }}>
+          <label>종목<select value={form.symbol} onChange={e => setForm({...form, symbol:e.target.value, price:String(instruments.find(s => s.symbol === e.target.value).price)})}>{instruments.map(s => <option value={s.symbol} key={s.symbol}>{s.name}</option>)}</select></label>
+          <label>구분<select value={form.side} onChange={e => setForm({...form,side:e.target.value})}><option value="buy">매수</option><option value="sell">매도</option></select></label>
+          {[['quantity','수량 (주)','number'],['price','거래단가 (원)','number'],['date','거래일','date']].map(([field,label,type]) => <label key={field}>{label}<input required type={type} min={type === 'number' ? 1 : undefined} step={type === 'number' ? 1 : undefined} max={type === 'date' ? new Date().toLocaleDateString('en-CA') : undefined} value={form[field]} onChange={e => setForm({...form,[field]:e.target.value})} /></label>)}<button className={styles.primary}>거래 저장</button></form><p className={styles.demoNote}>입력 순서로 잔고에 반영합니다. 과거 시점의 잔고를 재계산하지 않습니다.</p></section>
+          <section className={styles.card}><div className={styles.cardTitle}><h2>최근 거래</h2><span>{portfolio.transactions.length}건</span></div>{!portfolio.transactions.length && <p>기록한 거래가 없습니다. 초기 보유분은 예시 잔고입니다.</p>}<div className={styles.transactionList}>{portfolio.transactions.slice(0,view === 'overview' ? 5 : 100).map(t => <div className={styles.stockRow} key={t.id}><div><strong>{instruments.find(s => s.symbol === t.symbol)?.name} · {t.side === 'buy' ? '매수' : '매도'}</strong><small>{t.date} · {t.quantity}주 × {money(t.price)}</small></div><span>{money(t.quantity*t.price)}</span></div>)}</div></section></>}
+      </div>
+    </main>
+  </div>;
 }

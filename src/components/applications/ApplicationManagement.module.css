@@ -750,4 +750,16 @@
     font-size: 12px;
     padding: 0 7px
   }
+
+  .controls>button {
+    flex: 1
+  }
+
+  .controls>.add {
+    margin-left: 0
+  }
+
+  .reminder {
+    padding: 14px 16px
+  }
 }

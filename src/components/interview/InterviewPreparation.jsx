@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Building2,
   Check,
@@ -10,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./InterviewPreparation.module.css";
-import AccountMenu from "../account/AccountMenu.jsx";
+import DashboardHeader from "../navigation/DashboardHeader.jsx";
 import api from "../../util/api.js";
 
 const questions = [
@@ -44,7 +43,6 @@ const demoJob = { id: "demo", company: "루미랩", role: "프론트엔드 개�
 const storageKey = "interview-practice-answers-v1";
 
 export default function InterviewPreparation() {
-  const navigate = useNavigate();
   const [filter, setFilter] = useState("전체");
   const [selected, setSelected] = useState(0);
   const [answers, setAnswers] = useState(() => {
@@ -166,28 +164,7 @@ export default function InterviewPreparation() {
 
   return (
     <div className={styles.dashboard}>
-      <header className={styles.header}>
-        <button type="button" className={styles.brand} onClick={() => navigate("/main")}>
-          취업 대시보드
-        </button>
-        <nav className={styles.tabs} aria-label="주요 메뉴">
-          {["종합 현황", "공고·이력서 분석", "지원 관리", "면접 준비"].map(
-            (tab, index) => (
-              <button
-                key={tab}
-                className={index === 3 ? styles.activeTab : ""}
-                aria-current={index === 3 ? "page" : undefined}
-                onClick={() =>
-                  navigate(["/main", "/ChatApp", "/file", "/sendEmail"][index])
-                }
-              >
-                {tab}
-              </button>
-            ),
-          )}
-        </nav>
-        <AccountMenu />
-      </header>
+      <DashboardHeader active="interview" />
       <main className={styles.main}>
         <div className={styles.intro}>
           <div>

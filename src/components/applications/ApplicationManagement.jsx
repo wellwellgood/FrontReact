@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Bookmark,
   CalendarDays,
@@ -14,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./ApplicationManagement.module.css";
-import AccountMenu from "../account/AccountMenu.jsx";
+import DashboardHeader from "../navigation/DashboardHeader.jsx";
 
 const KEY = "job-application-board-v1";
 const columns = [
@@ -143,7 +142,6 @@ function Card({ job, onClick }) {
   );
 }
 export default function ApplicationManagement() {
-  const navigate = useNavigate();
   const [jobs, setJobs] = useState(readJobs);
   const [query, setQuery] = useState("");
   const [urgent, setUrgent] = useState(false);
@@ -210,16 +208,7 @@ export default function ApplicationManagement() {
   };
   return (
     <div className={styles.dashboard}>
-      <header className={styles.header}>
-        <button type="button" className={styles.brand} onClick={() => navigate("/main")}>취업 대시보드</button>
-        <nav className={styles.tabs} aria-label="대시보드 메뉴">
-          <button type="button" onClick={() => navigate("/main")}>종합 현황</button>
-          <button type="button" onClick={() => navigate("/ChatApp")}>공고·이력서 분석</button>
-          <button type="button" className={styles.active} aria-current="page">지원 관리</button>
-          <button type="button" onClick={() => navigate("/sendEmail")}>면접 준비</button>
-        </nav>
-        <AccountMenu />
-      </header>
+      <DashboardHeader active="applications" />
       <main className={styles.main}>
         <div className={styles.top}>
           <div>

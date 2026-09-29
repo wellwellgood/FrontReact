@@ -670,11 +670,17 @@
         font-size: 24px
     }
 
+    .answerPanel {
+        min-height: 500px
+    }
+
     .actions {
+        flex-direction: column;
         gap: 9px
     }
 
     .actions button {
+        width: 100%;
         font-size: 14px
     }
 

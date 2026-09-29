@@ -94,7 +94,7 @@ const Membership = () => {
 
       if (res.data?.message === "회원가입 성공") {
         alert("🎉 회원가입이 완료되었습니다!");
-        navigate("/main");
+        navigate("/dashboard");
       } else {
         showMessage(res.data?.message || "회원가입 실패");
       }

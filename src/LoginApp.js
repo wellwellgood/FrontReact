@@ -72,7 +72,7 @@ function LoginPage() {
       sessionStorage.setItem("name", name);
       sessionStorage.setItem("userToken", accessToken);
   
-      navigate("/main");
+      navigate("/dashboard");
     } catch (error) {
       if (error.response && error.response.data?.message) {
         alert(error.response.data.message);

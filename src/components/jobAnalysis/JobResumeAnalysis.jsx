@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   Check,
@@ -17,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./JobResumeAnalysis.module.css";
-import AccountMenu from "../account/AccountMenu.jsx";
+import DashboardHeader from "../navigation/DashboardHeader.jsx";
 
 const requirements = [
   {
@@ -61,7 +60,6 @@ const initialJob = {
 };
 
 export default function JobResumeAnalysis() {
-  const navigate = useNavigate();
   const input = useRef(null);
   const modal = useRef(null);
   const [dialog, setDialog] = useState({ title: "", text: "" });
@@ -122,32 +120,7 @@ export default function JobResumeAnalysis() {
       ));
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <button className={styles.brand} onClick={() => navigate("/main")}>
-          취업 대시보드
-        </button>
-        <div className={styles.tabs} aria-label="주요 메뉴">
-          {["종합 현황", "공고·이력서 분석", "지원 관리", "면접 준비"].map(
-            (tab, i) => (
-              <button
-                key={tab}
-                aria-current={i === 1 ? "page" : undefined}
-                className={i === 1 ? styles.active : ""}
-                onClick={() =>
-                  i === 0
-                    ? navigate("/main")
-                    : i === 2
-                      ? navigate("/file")
-                      : i === 3 && navigate("/sendEmail")
-                }
-              >
-                {tab}
-              </button>
-            ),
-          )}
-        </div>
-        <AccountMenu />
-      </header>
+      <DashboardHeader active="analysis" />
       <main className={styles.content}>
         <section className={styles.hero}>
           <div>

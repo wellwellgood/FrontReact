@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, CalendarDays, CheckCircle2, ChevronDown, LogOut, Settings, SlidersHorizontal, UserRound } from "lucide-react";
+import { Bell, CheckCircle2, ChevronDown, LogOut, Settings, SlidersHorizontal, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AccountMenu.module.css";
 
 const notifications = [
-  { id: 1, icon: CalendarDays, title: "면접 일정이 다가오고 있어요", detail: "루미랩 · 9월 26일 오후 2:00", time: "오늘" },
-  { id: 2, icon: CheckCircle2, title: "지원 상태가 변경되었어요", detail: "하루스튜디오 · 최종 합격", time: "1일 전" },
-  { id: 3, icon: Bell, title: "관심 공고 마감이 임박했어요", detail: "루미랩 · 프론트엔드 개발자", time: "2일 전" },
+  { id: 1, icon: Bell, title: "예시 데이터로 시작합니다", detail: "시세와 초기 잔고는 Mock 데이터입니다.", time: "안내" },
+  { id: 2, icon: CheckCircle2, title: "거래를 직접 기록하세요", detail: "실제 주문 없이 브라우저에 저장합니다.", time: "안내" },
 ];
 
 export default function AccountMenu() {

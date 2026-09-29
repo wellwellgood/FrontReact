@@ -903,4 +903,16 @@
         font-size: 12px;
         padding: 0 7px
     }
+
+    .content {
+        padding: 24px 16px
+    }
+
+    .card {
+        padding: 18px 16px
+    }
+
+    .results {
+        flex-direction: column
+    }
 }

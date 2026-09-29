@@ -1,6 +1,6 @@
 import { BellRing, Settings, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AccountMenu from "./AccountMenu.jsx";
+import DashboardHeader from "../navigation/DashboardHeader.jsx";
 import styles from "./AccountPages.module.css";
 
 const pages = [
@@ -13,13 +13,7 @@ export default function AccountLayout({ active, children }) {
   const navigate = useNavigate();
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <button className={styles.brand} onClick={() => navigate("/main")}>취업 대시보드</button>
-        <nav className={styles.dashboardNav} aria-label="대시보드 메뉴">
-          {["종합 현황", "공고·이력서 분석", "지원 관리", "면접 준비"].map((label, index) => <button key={label} onClick={() => navigate(["/main", "/ChatApp", "/file", "/sendEmail"][index])}>{label}</button>)}
-        </nav>
-        <AccountMenu />
-      </header>
+      <DashboardHeader />
       <main className={styles.main}>
         <aside className={styles.sidebar}>
           <h1>계정 관리</h1>

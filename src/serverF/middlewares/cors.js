@@ -2,7 +2,6 @@
 import cors from "cors";
 
 const allowedOrigins = [
-  "https://dashboardky.netlify.app",
   "https://dashboardkky.netlify.app",
   "http://localhost:3000",
   "http://localhost:10000",
@@ -12,17 +11,17 @@ const allowedOrigins = [
 const corsOptions = {
   origin: function (origin, callback) {
     console.log("🛰️ 요청 origin:", origin);
-    
+
     // origin이 없는 경우 (같은 도메인, 모바일 앱, Postman 등)
     if (!origin) {
       console.log("✅ Origin이 없음 - 허용");
       callback(null, true);
       return;
     }
-    
+
     // 슬래시 제거 후 비교
     const cleanOrigin = origin.replace(/\/$/, '');
-    
+
     // 허용된 origin인지 확인
     if (allowedOrigins.includes(cleanOrigin)) {
       callback(null, true);
@@ -70,13 +69,13 @@ const API = "https://react-server-wmqa.onrender.com";
 // 메시지 중복 제거 함수 (고급 버전)
 const removeDuplicateMessagesAdvanced = (messages) => {
   if (!Array.isArray(messages)) return [];
-  
+
   const uniqueMessages = new Map();
-  
+
   messages.forEach(message => {
     // 고유 키 생성: sender + receiver + content + time
     const key = `${message.sender_username}_${message.receiver_username}_${message.content}_${message.time}`;
-    
+
     if (!uniqueMessages.has(key)) {
       uniqueMessages.set(key, message);
     } else {
@@ -87,7 +86,7 @@ const removeDuplicateMessagesAdvanced = (messages) => {
       }
     }
   });
-  
+
   return Array.from(uniqueMessages.values());
 };
 
@@ -107,42 +106,42 @@ const safeApiRequest = async (url, options = {}) => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), defaultOptions.timeout);
-    
+
     const response = await fetch(url, {
       ...defaultOptions,
       signal: controller.signal
     });
-    
+
     clearTimeout(timeoutId);
-    
+
     // 응답 상태 확인
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`❌ HTTP ${response.status}: ${errorText}`);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     return data;
-    
+
   } catch (error) {
     console.error(`❌ API 요청 실패: ${url}`, error);
-    
+
     // 타임아웃 에러 처리
     if (error.name === 'AbortError') {
       throw new Error('요청 시간이 초과되었습니다. 네트워크 연결을 확인해주세요.');
     }
-    
+
     // 네트워크 에러 처리
     if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
       throw new Error('네트워크 연결을 확인해주세요');
     }
-    
+
     // CORS 에러 처리
     if (error.message.includes('CORS')) {
       throw new Error('서버 연결 권한이 없습니다');
     }
-    
+
     throw error;
   }
 };
@@ -150,14 +149,14 @@ const safeApiRequest = async (url, options = {}) => {
 // 재시도 로직이 포함된 API 요청
 const apiRequestWithRetry = async (url, options = {}, maxRetries = 3) => {
   let lastError;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await safeApiRequest(url, options);
     } catch (error) {
       lastError = error;
       console.warn(`🔄 재시도 ${i + 1}/${maxRetries}: ${error.message}`);
-      
+
       if (i < maxRetries - 1) {
         // 지수 백오프: 1초, 2초, 4초 대기
         const delay = 1000 * Math.pow(2, i);
@@ -166,7 +165,7 @@ const apiRequestWithRetry = async (url, options = {}, maxRetries = 3) => {
       }
     }
   }
-  
+
   throw lastError;
 };
 
@@ -180,7 +179,7 @@ const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
         receiver_username: receiverUsername,
       })
     });
-    
+
     // 소켓으로 읽음 상태 전송
     if (socket && socket.connected) {
       socket.emit("messageRead", {
@@ -188,7 +187,7 @@ const markMessagesAsRead = async (senderUsername, receiverUsername, socket) => {
         receiver_username: senderUsername,
       });
     }
-    
+
   } catch (error) {
     console.error("❌ 읽음 처리 실패:", error);
     // 읽음 처리 실패는 치명적이지 않으므로 에러를 던지지 않음
@@ -224,9 +223,9 @@ const sendMessage = async (messageData) => {
       method: 'POST',
       body: JSON.stringify(messageData)
     });
-    
+
     return savedMessage;
-    
+
   } catch (error) {
     console.error("❌ 메시지 전송 실패:", error);
     throw error;
@@ -237,12 +236,12 @@ const sendMessage = async (messageData) => {
 const fetchUsers = async (setUsers, setIsLoading, setUserListError) => {
   try {
     setIsLoading(true);
-    
+
     const users = await apiRequestWithRetry(`${API}/users`);
-    
+
     setUsers(users || []);
     setUserListError("");
-    
+
   } catch (error) {
     console.error("❌ 사용자 목록 로드 실패:", error);
     setUserListError(`사용자 목록을 불러오는 데 실패했습니다: ${error.message}`);
@@ -280,24 +279,24 @@ const monitorConnectionStatus = (callback) => {
   const checkConnection = async () => {
     const isOnline = checkNetworkStatus();
     const isServerUp = await checkServerHealth();
-    
+
     callback({
       online: isOnline,
       serverUp: isServerUp,
       status: isOnline && isServerUp ? 'connected' : 'disconnected'
     });
   };
-  
+
   // 초기 확인
   checkConnection();
-  
+
   // 주기적 확인 (30초마다)
   const interval = setInterval(checkConnection, 30000);
-  
+
   // 네트워크 상태 변경 이벤트 리스너
   window.addEventListener('online', checkConnection);
   window.addEventListener('offline', checkConnection);
-  
+
   return () => {
     clearInterval(interval);
     window.removeEventListener('online', checkConnection);
@@ -309,20 +308,20 @@ const monitorConnectionStatus = (callback) => {
 const addMessageWithDeduplication = (currentMessages, newMessage) => {
   // ID 기반 체크
   const existsById = currentMessages.some(msg => msg.id === newMessage.id);
-  
+
   if (existsById) {
     console.log('🚫 ID 기반 중복 차단:', newMessage.id);
     return currentMessages;
   }
-  
+
   // 내용 기반 체크 (추가 보안)
-  const existsByContent = currentMessages.some(msg => 
+  const existsByContent = currentMessages.some(msg =>
     msg.time === newMessage.time &&
     msg.content === newMessage.content &&
     msg.sender_username === newMessage.sender_username &&
     msg.receiver_username === newMessage.receiver_username
   );
-  
+
   if (existsByContent) {
     console.log('🚫 내용 기반 중복 차단:', {
       time: newMessage.time,
@@ -330,7 +329,7 @@ const addMessageWithDeduplication = (currentMessages, newMessage) => {
     });
     return currentMessages;
   }
-  
+
   // 중복이 아니면 추가
 
   return [...currentMessages, newMessage];

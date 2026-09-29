@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+dotenv.config({ path: new URL("./.env.kis.local", import.meta.url).pathname });
 
 import http from "http";
 import express from "express";

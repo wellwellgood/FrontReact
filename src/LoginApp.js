@@ -55,6 +55,7 @@ function LoginPage() {
   };
 
   const loginButton = async () => {
+    setErrorMessage("");
     try {
       const response = await api.post(
         "/auth/login",
@@ -74,11 +75,10 @@ function LoginPage() {
   
       navigate("/dashboard");
     } catch (error) {
-      if (error.response && error.response.data?.message) {
-        alert(error.response.data.message);
-      } else {
-        alert("로그인 중 오류가 발생했습니다.");
-      }
+      setErrorMessage(
+        error.response?.data?.message ||
+          "로그인 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요."
+      );
     }
   };
   return (

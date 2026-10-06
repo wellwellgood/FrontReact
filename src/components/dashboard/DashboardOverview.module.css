@@ -1,6 +1,6 @@
 .dashboard {
     min-height: 100vh;
-    background-image: url('/src/image/background.png');
+    background-image: url('/src/image/backgound.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -292,7 +292,13 @@
 
 .card {
     background: white;
+    box-shadow:
+        inset 10px 10px 20px rgba(153, 192, 255, 0.1),
+        inset 2px 2px 5px rgba(195, 218, 255, 0.2),
+        inset -10px -10px 20px rgba(229, 253, 190, 0.1),
+        inset -2px -2px 30px rgba(247, 255, 226, 0.2);
     border: 1px solid #dfe7f2;
+    backdrop-filter: blur(20px) contrast(80%) saturate(120%);
     border-radius: 12px;
     padding: 22px 24px;
     min-width: 0

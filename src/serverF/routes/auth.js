@@ -10,6 +10,32 @@ const router = express.Router();
 const verificationStore = {};
 const phoneVerificationStore = new Map();
 
+const databaseErrorCodes = new Set([
+  "28P01",
+  "3D000",
+  "57P01",
+  "ECONNREFUSED",
+  "ENOTFOUND",
+  "ETIMEDOUT",
+]);
+
+const authErrorResponse = (res, err) => {
+  if (databaseErrorCodes.has(err?.code)) {
+    return res.status(503).json({
+      message: "데이터베이스에 연결할 수 없습니다. Neon 연결 정보를 확인해 주세요.",
+      ...(process.env.NODE_ENV !== "production" && { code: err.code }),
+    });
+  }
+
+  if (err?.message?.includes("secretOrPrivateKey")) {
+    return res.status(503).json({
+      message: "로그인 토큰 설정이 누락되었습니다. JWT 환경변수를 확인해 주세요.",
+    });
+  }
+
+  return res.status(500).json({ message: "로그인 처리 중 서버 오류가 발생했습니다." });
+};
+
 const generateAccessToken = (user) =>
   jwt.sign(
     { id: user.id, username: user.username, name: user.name },
@@ -104,6 +130,10 @@ router.post("/login", async (req, res) => {
     if (result.rows.length === 0) return res.status(401).json({ message: "유저 없음" });
 
     const user = result.rows[0];
+    if (typeof user.password !== "string" || !user.password) {
+      console.error("❌ 로그인 오류: 저장된 비밀번호 형식이 올바르지 않습니다.");
+      return res.status(500).json({ message: "계정의 비밀번호 정보를 확인할 수 없습니다." });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "비밀번호 틀림" });
 
@@ -124,8 +154,8 @@ router.post("/login", async (req, res) => {
       name: user.name            // 🔥 추가
     });
   } catch (err) {
-    console.error("❌ 로그인 오류:", err);
-    res.status(500).json({ message: "서버 오류" });
+    console.error("❌ 로그인 오류:", err.code || err.message);
+    return authErrorResponse(res, err);
   }
 });
 

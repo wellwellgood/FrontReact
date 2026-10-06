@@ -848,6 +848,10 @@
         font-size: 23px !important
     }
 
+    .content {
+        padding: 20px 14px 28px
+    }
+
     .heading p {
         font-size: 13px
     }
@@ -863,6 +867,35 @@
     .stat {
         gap: 9px;
         padding: 14px
+    }
+
+    .card {
+        padding: 18px 15px;
+        border-radius: 12px
+    }
+
+    .connection {
+        gap: 16px
+    }
+
+    .buttonGroup {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%
+    }
+
+    .buttonGroup button {
+        width: 100%
+    }
+
+    .repoRow,
+    .stockRow {
+        min-width: 0
+    }
+
+    .stockRow {
+        align-items: flex-start;
+        flex-direction: column
     }
 
     .stats {

@@ -1,6 +1,9 @@
 .dashboard {
     min-height: 100vh;
-    background: #f5f8fd;
+    background-image: url('/src/image/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: #101e40;
     font-family: Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
     text-align: left
@@ -886,53 +889,310 @@
     }
 }
 
-.statText strong { font-size: clamp(18px, 1.65vw, 28px); overflow-wrap: anywhere; }
-.stat { gap: 14px; }
-.statIcon { width: 48px; height: 48px; }
-.badge { color: #0062ee; background: #e6f0ff; padding: 8px 14px; border-radius: 20px; white-space: nowrap; }
-.sourceNote { padding: 14px 18px; background: #eaf3ff; border-radius: 10px; margin-bottom: 20px !important; color: #455c80; font-size: 14px; }
-.feedback { min-height: 26px; color: #365a88; }
-.full { grid-column: 1 / -1; }
-.tableWrap { overflow-x: auto; }
-.tableWrap table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 14px; }
-.tableWrap th, .tableWrap td { text-align: right; padding: 15px 9px; border-bottom: 1px solid #e8edf5; }
-.tableWrap th:first-child { text-align: left; }
-.tableWrap small, .stockRow small { display: block; color: #6b7890; margin-top: 5px; font-weight: normal; }
-.positive { color: #c42e40; }
-.negative { color: #1665c4; }
-.returnList { margin-top: 20px; }
-.returnList > div, .allocation > div, .stockRow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 0; }
-.allocation progress { width: 100%; height: 12px; accent-color: #1876ee; }
-.allocation > div { font-size: 14px; }
-.stockRow { border-bottom: 1px solid #e8edf5; }
-.search, .tradeForm label { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
-.search input, .tradeForm input, .tradeForm select { width: 100%; min-width: 0; padding: 11px; border: 1px solid #cbd8e8; border-radius: 7px; background: white; color: #152545; }
-.tradeForm { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: end; }
-.transactionList { max-height: 500px; overflow-y: auto; }
-@media(max-width:520px) { .tradeForm { grid-template-columns: 1fr; } .allocation > div { flex-wrap: wrap; } }
+.statText strong {
+    font-size: clamp(18px, 1.65vw, 28px);
+    overflow-wrap: anywhere;
+}
 
-.connection { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:20px; }
-.connection h2, .cardTitle h2 { display:flex; align-items:center; gap:9px; }
-.connection p { color:#64748b; font-size:14px; margin-top:8px; }
-.buttonGroup { display:flex; flex-wrap:wrap; gap:10px; }
-.empty { text-align:center; padding:45px 24px; }
-.empty h2, .empty p { margin-bottom:14px; }
-.dashboard a { color:#1767d6; text-decoration:none; }
-.dashboard a:hover { text-decoration:underline; }
-.repoRow { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:20px 0; border-bottom:1px solid #e8edf5; }
-.repoRow h3 { font-size:17px; overflow-wrap:anywhere; }
-.repoRow h3 a, .stockRow h3 a { display:inline-flex; align-items:center; gap:7px; }
-.repoRow p { color:#64748b; font-size:14px; margin-top:6px; overflow-wrap:anywhere; }
-.repoRow small { display:block; color:#718096; font-size:12px; margin-top:10px; }
-.repoList { max-height:650px; overflow:auto; }
-.filters { display:flex; flex-wrap:wrap; gap:12px; align-items:end; }
-.filters .search { flex:1; min-width:140px; }
-.filters select { width:100%; padding:11px; border:1px solid #cbd8e8; border-radius:7px; background:white; color:#152545; }
-.favoriteFilter { display:flex; align-items:center; gap:8px; padding:11px 0; font-size:13px; }
-.favoriteFilter input { accent-color:#0062ee; }
-.demoNav { display:flex; gap:20px; padding-bottom:20px; flex-wrap:wrap; }
-.demoNav a[aria-current=page] { font-weight:bold; border-bottom:2px solid #1767d6; }
-.stockRow h3 { font-size:15px; overflow-wrap:anywhere; }
-.stockRow time { white-space:nowrap; color:#64748b; font-size:13px; }
-@media(max-width:900px) { .connection { align-items:flex-start; flex-direction:column; } }
-@media(max-width:520px) { .buttonGroup { width:100%; } .buttonGroup button { flex:1; white-space:nowrap; } }
+.stat {
+    gap: 14px;
+}
+
+.statIcon {
+    width: 48px;
+    height: 48px;
+}
+
+.badge {
+    color: #0062ee;
+    background: #e6f0ff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.sourceNote {
+    padding: 14px 18px;
+    background: #eaf3ff;
+    border-radius: 10px;
+    margin-bottom: 20px !important;
+    color: #455c80;
+    font-size: 14px;
+}
+
+.feedback {
+    min-height: 26px;
+    color: #365a88;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.tableWrap {
+    overflow-x: auto;
+}
+
+.tableWrap table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.tableWrap th,
+.tableWrap td {
+    text-align: right;
+    padding: 15px 9px;
+    border-bottom: 1px solid #e8edf5;
+}
+
+.tableWrap th:first-child {
+    text-align: left;
+}
+
+.tableWrap small,
+.stockRow small {
+    display: block;
+    color: #6b7890;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+.positive {
+    color: #c42e40;
+}
+
+.negative {
+    color: #1665c4;
+}
+
+.returnList {
+    margin-top: 20px;
+}
+
+.returnList>div,
+.allocation>div,
+.stockRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+}
+
+.allocation progress {
+    width: 100%;
+    height: 12px;
+    accent-color: #1876ee;
+}
+
+.allocation>div {
+    font-size: 14px;
+}
+
+.stockRow {
+    border-bottom: 1px solid #e8edf5;
+}
+
+.search,
+.tradeForm label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.search input,
+.tradeForm input,
+.tradeForm select {
+    width: 100%;
+    min-width: 0;
+    padding: 11px;
+    border: 1px solid #cbd8e8;
+    border-radius: 7px;
+    background: white;
+    color: #152545;
+}
+
+.tradeForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    align-items: end;
+}
+
+.transactionList {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+@media(max-width:520px) {
+    .tradeForm {
+        grid-template-columns: 1fr;
+    }
+
+    .allocation>div {
+        flex-wrap: wrap;
+    }
+}
+
+.connection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.connection h2,
+.cardTitle h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.connection p {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.buttonGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.empty {
+    text-align: center;
+    padding: 45px 24px;
+}
+
+.empty h2,
+.empty p {
+    margin-bottom: 14px;
+}
+
+.dashboard a {
+    color: #1767d6;
+    text-decoration: none;
+}
+
+.dashboard a:hover {
+    text-decoration: underline;
+}
+
+.repoRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 20px 0;
+    border-bottom: 1px solid #e8edf5;
+}
+
+.repoRow h3 {
+    font-size: 17px;
+    overflow-wrap: anywhere;
+}
+
+.repoRow h3 a,
+.stockRow h3 a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.repoRow p {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 6px;
+    overflow-wrap: anywhere;
+}
+
+.repoRow small {
+    display: block;
+    color: #718096;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.repoList {
+    max-height: 650px;
+    overflow: auto;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: end;
+}
+
+.filters .search {
+    flex: 1;
+    min-width: 140px;
+}
+
+.filters select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd8e8;
+    border-radius: 7px;
+    background: white;
+    color: #152545;
+}
+
+.favoriteFilter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 0;
+    font-size: 13px;
+}
+
+.favoriteFilter input {
+    accent-color: #0062ee;
+}
+
+.demoNav {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.demoNav a[aria-current=page] {
+    font-weight: bold;
+    border-bottom: 2px solid #1767d6;
+}
+
+.stockRow h3 {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.stockRow time {
+    white-space: nowrap;
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media(max-width:900px) {
+    .connection {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media(max-width:520px) {
+    .buttonGroup {
+        width: 100%;
+    }
+
+    .buttonGroup button {
+        flex: 1;
+        white-space: nowrap;
+    }
+}

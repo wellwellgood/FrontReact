@@ -30,7 +30,7 @@ export default function DashboardHeader({ active }) {
           </button>
         ))}
       </nav>
-      <AccountMenu />
+      <AccountMenu side />
     </header>
   );
 }

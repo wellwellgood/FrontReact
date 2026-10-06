@@ -1,5 +1,6 @@
 .dashboard {
   min-height: 100vh;
+  padding-left: 240px;
   background: #f8faff;
   color: #182541;
   font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif
@@ -648,6 +649,9 @@
 }
 
 @media(max-width:900px) {
+  .dashboard {
+    padding-left: 0
+  }
   .header {
     height: auto;
     min-height: 72px;

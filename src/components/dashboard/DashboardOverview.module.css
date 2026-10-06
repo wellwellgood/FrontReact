@@ -1,12 +1,7 @@
 .dashboard {
     min-height: 100vh;
-    background-image:
-        radial-gradient(circle at 18% 18%, rgba(109, 177, 255, .28), transparent 34%),
-        radial-gradient(circle at 82% 72%, rgba(183, 231, 255, .3), transparent 32%),
-        url('../../image/backgound.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    padding-left: 240px;
+    background: linear-gradient(to right, #000, #444);
     color: #fff;
     font-family: Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
     text-align: left
@@ -769,6 +764,10 @@
 }
 
 @media(max-width:900px) {
+    .dashboard {
+        padding-left: 0
+    }
+
     .header {
         height: auto;
         min-height: 72px;

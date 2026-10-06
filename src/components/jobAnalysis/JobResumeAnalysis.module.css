@@ -1,5 +1,6 @@
 .page {
     min-height: 100vh;
+    padding-left: 240px;
     background: #f5f8fc;
     color: #101e40;
     font-family: Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
@@ -787,6 +788,9 @@
 }
 
 @media(max-width:900px) {
+    .page {
+        padding-left: 0
+    }
     .header {
         height: auto;
         min-height: 72px;

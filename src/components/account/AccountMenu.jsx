@@ -8,7 +8,7 @@ const notifications = [
   { id: 2, icon: CheckCircle2, title: "프로젝트를 즐겨찾기에 저장하세요", detail: "연결한 사용자 계정별로 서버에 저장됩니다.", time: "안내" },
 ];
 
-export default function AccountMenu() {
+export default function AccountMenu({ side = false }) {
   const navigate = useNavigate();
   const wrap = useRef(null);
   const [open, setOpen] = useState(false);
@@ -37,7 +37,7 @@ export default function AccountMenu() {
   };
 
   return (
-    <div className={styles.account} ref={wrap}>
+    <div className={`${styles.account} ${side ? styles.side : ""}`} ref={wrap}>
       <button
         className={styles.bell}
         type="button"

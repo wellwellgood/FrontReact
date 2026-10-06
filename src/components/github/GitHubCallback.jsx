@@ -7,6 +7,7 @@ export default function GitHubCallback() {
   const navigate = useNavigate();
   const [message, setMessage] = useState('GitHub 계정을 연결하고 있습니다…');
   useEffect(() => {
+    ƒ
     if (started.current) return;
     started.current = true;
     const params = new URLSearchParams(window.location.search);

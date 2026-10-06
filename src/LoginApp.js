@@ -10,6 +10,7 @@ function LoginPage() {
   const [PWvalid, setPWvalid] = useState(false);
   const [notAllow, setNotAllow] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
 
   const goToid = () => navigate("/id");
@@ -22,7 +23,6 @@ function LoginPage() {
   }, [theme]);
 
   useEffect(() => {
-    console.log("✅ sessionStorage userId:", sessionStorage.getItem("userId"));
     const handleBeforeUnload = () => {
       sessionStorage.clear();
     };
@@ -55,7 +55,9 @@ function LoginPage() {
   };
 
   const loginButton = async () => {
+    if (isSubmitting) return;
     setErrorMessage("");
+    setIsSubmitting(true);
     try {
       const response = await api.post(
         "/auth/login",
@@ -79,6 +81,8 @@ function LoginPage() {
         error.response?.data?.message ||
           "로그인 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
@@ -111,9 +115,9 @@ function LoginPage() {
             <button
               className={styles.linkpage}
               onClick={loginButton}
-              disabled={!PWvalid || notAllow}
+              disabled={!PWvalid || notAllow || isSubmitting}
             >
-              <span>Login</span>
+              <span>{isSubmitting ? "로그인 중..." : "Login"}</span>
             </button>
             <div className={styles.findbox}>
               <button className={styles.findbtn} onClick={goToid}>

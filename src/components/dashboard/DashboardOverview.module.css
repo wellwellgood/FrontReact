@@ -189,7 +189,8 @@
     font-size: 34px;
     letter-spacing: -1.3px;
     font-weight: 800;
-    color: #fff
+    color: #fff;
+    text-align: left;
 }
 
 .heading p {

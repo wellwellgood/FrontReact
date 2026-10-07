@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import styles from "./serverF/chatServer/css/password.module.css";
+import styles from "./AuthPages.module.css";
 import api from "./util/api.js";
 import { ArrowLeft, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -121,14 +121,15 @@ export default function Password() {
   return (
     <div className={styles.findID}>
       <div className={styles.IDform}>
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="뒤로가기"
+        >
+          <ArrowLeft className={styles.ArrowLeft} />
+        </button>
+        <div className={styles.logintext}><h1>Hello,</h1><h2>Every one</h2></div>
         <div className={styles.IDarea}>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="뒤로가기"
-          >
-            <ArrowLeft className={styles.ArrowLeft} />
-          </button>
           <Lock className={styles.icon} />
           <h1>비밀번호 찾기</h1>
           <input

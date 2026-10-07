@@ -1,23 +1,23 @@
 .dashboard {
   min-height: 100vh;
-  padding-left: 240px;
+  padding-left: 96px;
   background: #f8faff;
   color: #182541;
-  font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif
+  font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 
 .dashboard * {
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 .dashboard button,
 .dashboard input,
 .dashboard select {
-  font: inherit
+  font: inherit;
 }
 
 .dashboard button {
-  cursor: pointer
+  cursor: pointer;
 }
 
 .header {
@@ -28,7 +28,7 @@
   justify-content: space-between;
   gap: 28px;
   background: #fff;
-  border-bottom: 1px solid #e9eef6
+  border-bottom: 1px solid #e9eef6;
 }
 
 .dashboard .brand {
@@ -39,7 +39,7 @@
   font-size: 27px;
   font-weight: 800;
   white-space: nowrap;
-  letter-spacing: -.04em
+  letter-spacing: -.04em;
 }
 
 .tabs {
@@ -54,7 +54,7 @@
   gap: 28px;
   align-items: stretch;
   background: transparent;
-  z-index: auto
+  z-index: auto;
 }
 
 .tabs span,
@@ -68,12 +68,12 @@
   color: #526078;
   font-size: 16px;
   font-weight: 700;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .tabs .active {
   color: #0065f4;
-  border-bottom-color: #0065f4
+  border-bottom-color: #0065f4;
 }
 
 .profile {
@@ -82,11 +82,11 @@
   gap: 10px;
   white-space: nowrap;
   color: #526078;
-  position: relative
+  position: relative;
 }
 
 .profile>svg:first-child {
-  margin-right: 15px
+  margin-right: 15px;
 }
 
 .profile>i {
@@ -97,7 +97,7 @@
   height: 10px;
   border-radius: 50%;
   background: #ec4656;
-  border: 2px solid #fff
+  border: 2px solid #fff;
 }
 
 .avatar {
@@ -108,13 +108,13 @@
   border-radius: 50%;
   background: #e1eeff;
   color: #608dc7;
-  font-weight: 700
+  font-weight: 700;
 }
 
 .main {
   max-width: 1600px;
   margin: auto;
-  padding: 42px 32px 28px
+  padding: 42px 32px 28px;
 }
 
 .top {
@@ -122,25 +122,25 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 34px
+  margin-bottom: 34px;
 }
 
 .top h1 {
   font-size: 32px;
   letter-spacing: -.045em;
-  margin: 0 0 9px
+  margin: 0 0 9px;
 }
 
 .top p {
   font-size: 17px;
   color: #64728c;
-  margin: 0
+  margin: 0;
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 9px
+  gap: 9px;
 }
 
 .controls>button:not(.add) {
@@ -151,13 +151,13 @@
   color: #3d4d69;
   font-weight: 700;
   padding: 0 19px;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .controls>button.on:not(.add) {
   color: #0c57d4;
   background: #eef5ff;
-  border-color: #b7d1ff
+  border-color: #b7d1ff;
 }
 
 .search {
@@ -180,11 +180,11 @@
   border: 0;
   outline: 0;
   background: none;
-  color: #182541
+  color: #182541;
 }
 
 .search input::placeholder {
-  color: #78869d
+  color: #78869d;
 }
 
 .controls>.add {
@@ -199,13 +199,13 @@
   background: #1159dc;
   color: #fff;
   font-weight: 700;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .board {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px
+  gap: 14px;
 }
 
 .column {
@@ -214,52 +214,52 @@
   padding: 13px 11px;
   border: 1px solid #e1e9f5;
   border-radius: 12px;
-  background: #f8fbff
+  background: #f8fbff;
 }
 
 .column.interest {
-  background: linear-gradient(#f5f8ff, #fbfdff)
+  background: linear-gradient(#f5f8ff, #fbfdff);
 }
 
 .column.applied {
-  background: linear-gradient(#f1f8ff, #fbfdff)
+  background: linear-gradient(#f1f8ff, #fbfdff);
 }
 
 .column.interview {
-  background: linear-gradient(#f4f5ff, #fbfdff)
+  background: linear-gradient(#f4f5ff, #fbfdff);
 }
 
 .column.result {
-  background: linear-gradient(#f0fff7, #fbfefd)
+  background: linear-gradient(#f0fff7, #fbfefd);
 }
 
 .columnHead {
-  padding: 5px 10px 15px
+  padding: 5px 10px 15px;
 }
 
 .columnHead>div {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #60718f
+  color: #60718f;
 }
 
 .column.applied .columnHead>div {
-  color: #1762da
+  color: #1762da;
 }
 
 .column.interview .columnHead>div {
-  color: #4358dc
+  color: #4358dc;
 }
 
 .column.result .columnHead>div {
-  color: #1fae70
+  color: #1fae70;
 }
 
 .columnHead h2 {
   font-size: 19px;
   color: #162342;
-  margin: 0
+  margin: 0;
 }
 
 .columnHead>div>span {
@@ -271,13 +271,13 @@
   background: #e9eef6;
   color: #4b5a74;
   font-weight: 800;
-  font-size: 14px
+  font-size: 14px;
 }
 
 .columnHead p {
   font-size: 15px;
   color: #61708a;
-  margin: 8px 0 0
+  margin: 8px 0 0;
 }
 
 .cards {
@@ -287,7 +287,7 @@
   max-height: 570px;
   overflow: auto;
   padding: 1px 0 4px;
-  scrollbar-width: thin
+  scrollbar-width: thin;
 }
 
 .card {
@@ -298,26 +298,26 @@
   border: 1px solid #dbe5f2;
   border-radius: 11px;
   padding: 16px 18px 14px;
-  color: #172341
+  color: #172341;
 }
 
 .card:hover {
   border-color: #8fb6f9;
-  box-shadow: 0 5px 14px rgba(31, 85, 181, .09)
+  box-shadow: 0 5px 14px rgba(31, 85, 181, .09);
 }
 
 .cardHead {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 0
+  min-width: 0;
 }
 
 .cardHead strong {
   font-size: 17px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .mark {
@@ -328,37 +328,37 @@
   display: grid;
   place-items: center;
   font-size: 17px;
-  font-weight: 800
+  font-weight: 800;
 }
 
 .mark.blue {
   background: #e7f0ff;
-  color: #115cd2
+  color: #115cd2;
 }
 
 .mark.green {
   background: #e5f8f1;
-  color: #079662
+  color: #079662;
 }
 
 .mark.royal {
   background: #2d6bd4;
-  color: #fff
+  color: #fff;
 }
 
 .mark.navy {
   background: #19253c;
-  color: #d6e3fc
+  color: #d6e3fc;
 }
 
 .mark.orange {
   background: #e77442;
-  color: #fff
+  color: #fff;
 }
 
 .mark.purple {
   background: #efeaff;
-  color: #694fca
+  color: #694fca;
 }
 
 .role {
@@ -367,14 +367,14 @@
   margin: 10px 0 9px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis
+  text-overflow: ellipsis;
 }
 
 .skills {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  min-height: 29px
+  min-height: 29px;
 }
 
 .skills span {
@@ -382,7 +382,7 @@
   color: #50617e;
   padding: 5px 11px;
   border-radius: 20px;
-  font-size: 13px
+  font-size: 13px;
 }
 
 .cardFoot {
@@ -393,20 +393,20 @@
   color: #647692;
   font-size: 14px;
   white-space: nowrap;
-  min-width: 0
+  min-width: 0;
 }
 
 .cardFoot>span {
   overflow: hidden;
-  text-overflow: ellipsis
+  text-overflow: ellipsis;
 }
 
 .cardFoot svg {
-  flex: none
+  flex: none;
 }
 
 .arrow {
-  margin-left: auto
+  margin-left: auto;
 }
 
 .cardFoot em {
@@ -417,11 +417,11 @@
   background: #e8f0ff;
   border-radius: 20px;
   padding: 5px 9px;
-  font-weight: 800
+  font-weight: 800;
 }
 
 .cardFoot em+.arrow {
-  margin-left: 0
+  margin-left: 0;
 }
 
 .resultBadge {
@@ -432,18 +432,18 @@
   color: #50617c;
   font-size: 12px;
   font-weight: 800;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .resultBadge.passed {
   color: #13865d;
-  background: #e0f8ee
+  background: #e0f8ee;
 }
 
 .empty {
   text-align: center;
   color: #8793a7;
-  padding: 30px 5px
+  padding: 30px 5px;
 }
 
 .reminder {
@@ -455,23 +455,23 @@
   padding: 13px 23px;
   display: flex;
   align-items: center;
-  gap: 18px
+  gap: 18px;
 }
 
 .reminder>svg {
   color: #1260df;
-  flex: none
+  flex: none;
 }
 
 .reminder strong {
   font-size: 16px;
-  color: #124caf
+  color: #124caf;
 }
 
 .reminder p {
   font-size: 14px;
   color: #64728a;
-  margin: 3px 0 0
+  margin: 3px 0 0;
 }
 
 .reminder button {
@@ -486,7 +486,7 @@
   padding: 11px 16px;
   font-size: 14px;
   font-weight: 700;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .backdrop {
@@ -496,7 +496,7 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  z-index: 100
+  z-index: 100;
 }
 
 .modal {
@@ -506,19 +506,19 @@
   overflow: auto;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(15, 28, 52, .22);
-  padding: 25px
+  padding: 25px;
 }
 
 .modalHead {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px
+  margin-bottom: 20px;
 }
 
 .modalHead h2 {
   font-size: 22px;
-  margin: 0
+  margin: 0;
 }
 
 .modalHead button {
@@ -526,13 +526,13 @@
   background: transparent;
   color: #64728c;
   display: grid;
-  place-items: center
+  place-items: center;
 }
 
 .modal form {
   display: flex;
   flex-direction: column;
-  gap: 15px
+  gap: 15px;
 }
 
 .modal form label {
@@ -541,7 +541,7 @@
   color: #33425d;
   display: flex;
   flex-direction: column;
-  gap: 7px
+  gap: 7px;
 }
 
 .modal input,
@@ -553,7 +553,7 @@
   padding: 0 12px;
   background: #fff;
   color: #182643;
-  outline-color: #1761e5
+  outline-color: #1761e5;
 }
 
 .submit {
@@ -563,28 +563,28 @@
   border: 0;
   border-radius: 8px;
   font-weight: 800;
-  margin-top: 5px
+  margin-top: 5px;
 }
 
 .detailRole {
   font-weight: 700;
-  font-size: 17px
+  font-size: 17px;
 }
 
 .detailDate {
-  color: #61708a
+  color: #61708a;
 }
 
 .detailLabel {
   display: block;
   font-size: 14px;
-  margin: 25px 0 10px
+  margin: 25px 0 10px;
 }
 
 .choices {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px
+  gap: 8px;
 }
 
 .choices button {
@@ -592,14 +592,14 @@
   background: #fff;
   color: #354761;
   border-radius: 8px;
-  padding: 10px
+  padding: 10px;
 }
 
 .choices .choiceOn {
   border-color: #1260df;
   background: #eef5ff;
   color: #1159dc;
-  font-weight: 800
+  font-weight: 800;
 }
 
 .delete {
@@ -608,67 +608,67 @@
   border: 0;
   color: #d54848;
   font-size: 14px;
-  padding: 5px 0
+  padding: 5px 0;
 }
 
 @media(max-width:1280px) {
   .top {
     align-items: flex-start;
-    flex-direction: column
+    flex-direction: column;
   }
 
   .controls {
-    width: 100%
+    width: 100%;
   }
 
   .search {
-    flex: 1
+    flex: 1;
   }
 
   .board {
-    grid-template-columns: repeat(2, minmax(0, 1fr))
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .column {
-    min-height: 520px
+    min-height: 520px;
   }
 }
 
 @media(max-width:1250px) {
   .tabs {
-    gap: 4px
+    gap: 4px;
   }
 
   .dashboard .brand {
-    font-size: 23px
+    font-size: 23px;
   }
 
   .profile>svg:first-child {
-    margin-right: 0
+    margin-right: 0;
   }
 }
 
 @media(max-width:900px) {
   .dashboard {
-    padding-left: 0
+    padding-left: 0;
   }
   .header {
     height: auto;
     min-height: 72px;
     flex-wrap: wrap;
     padding-top: 14px;
-    gap: 10px
+    gap: 10px;
   }
 
   .tabs {
     order: 3;
     width: 100%;
     justify-content: center;
-    height: 52px
+    height: 52px;
   }
 
   .profile {
-    margin-left: auto
+    margin-left: auto;
   }
 }
 
@@ -677,11 +677,11 @@
     height: auto;
     min-height: 72px;
     padding: 14px 3.4% 0;
-    flex-wrap: wrap
+    flex-wrap: wrap;
   }
 
   .dashboard .brand {
-    font-size: 23px
+    font-size: 23px;
   }
 
   .tabs {
@@ -689,81 +689,88 @@
     width: 100%;
     overflow: auto;
     gap: 4px;
-    height: 52px
+    height: 52px;
   }
 
   .profile {
-    margin-left: auto
+    margin-left: auto;
   }
 
   .profile>span:not(.avatar),
   .profile>svg:last-child {
-    display: none
+    display: none;
   }
 
   .main {
-    padding: 28px 16px
+    padding: 28px 16px;
   }
 
   .top h1 {
-    font-size: 26px
+    font-size: 26px;
   }
 
   .top p {
-    font-size: 15px
+    font-size: 15px;
   }
 
   .controls {
-    flex-wrap: wrap
+    flex-wrap: wrap;
   }
 
   .search {
     order: 3;
     min-width: 100%;
-    margin: 0
+    margin: 0;
   }
 
   .controls>.add {
-    margin-left: auto
+    margin-left: auto;
   }
 
   .board {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
   }
 
   .column {
-    min-height: 0
+    min-height: 0;
   }
 
   .cards {
-    max-height: none
+    max-height: none;
   }
 
   .reminder button {
-    display: none
+    display: none;
   }
 }
 
 @media(max-width:520px) {
   .dashboard .brand {
-    font-size: 20px
+    font-size: 20px;
   }
 
   .tabs button,
   .tabs span {
     font-size: 12px;
-    padding: 0 7px
+    padding: 0 7px;
   }
 
   .controls>button {
-    flex: 1
+    flex: 1;
   }
 
   .controls>.add {
-    margin-left: 0
+    margin-left: 0;
   }
 
   .reminder {
-    padding: 14px 16px
+    padding: 14px 16px;
   }
+}
+
+
+/* sidebar responsive gutter */
+@media(min-width:901px){
+  .dashboard{transition:padding-left .24s ease;}
+  .dashboard:has(> header:hover){padding-left:224px;}
 }

@@ -1,38 +1,38 @@
 .dashboard {
     min-height: 100vh;
-    padding-left: 240px;
+    padding-left: 96px;
     background: #f7faff;
     color: #17233e;
     font-family: Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    text-align: left
+    text-align: left;
 }
 
 .dashboard * {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 .dashboard button,
 .dashboard select,
 .dashboard textarea {
-    font: inherit
+    font: inherit;
 }
 
 .dashboard button {
-    cursor: pointer
+    cursor: pointer;
 }
 
 .dashboard button:focus-visible,
 .dashboard select:focus-visible,
 .dashboard textarea:focus-visible {
     outline: 3px solid #8dbbff;
-    outline-offset: 2px
+    outline-offset: 2px;
 }
 
 .dashboard h1,
 .dashboard h2,
 .dashboard h3,
 .dashboard p {
-    margin: 0
+    margin: 0;
 }
 
 .header {
@@ -43,7 +43,7 @@
     justify-content: space-between;
     gap: 28px;
     background: #fff;
-    border-bottom: 1px solid #e9eef6
+    border-bottom: 1px solid #e9eef6;
 }
 
 .brand {
@@ -53,14 +53,14 @@
     padding: 0;
     font-size: 27px !important;
     font-weight: 800 !important;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .tabs {
     height: 100%;
     display: flex;
     align-items: stretch;
-    gap: 28px
+    gap: 28px;
 }
 
 .tabs button {
@@ -71,18 +71,18 @@
     color: #526078;
     font-size: 16px;
     font-weight: 700;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .tabs .activeTab {
     color: #0065f4;
-    border-bottom-color: #0065f4
+    border-bottom-color: #0065f4;
 }
 
 .account {
     display: flex;
     align-items: center;
-    gap: 22px
+    gap: 22px;
 }
 
 .iconButton {
@@ -92,7 +92,7 @@
     color: #51617b;
     padding: 8px;
     display: grid;
-    place-items: center
+    place-items: center;
 }
 
 .iconButton i {
@@ -103,11 +103,11 @@
     height: 9px;
     background: #eb4254;
     border: 1px solid white;
-    border-radius: 50%
+    border-radius: 50%;
 }
 
 .profileWrap {
-    position: relative
+    position: relative;
 }
 
 .profile {
@@ -117,7 +117,7 @@
     align-items: center;
     gap: 10px;
     color: #526078;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .avatar {
@@ -128,7 +128,7 @@
     color: #2366c7;
     display: grid;
     place-items: center;
-    font-weight: 750
+    font-weight: 750;
 }
 
 .profileMenu {
@@ -141,7 +141,7 @@
     background: white;
     border: 1px solid #dce5f2;
     border-radius: 10px;
-    box-shadow: 0 12px 26px #15294c22
+    box-shadow: 0 12px 26px #15294c22;
 }
 
 .profileMenu button {
@@ -151,17 +151,17 @@
     background: transparent;
     padding: 9px;
     text-align: left;
-    color: #253754
+    color: #253754;
 }
 
 .profileMenu button:hover {
-    background: #f2f6fd
+    background: #f2f6fd;
 }
 
 .main {
     padding: 56px 2.4% 48px;
     max-width: 1800px;
-    margin: auto
+    margin: auto;
 }
 
 .intro {
@@ -169,7 +169,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    margin-bottom: 32px
+    margin-bottom: 32px;
 }
 
 .intro h1 {
@@ -177,13 +177,13 @@
     letter-spacing: -.045em;
     line-height: 1.35;
     font-weight: 800;
-    color: #19243a
+    color: #19243a;
 }
 
 .intro p {
     font-size: 17px;
     color: #64728a;
-    margin-top: 7px
+    margin-top: 7px;
 }
 
 .jobSelect {
@@ -198,7 +198,7 @@
     background: white;
     border-radius: 11px;
     box-shadow: 0 3px 7px #15294c08;
-    color: #6693cf
+    color: #6693cf;
 }
 
 .jobSelect select {
@@ -210,19 +210,19 @@
     color: #1b2a47;
     font-weight: 700;
     outline: none;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .jobSelect>svg:last-child {
     color: #4e617d;
-    pointer-events: none
+    pointer-events: none;
 }
 
 .grid {
     display: grid;
     grid-template-columns: minmax(265px, 1.01fr) minmax(430px, 1.77fr) minmax(310px, 1.19fr);
     gap: 20px;
-    align-items: stretch
+    align-items: stretch;
 }
 
 .panel {
@@ -232,27 +232,27 @@
     border: 1px solid #d9e2f1;
     border-radius: 12px;
     background: white;
-    box-shadow: 0 2px 4px #13264c03
+    box-shadow: 0 2px 4px #13264c03;
 }
 
 .panel h2 {
     font-size: 24px;
     line-height: 1.35;
     font-weight: 800;
-    letter-spacing: -.03em
+    letter-spacing: -.03em;
 }
 
 .subtitle {
     margin-top: 4px !important;
     color: #6b7890;
     font-size: 16px;
-    line-height: 1.5
+    line-height: 1.5;
 }
 
 .filters {
     display: flex;
     gap: 9px;
-    margin: 26px 0 20px
+    margin: 26px 0 20px;
 }
 
 .filters button {
@@ -261,19 +261,19 @@
     background: #f8faff;
     color: #273b5c;
     border-radius: 30px;
-    font-weight: 700
+    font-weight: 700;
 }
 
 .filters .selectedFilter {
     color: white;
     background: #1c63d8;
     border-color: #1c63d8;
-    box-shadow: 0 3px 8px #1c63d829
+    box-shadow: 0 3px 8px #1c63d829;
 }
 
 .questionList {
     display: grid;
-    gap: 9px
+    gap: 9px;
 }
 
 .questionList button {
@@ -288,7 +288,7 @@
     border-radius: 10px;
     background: transparent;
     color: #34445e;
-    font-size: 15px
+    font-size: 15px;
 }
 
 .questionList button>span:first-child {
@@ -301,25 +301,25 @@
     border-radius: 50%;
     background: #f8faff;
     font-weight: 750;
-    color: #243652
+    color: #243652;
 }
 
 .questionList .selectedQuestion {
     background: #eaf2ff;
     color: #1760d4;
-    font-weight: 700
+    font-weight: 700;
 }
 
 .questionList .selectedQuestion>span:first-child {
     background: #1d64d8;
     color: white;
-    border-color: #1d64d8
+    border-color: #1d64d8;
 }
 
 .answerPanel {
     display: flex;
     flex-direction: column;
-    padding: 27px 27px 30px
+    padding: 27px 27px 30px;
 }
 
 .questionMeta {
@@ -328,7 +328,7 @@
     align-items: center;
     gap: 10px;
     color: #5c6a82;
-    font-weight: 700
+    font-weight: 700;
 }
 
 .typeBadge {
@@ -336,18 +336,18 @@
     border-radius: 9px;
     color: #1d62d8;
     background: #e9f1ff;
-    font-size: 14px
+    font-size: 14px;
 }
 
 .answerPanel h2 {
     margin-top: 22px;
-    font-size: 29px
+    font-size: 29px;
 }
 
 .answerHint {
     margin: 12px 0 27px !important;
     color: #718098;
-    line-height: 1.5
+    line-height: 1.5;
 }
 
 .answerBox {
@@ -357,7 +357,7 @@
     min-height: 280px;
     border: 1px solid #d5e0f0;
     border-radius: 9px;
-    overflow: hidden
+    overflow: hidden;
 }
 
 .answerBox textarea {
@@ -371,11 +371,11 @@
     color: #2c3b55;
     font-size: 16px;
     line-height: 1.8;
-    background: white
+    background: white;
 }
 
 .answerBox textarea::placeholder {
-    color: #9ba8b8
+    color: #9ba8b8;
 }
 
 .answerBox>span {
@@ -383,14 +383,14 @@
     right: 17px;
     bottom: 14px;
     color: #71809a;
-    font-size: 14px
+    font-size: 14px;
 }
 
 .actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
-    margin-top: 27px
+    margin-top: 27px;
 }
 
 .actions button {
@@ -400,23 +400,23 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    font-weight: 750
+    font-weight: 750;
 }
 
 .voiceButton {
     border: 1px solid #c6d6ea;
     background: white;
-    color: #193e77
+    color: #193e77;
 }
 
 .feedbackButton {
     border: 1px solid #1e61d3;
     background: #1d63d6;
-    color: white
+    color: white;
 }
 
 .feedbackPanel .subtitle {
-    margin-bottom: 24px !important
+    margin-bottom: 24px !important;
 }
 
 .tip {
@@ -425,36 +425,36 @@
     border-radius: 10px;
     padding: 19px 18px;
     min-height: 105px;
-    margin-bottom: 14px
+    margin-bottom: 14px;
 }
 
 .tip>svg,
 .exclamation {
-    flex: none
+    flex: none;
 }
 
 .tip strong {
     display: block;
-    font-size: 16px
+    font-size: 16px;
 }
 
 .tip p {
     font-size: 14px;
     line-height: 1.55;
     margin-top: 7px;
-    color: #52617b
+    color: #52617b;
 }
 
 .good {
     background: #f0fcf8;
     border: 1px solid #ccefe3;
-    color: #128462
+    color: #128462;
 }
 
 .improve {
     background: #fffaf0;
     border: 1px solid #f4e5ba;
-    color: #aa7611
+    color: #aa7611;
 }
 
 .exclamation {
@@ -465,23 +465,23 @@
     place-items: center;
     background: #e2a319;
     color: white;
-    font-weight: 800
+    font-weight: 800;
 }
 
 .structure {
     padding: 18px 17px;
     border: 1px solid #d9e2f1;
-    border-radius: 10px
+    border-radius: 10px;
 }
 
 .structure h3 {
-    font-size: 18px
+    font-size: 18px;
 }
 
 .structure>p {
     margin: 4px 0 19px !important;
     color: #72819a;
-    font-size: 14px
+    font-size: 14px;
 }
 
 .checkRow {
@@ -491,15 +491,15 @@
     gap: 9px;
     margin: 15px 0;
     font-size: 13px;
-    line-height: 1.5
+    line-height: 1.5;
 }
 
 .checkRow strong {
-    font-size: 13px
+    font-size: 13px;
 }
 
 .checkRow>span:last-child {
-    color: #6c7890
+    color: #6c7890;
 }
 
 .checked,
@@ -508,24 +508,24 @@
     height: 24px;
     display: grid;
     place-items: center;
-    border-radius: 50%
+    border-radius: 50%;
 }
 
 .checked {
     background: #1d63d6;
-    color: white
+    color: white;
 }
 
 .unchecked {
     border: 1px solid #b9c9df;
-    background: #f8faff
+    background: #f8faff;
 }
 
 .sampleNote {
     margin-top: 16px !important;
     color: #8290a4;
     font-size: 12px;
-    line-height: 1.5
+    line-height: 1.5;
 }
 
 .notice {
@@ -542,7 +542,7 @@
     border-radius: 10px;
     background: #1c2f4d;
     color: white;
-    box-shadow: 0 10px 30px #0c1f3c30
+    box-shadow: 0 10px 30px #0c1f3c30;
 }
 
 .notice button {
@@ -550,7 +550,7 @@
     place-items: center;
     border: 0;
     background: transparent;
-    color: white
+    color: white;
 }
 
 .srOnly {
@@ -562,133 +562,140 @@
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
-    border: 0
+    border: 0;
 }
 
 @media(max-width:1250px) {
     .grid {
-        grid-template-columns: minmax(260px, 1fr) minmax(420px, 1.6fr)
+        grid-template-columns: minmax(260px, 1fr) minmax(420px, 1.6fr);
     }
 
     .feedbackPanel {
         grid-column: 1/-1;
-        min-height: 0
+        min-height: 0;
     }
 
     .header {
-        gap: 28px
+        gap: 28px;
     }
 
     .tabs {
-        gap: 4px
+        gap: 4px;
     }
 
     .brand {
-        font-size: 23px !important
+        font-size: 23px !important;
     }
 }
 
 @media(max-width:900px) {
     .dashboard {
-        padding-left: 0
+        padding-left: 0;
     }
     .header {
         height: auto;
         min-height: 72px;
         flex-wrap: wrap;
         padding-top: 14px;
-        gap: 10px
+        gap: 10px;
     }
 
     .tabs {
         order: 3;
         width: 100%;
         justify-content: center;
-        height: 52px
+        height: 52px;
     }
 
     .main {
-        padding-top: 36px
+        padding-top: 36px;
     }
 
     .intro {
         align-items: flex-start;
-        flex-direction: column
+        flex-direction: column;
     }
 
     .jobSelect {
-        width: 100%
+        width: 100%;
     }
 
     .grid {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
     }
 
     .panel {
-        min-height: 0
+        min-height: 0;
     }
 
     .questionList {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     }
 
     .answerPanel {
-        min-height: 600px
+        min-height: 600px;
     }
 
     .feedbackPanel {
-        grid-column: auto
+        grid-column: auto;
     }
 }
 
 @media(max-width:520px) {
     .header {
-        padding: 12px 16px 0
+        padding: 12px 16px 0;
     }
 
     .account {
-        gap: 5px
+        gap: 5px;
     }
 
     .profile>span:not(.avatar) {
-        display: none
+        display: none;
     }
 
     .main {
-        padding: 30px 16px
+        padding: 30px 16px;
     }
 
     .intro h1 {
-        font-size: 26px
+        font-size: 26px;
     }
 
     .intro p {
-        font-size: 14px
+        font-size: 14px;
     }
 
     .panel {
-        padding: 21px 17px
+        padding: 21px 17px;
     }
 
     .answerPanel h2 {
-        font-size: 24px
+        font-size: 24px;
     }
 
     .answerPanel {
-        min-height: 500px
+        min-height: 500px;
     }
 
     .actions {
         flex-direction: column;
-        gap: 9px
+        gap: 9px;
     }
 
     .actions button {
         width: 100%;
-        font-size: 14px
+        font-size: 14px;
     }
 
     .jobSelect {
-        min-width: 0
+        min-width: 0;
     }
+}
+
+
+/* sidebar responsive gutter */
+@media(min-width:901px){
+  .dashboard{transition:padding-left .24s ease;}
+  .dashboard:has(> header:hover){padding-left:224px;}
 }

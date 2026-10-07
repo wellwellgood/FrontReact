@@ -59,7 +59,7 @@
     letter-spacing: -.04em;
     white-space: nowrap;
     text-align: left;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .tabs {
@@ -67,7 +67,19 @@
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
-    min-width: 0
+    min-width: 0;
+}
+
+.tabs button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tabs button svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
 }
 
 .tabs button {
@@ -83,7 +95,7 @@
     font-weight: 700;
     white-space: nowrap;
     text-align: left;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .tabs button:hover {
@@ -108,7 +120,7 @@
 .brand:focus-visible,
 .tabs button:focus-visible {
     outline: 3px solid #8dbbff;
-    outline-offset: 2px
+    outline-offset: 2px;
 }
 
 @media(max-width:900px) {
@@ -131,18 +143,18 @@
         border-radius: 0;
         box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
         -webkit-backdrop-filter: blur(18px) saturate(140%);
-        backdrop-filter: blur(18px) saturate(140%)
+        backdrop-filter: blur(18px) saturate(140%);
     }
 
     .header::before,
     .header::after {
-        display: none
+        display: none;
     }
 
     .brand {
         padding: 0;
         justify-self: start;
-        font-size: 23px
+        font-size: 23px;
     }
 
     .tabs {
@@ -158,7 +170,7 @@
     }
 
     .tabs::-webkit-scrollbar {
-        display: none
+        display: none;
     }
 
     .tabs button {
@@ -171,7 +183,7 @@
         background: transparent;
         padding: 0 6px;
         color: rgba(255, 255, 255, .72);
-        text-align: center
+        text-align: center;
     }
 
     .tabs .active {
@@ -189,28 +201,28 @@
         padding: max(8px, env(safe-area-inset-top)) 14px 0;
         grid-template-columns: minmax(0, 1fr) auto;
         grid-template-rows: 46px 52px;
-        gap: 0 4px
+        gap: 0 4px;
     }
 
     .brand {
-        font-size: 20px
+        font-size: 20px;
     }
 
     .tabs {
-        width: 100%
+        width: 100%;
     }
 
     .tabs button {
         width: 100%;
         min-width: 0;
         font-size: 12px;
-        padding: 0 3px
+        padding: 0 3px;
     }
 }
 
 .menuToggle,
 .mobileTitle {
-    display: none
+    display: none;
 }
 
 @media(max-width:900px) {
@@ -221,11 +233,11 @@
         grid-template-rows: 1fr;
         gap: 10px;
         padding: max(8px, env(safe-area-inset-top)) 14px 8px;
-        overflow: visible
+        overflow: visible;
     }
 
     .brand {
-        display: none
+        display: none;
     }
 
     .menuToggle {
@@ -238,12 +250,12 @@
         border-radius: 10px;
         background: rgba(255, 255, 255, .06);
         color: #fff;
-        cursor: pointer
+        cursor: pointer;
     }
 
     .menuToggle svg {
         width: 22px;
-        height: 22px
+        height: 22px;
     }
 
     .mobileTitle {
@@ -255,7 +267,7 @@
         line-height: 1.2;
         text-align: right;
         text-overflow: ellipsis;
-        white-space: nowrap
+        white-space: nowrap;
     }
 
     .tabs {
@@ -274,11 +286,11 @@
         border-radius: 13px;
         background: rgba(18, 22, 29, .98);
         box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
-        backdrop-filter: blur(18px)
+        backdrop-filter: blur(18px);
     }
 
     .tabs.menuOpen {
-        display: grid
+        display: grid;
     }
 
     .tabs button {
@@ -289,15 +301,15 @@
         border-radius: 9px;
         color: rgba(255, 255, 255, .78);
         font-size: 14px;
-        text-align: left
+        text-align: left;
     }
 
     .tabs button:hover {
-        background: rgba(255, 255, 255, .08)
+        background: rgba(255, 255, 255, .08);
     }
 
     .tabs .active {
-        display: none
+        display: none;
     }
 }
 
@@ -306,17 +318,103 @@
         min-height: 60px;
         height: 60px;
         padding: max(7px, env(safe-area-inset-top)) 10px 7px;
-        gap: 7px
+        gap: 7px;
     }
 
     .menuToggle {
         width: 40px;
-        height: 40px
+        height: 40px;
     }
 
     .mobileTitle {
         font-size: 28px;
         text-align: center;
         margin-top: 5px;
+    }
+}
+
+@media(min-width:901px) {
+    .header {
+        width: 72px;
+        padding: 24px 8px;
+        transition: width .24s ease;
+        overflow: visible;
+    }
+
+    .header:hover {
+        width: 200px;
+    }
+
+    .header::after {
+        width: 36px;
+        left: 18px;
+        transition: width .24s ease, left .24s ease;
+    }
+
+    .header:hover::after {
+        width: 112px;
+        left: 36px;
+    }
+
+    .header::before {
+        display: none;
+    }
+
+    .brand {
+        width: 100%;
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .brand svg,
+    .tabs button svg {
+        width: 23px;
+        height: 23px;
+        flex: 0 0 23px;
+    }
+
+    .brand span,
+    .tabLabel {
+        max-width: 0;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition: max-width .24s ease, opacity .16s ease, transform .24s ease;
+        white-space: nowrap;
+    }
+
+    .header:hover .brand {
+        justify-content: flex-start;
+        padding: 0 10px;
+    }
+
+    .header:hover .brand span,
+    .header:hover .tabLabel {
+        max-width: 145px;
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .tabs button {
+        width: 100%;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 11px;
+        padding: 0;
+        border-left: 0;
+        text-align: left;
+        transition: background .18s ease, color .18s ease, padding .24s ease;
+    }
+
+    .header:hover .tabs button {
+        justify-content: flex-start;
+        padding: 0 13px;
     }
 }

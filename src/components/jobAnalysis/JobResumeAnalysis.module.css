@@ -1,24 +1,24 @@
 .page {
     min-height: 100vh;
-    padding-left: 240px;
+    padding-left: 96px;
     background: #f5f8fc;
     color: #101e40;
     font-family: Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    text-align: left
+    text-align: left;
 }
 
 .page * {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 .page button,
 .page input,
 .page textarea {
-    font: inherit
+    font: inherit;
 }
 
 .page button {
-    cursor: pointer
+    cursor: pointer;
 }
 
 .page button:focus-visible,
@@ -26,14 +26,14 @@
 .page input:focus-visible,
 .page textarea:focus-visible {
     outline: 3px solid #99c3ff;
-    outline-offset: 3px
+    outline-offset: 3px;
 }
 
 .page svg {
     width: 22px;
     height: 22px;
     color: currentColor;
-    flex-shrink: 0
+    flex-shrink: 0;
 }
 
 .page h1,
@@ -41,19 +41,19 @@
 .page h3,
 .page p {
     margin: 0;
-    line-height: 1.5
+    line-height: 1.5;
 }
 
 .page h2 {
     font-size: 21px;
     font-weight: 750;
-    color: #101e40
+    color: #101e40;
 }
 
 .page h3 {
     font-size: 14px;
     font-weight: 700;
-    color: #15264a
+    color: #15264a;
 }
 
 .header {
@@ -64,7 +64,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 3.4%;
-    gap: 28px
+    gap: 28px;
 }
 
 .brand {
@@ -73,13 +73,13 @@
     color: #0c193c;
     font-size: 27px !important;
     font-weight: 800 !important;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .tabs {
     display: flex;
     gap: 28px;
-    align-self: stretch
+    align-self: stretch;
 }
 
 .tabs button {
@@ -89,19 +89,19 @@
     padding: 0 12px;
     color: #526078;
     font-weight: 700;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .tabs .active {
     border-bottom-color: #0065f4;
-    color: #0065f4
+    color: #0065f4;
 }
 
 .account {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 25px
+    gap: 25px;
 }
 
 .iconButton {
@@ -112,7 +112,7 @@
     padding: 8px;
     display: flex;
     align-items: center;
-    justify-content: center
+    justify-content: center;
 }
 
 .iconButton i {
@@ -122,7 +122,7 @@
     width: 8px;
     height: 8px;
     background: #ee3949;
-    border-radius: 50%
+    border-radius: 50%;
 }
 
 .profile {
@@ -132,12 +132,12 @@
     border: 0;
     background: none;
     color: #526078;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .profile svg {
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
 .avatar {
@@ -148,7 +148,7 @@
     border-radius: 50%;
     background: #e1eeff;
     color: #608dc7;
-    font-size: 18px
+    font-size: 18px;
 }
 
 .menu {
@@ -161,7 +161,7 @@
     border: 1px solid #dce5f2;
     border-radius: 10px;
     box-shadow: 0 10px 30px #13284a15;
-    z-index: 5
+    z-index: 5;
 }
 
 .menu button {
@@ -171,20 +171,20 @@
     background: white;
     border: 0;
     text-align: left;
-    color: #203656
+    color: #203656;
 }
 
 .content {
     max-width: 1740px;
     margin: auto;
-    padding: 38px 2.5% 24px
+    padding: 38px 2.5% 24px;
 }
 
 .hero {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 26px
+    margin-bottom: 26px;
 }
 
 .badge {
@@ -197,12 +197,12 @@
     padding: 5px 12px;
     font-size: 13px;
     font-weight: 700;
-    margin-bottom: 12px
+    margin-bottom: 12px;
 }
 
 .badge svg {
     width: 18px;
-    height: 18px
+    height: 18px;
 }
 
 .page .hero h1 {
@@ -210,18 +210,18 @@
     font-weight: 800;
     letter-spacing: -1.3px;
     color: #101e40;
-    margin-bottom: 6px
+    margin-bottom: 6px;
 }
 
 .hero p {
     font-size: 17px;
-    color: #73819c
+    color: #73819c;
 }
 
 .hero aside {
     font-size: 16px;
     color: #7e8ba3;
-    line-height: 1.6
+    line-height: 1.6;
 }
 
 .hero aside span {
@@ -229,13 +229,13 @@
     width: 20px;
     height: 2px;
     background: #4585ff;
-    margin-top: 18px
+    margin-top: 18px;
 }
 
 .columns {
     display: grid;
     grid-template-columns: 1fr 1.03fr 1.23fr;
-    gap: 16px
+    gap: 16px;
 }
 
 .card {
@@ -245,27 +245,27 @@
     padding: 23px 20px;
     min-width: 0;
     display: flex;
-    flex-direction: column
+    flex-direction: column;
 }
 
 .cardHeading {
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    margin-bottom: 26px
+    margin-bottom: 26px;
 }
 
 .cardHeading>svg {
     color: #0671ff;
     margin-top: 5px;
     width: 25px;
-    height: 25px
+    height: 25px;
 }
 
 .cardHeading p {
     font-size: 13px;
     color: #7f8ba2;
-    margin-top: 3px
+    margin-top: 3px;
 }
 
 .upload {
@@ -279,7 +279,7 @@
     padding: 39px 16px 25px;
     min-height: 272px;
     gap: 10px;
-    text-align: center
+    text-align: center;
 }
 
 .fileIcon {
@@ -291,29 +291,29 @@
     width: 66px;
     height: 69px;
     color: #528efa;
-    margin-bottom: 8px
+    margin-bottom: 8px;
 }
 
 .fileIcon svg {
     width: 38px;
     height: 38px;
-    stroke-width: 2
+    stroke-width: 2;
 }
 
 .upload strong {
     font-size: 16px;
     overflow-wrap: anywhere;
-    max-width: 100%
+    max-width: 100%;
 }
 
 .upload>span {
     font-size: 13px;
-    color: #8390a7
+    color: #8390a7;
 }
 
 .upload small {
     font-size: 11px;
-    color: #8e9ab0
+    color: #8e9ab0;
 }
 
 .outline {
@@ -322,46 +322,46 @@
     padding: 10px 16px;
     background: white;
     color: #0667ed;
-    font-weight: 700 !important
+    font-weight: 700 !important;
 }
 
 .outline:hover {
-    background: #f0f6ff
+    background: #f0f6ff;
 }
 
 .upload .outline {
     width: 65%;
-    margin-top: 13px
+    margin-top: 13px;
 }
 
 .skills {
     margin-top: 24px;
     padding-top: 22px;
-    border-top: 1px solid #e4ebf5
+    border-top: 1px solid #e4ebf5;
 }
 
 .skills h3 {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 12px
+    margin-bottom: 12px;
 }
 
 .skills h3 svg {
     color: #7e8da6;
     width: 19px;
-    height: 19px
+    height: 19px;
 }
 
 .skills h3 small {
     font-weight: 400;
-    color: #7d8a9f
+    color: #7d8a9f;
 }
 
 .skills>div {
     display: flex;
     gap: 7px;
-    flex-wrap: wrap
+    flex-wrap: wrap;
 }
 
 .skills>div span {
@@ -369,7 +369,7 @@
     color: #0067ef;
     border-radius: 30px;
     font-size: 12px;
-    padding: 8px 16px
+    padding: 8px 16px;
 }
 
 .external {
@@ -383,19 +383,19 @@
     text-decoration: none;
     color: #006bfa;
     font-size: 12px !important;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .external svg {
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
 .company {
     display: flex;
     align-items: center;
     gap: 14px;
-    margin-bottom: 21px
+    margin-bottom: 21px;
 }
 
 .company>span {
@@ -407,22 +407,22 @@
     color: #1478ee;
     border-radius: 7px;
     font-size: 24px;
-    font-weight: 900
+    font-weight: 900;
 }
 
 .company strong {
-    font-size: 15px
+    font-size: 15px;
 }
 
 .company p {
     font-size: 12px;
     color: #8391a8;
-    margin-top: 4px
+    margin-top: 4px;
 }
 
 .page .jobTitle {
     font-size: 22px;
-    margin-bottom: 9px
+    margin-bottom: 9px;
 }
 
 .chips {
@@ -431,13 +431,13 @@
     align-items: center;
     flex-wrap: wrap;
     color: #72829b;
-    font-size: 12px
+    font-size: 12px;
 }
 
 .chips>span {
     background: #f0f3f8;
     border-radius: 20px;
-    padding: 4px 9px
+    padding: 4px 9px;
 }
 
 .chips>span:last-child {
@@ -445,54 +445,54 @@
     align-items: center;
     gap: 4px;
     background: none;
-    padding: 0
+    padding: 0;
 }
 
 .chips svg {
     width: 15px;
-    height: 15px
+    height: 15px;
 }
 
 .jobSection {
-    padding: 19px 0 0
+    padding: 19px 0 0;
 }
 
 .jobSection+.jobSection {
     border-top: 1px solid #e0e8f3;
-    margin-top: 18px
+    margin-top: 18px;
 }
 
 .jobSection h3 {
-    margin-bottom: 5px
+    margin-bottom: 5px;
 }
 
 .bullet {
     font-size: 13px;
     color: #73839d;
     line-height: 1.8 !important;
-    overflow-wrap: anywhere
+    overflow-wrap: anywhere;
 }
 
 .changeJob {
     margin-top: auto;
     width: 100%;
-    min-height: 41px
+    min-height: 41px;
 }
 
 .jobSection:last-of-type {
-    margin-bottom: 18px
+    margin-bottom: 18px;
 }
 
 .results {
     display: flex;
     flex-direction: column;
-    gap: 9px
+    gap: 9px;
 }
 
 .result {
     border: 1px solid #e1e7f0;
     border-radius: 9px;
-    padding: 8px 9px
+    padding: 8px 9px;
 }
 
 .resultHeader {
@@ -504,22 +504,22 @@
     background: none;
     padding: 0 5px 9px;
     color: #0d1b39;
-    text-align: left
+    text-align: left;
 }
 
 .resultHeader strong {
-    font-size: 16px
+    font-size: 16px;
 }
 
 .resultHeader>svg {
     width: 15px;
     height: 15px;
     margin-left: 12px;
-    transition: transform .2s
+    transition: transform .2s;
 }
 
 .rotated {
-    transform: rotate(-90deg)
+    transform: rotate(-90deg);
 }
 
 .status {
@@ -530,27 +530,27 @@
     border-radius: 30px;
     padding: 5px 13px;
     font-size: 12px;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .status svg {
     width: 17px;
-    height: 17px
+    height: 17px;
 }
 
 .green {
     background: #eaf8f3;
-    color: #169975
+    color: #169975;
 }
 
 .yellow {
     background: #fff7e5;
-    color: #c18816
+    color: #c18816;
 }
 
 .gray {
     background: #f0f3f8;
-    color: #64738a
+    color: #64738a;
 }
 
 .page .explanation {
@@ -559,7 +559,7 @@
     padding: 9px 12px;
     border-radius: 6px;
     color: #788697;
-    white-space: pre-line
+    white-space: pre-line;
 }
 
 .guide {
@@ -570,38 +570,38 @@
     padding: 25px;
     border: 1px solid #cfe3ff;
     border-radius: 12px;
-    background: linear-gradient(120deg, #f2f8ff, #eef5ff)
+    background: linear-gradient(120deg, #f2f8ff, #eef5ff);
 }
 
 .guideTitle {
     display: flex;
     gap: 20px;
     align-items: center;
-    flex-shrink: 0
+    flex-shrink: 0;
 }
 
 .guideTitle>svg {
     width: 35px;
     height: 35px;
-    color: #006aff
+    color: #006aff;
 }
 
 .guideTitle h2 {
-    font-size: 19px
+    font-size: 19px;
 }
 
 .guideTitle p,
 .tip p {
     font-size: 12px;
     color: #8290a7;
-    margin-top: 5px
+    margin-top: 5px;
 }
 
 .tip {
     display: flex;
     gap: 15px;
     align-items: flex-start;
-    flex: 1
+    flex: 1;
 }
 
 .tip>span {
@@ -612,11 +612,11 @@
     color: white;
     display: grid;
     place-items: center;
-    flex-shrink: 0
+    flex-shrink: 0;
 }
 
 .tip strong {
-    font-size: 12px
+    font-size: 12px;
 }
 
 .primary {
@@ -631,29 +631,29 @@
     padding: 14px 20px;
     font-weight: 700 !important;
     font-size: 13px !important;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .primary svg {
     width: 17px;
-    height: 17px
+    height: 17px;
 }
 
 .primary:disabled {
     opacity: .5;
-    cursor: default
+    cursor: default;
 }
 
 .notice {
     font-size: 11px;
     color: #8b97aa;
-    margin-top: 13px !important
+    margin-top: 13px !important;
 }
 
 .error {
     color: #b42318;
     font-size: 13px;
-    margin-top: 10px !important
+    margin-top: 10px !important;
 }
 
 .dialog {
@@ -668,34 +668,34 @@
     overflow: auto;
     background: white;
     color: #162546;
-    box-shadow: 0 20px 80px #101e4020
+    box-shadow: 0 20px 80px #101e4020;
 }
 
 .dialog::backdrop {
-    background: #10244066
+    background: #10244066;
 }
 
 .dialogHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 18px
+    margin-bottom: 18px;
 }
 
 .dialogText {
     white-space: pre-line;
     line-height: 1.8 !important;
-    color: #63718b
+    color: #63718b;
 }
 
 .dialog form {
     display: grid;
-    gap: 12px
+    gap: 12px;
 }
 
 .dialog label {
     font-size: 13px;
-    font-weight: 600
+    font-weight: 600;
 }
 
 .dialog input,
@@ -707,107 +707,107 @@
     border-radius: 6px;
     padding: 10px;
     background: white;
-    color: #203353
+    color: #203353;
 }
 
 .dialog textarea {
-    resize: vertical
+    resize: vertical;
 }
 
 @media(min-width:1500px) {
     .card {
-        padding: 25px 20px
+        padding: 25px 20px;
     }
 
     .upload {
-        min-height: 286px
+        min-height: 286px;
     }
 
     .result {
-        padding: 10px
+        padding: 10px;
     }
 
     .cardHeading {
-        margin-bottom: 27px
+        margin-bottom: 27px;
     }
 
     .resultHeader {
-        padding-bottom: 12px
+        padding-bottom: 12px;
     }
 
     .guide {
-        margin-top: 20px
+        margin-top: 20px;
     }
 }
 
 @media(max-width:1250px) {
     .header {
-        gap: 28px
+        gap: 28px;
     }
 
     .tabs {
-        gap: 4px
+        gap: 4px;
     }
 
     .brand {
-        font-size: 23px !important
+        font-size: 23px !important;
     }
 
     .account {
-        gap: 8px
+        gap: 8px;
     }
 
     .columns {
-        grid-template-columns: 1fr 1fr
+        grid-template-columns: 1fr 1fr;
     }
 
     .columns>.card:last-child {
-        grid-column: 1/-1
+        grid-column: 1/-1;
     }
 
     .results {
         display: grid;
-        grid-template-columns: 1fr 1fr
+        grid-template-columns: 1fr 1fr;
     }
 
     .guide {
-        flex-wrap: wrap
+        flex-wrap: wrap;
     }
 
     .guideTitle {
-        width: 100%
+        width: 100%;
     }
 
     .hero aside {
-        display: none
+        display: none;
     }
 
     .external {
-        font-size: 11px !important
+        font-size: 11px !important;
     }
 }
 
 @media(max-width:900px) {
     .page {
-        padding-left: 0
+        padding-left: 0;
     }
     .header {
         height: auto;
         min-height: 72px;
         flex-wrap: wrap;
         padding-top: 14px;
-        gap: 10px
+        gap: 10px;
     }
 
     .tabs {
         order: 3;
         width: 100%;
         justify-content: center;
-        height: 52px
+        height: 52px;
     }
 
     .account {
-        margin-left: auto
+        margin-left: auto;
     }
 }
 
@@ -816,107 +816,114 @@
         height: auto;
         flex-wrap: wrap;
         padding: 14px 3.4% 0;
-        gap: 10px
+        gap: 10px;
     }
 
     .tabs {
         order: 3;
         width: 100%;
         justify-content: center;
-        height: 52px
+        height: 52px;
     }
 
     .brand {
-        font-size: 23px !important
+        font-size: 23px !important;
     }
 
     .profile {
         font-size: 13px;
-        gap: 7px
+        gap: 7px;
     }
 
     .avatar {
         width: 32px;
-        height: 32px
+        height: 32px;
     }
 
     .content {
-        padding: 25px 18px
+        padding: 25px 18px;
     }
 
     .page .hero h1 {
-        font-size: 27px
+        font-size: 27px;
     }
 
     .hero p {
-        font-size: 14px
+        font-size: 14px;
     }
 
     .columns {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
     }
 
     .columns>.card:last-child {
-        grid-column: auto
+        grid-column: auto;
     }
 
     .results {
-        display: flex
+        display: flex;
     }
 
     .guide {
         padding: 20px;
-        gap: 20px
+        gap: 20px;
     }
 
     .tip {
-        flex-basis: 100%
+        flex-basis: 100%;
     }
 
     .guideTitle {
-        gap: 12px
+        gap: 12px;
     }
 
     .guideTitle h2 {
-        font-size: 18px
+        font-size: 18px;
     }
 
     .guide .primary {
-        width: 100%
+        width: 100%;
     }
 
     .card {
-        padding: 22px
+        padding: 22px;
     }
 
     .notice {
-        line-height: 1.7 !important
+        line-height: 1.7 !important;
     }
 
     .upload {
-        min-height: 250px
+        min-height: 250px;
     }
 }
 
 @media(max-width:520px) {
     .brand {
-        font-size: 20px !important
+        font-size: 20px !important;
     }
 
     .tabs button {
         font-size: 12px;
-        padding: 0 7px
+        padding: 0 7px;
     }
 
     .content {
-        padding: 24px 16px
+        padding: 24px 16px;
     }
 
     .card {
-        padding: 18px 16px
+        padding: 18px 16px;
     }
 
     .results {
-        flex-direction: column
+        flex-direction: column;
     }
+}
+
+
+/* sidebar responsive gutter */
+@media(min-width:901px){
+  .page{transition:padding-left .24s ease;}
+  .page:has(> header:hover){padding-left:224px;}
 }

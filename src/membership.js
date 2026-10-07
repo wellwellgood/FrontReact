@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import styles from "./membership.module.css";
+import styles from "./AuthPages.module.css";
 import { useNavigate } from "react-router-dom";
 import { UserRoundPlus , ArrowLeft } from 'lucide-react';
 
@@ -109,10 +109,11 @@ const Membership = () => {
   return (
     <div className={styles.findID}>
       <form className={styles.IDform} onSubmit={handleSubmit}>
+        <button type="button" onClick={() => navigate("/login")} aria-label="뒤로가기">
+          <ArrowLeft className={styles.ArrowLeft} />
+        </button>
+        <div className={styles.logintext}><h1>Hello,</h1><h2>Every one</h2></div>
         <div className={styles.IDarea}>
-          <button type="button" onClick={() => navigate("/login")}>
-            <ArrowLeft className={styles.ArrowLeft} />
-          </button>
           <div className={styles.toparea}>
             <UserRoundPlus  className={styles.UserRoundPlus} />
             <h1>회원가입</h1>

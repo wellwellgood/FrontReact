@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import api from "./util/api.js";
-import styles from "./serverF/chatServer/css/ID.module.css";
+import styles from "./AuthPages.module.css";
 import { useNavigate } from "react-router-dom";
 import { UserRoundPlus, ArrowLeft } from "lucide-react";
 
@@ -99,6 +99,7 @@ export default function ID() {
         >
           <ArrowLeft className={styles.ArrowLeft} />
         </button>
+        <div className={styles.logintext}><h1>Hello,</h1><h2>Every one</h2></div>
         <User className={styles.icon} />
         <div className={styles.IDarea}>
           <h1>아이디 찾기</h1>

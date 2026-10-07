@@ -1201,9 +1201,9 @@
 }
 
 .repoRow {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: flex-start;
-    justify-content: space-between;
     gap: 14px;
     padding: 20px 0;
     border-bottom: 1px solid #e8edf5;
@@ -1349,4 +1349,95 @@
 @media(min-width:901px){
   .dashboard{transition:padding-left .24s ease;}
   .dashboard:has(> header:hover){padding-left:224px;}
+}
+
+.repoActions {
+    display: flex;
+    align-items: center;
+    align-self: start;
+    gap: 8px;
+}
+
+.aiButton {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border: 1px solid rgba(110, 159, 255, 0.38);
+    border-radius: 9px;
+    background: rgba(55, 111, 243, 0.14);
+    color: #78a6ff;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.aiButton:hover:not(:disabled) {
+    border-color: rgba(126, 169, 255, 0.75);
+    background: rgba(55, 111, 243, 0.25);
+    color: #a9c5ff;
+}
+
+.aiButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.aiButton svg {
+    width: 16px;
+    height: 16px;
+}
+
+.aiResult {
+    grid-column: 1 / -1;
+    margin-top: 2px;
+    padding: 15px 16px;
+    border: 1px solid rgba(110, 159, 255, 0.28);
+    border-radius: 10px;
+    background: rgba(55, 111, 243, 0.1);
+}
+
+.aiResult strong {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #8db5ff;
+    font-size: 13px;
+}
+
+.aiResult strong svg {
+    width: 16px;
+    height: 16px;
+}
+
+.aiResult p {
+    margin-top: 9px;
+    color: #d4dded;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+.aiError {
+    border-color: rgba(239, 68, 84, 0.35);
+    background: rgba(239, 68, 84, 0.1);
+}
+
+.aiError strong,
+.aiError p {
+    color: #ff9ca5;
+}
+
+@media (max-width: 520px) {
+    .repoActions {
+        grid-column: 1 / -1;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .aiButton {
+        flex: 1;
+    }
 }

@@ -281,3 +281,42 @@ button h2 {
 .saveIDtext {
   color: #e6ebff;
 }
+.passwordField {
+  position: relative;
+  width: 100%;
+}
+
+.passwordField .pw {
+  padding-right: 48px;
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  display: grid;
+  width: 40px;
+  height: 45px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+}
+
+.passwordToggle:hover {
+  color: #ffffff;
+  background: rgba(47, 107, 255, 0.16);
+}
+
+.passwordToggle:focus-visible {
+  outline: 2px solid #8fb0ff;
+  outline-offset: -3px;
+}
+
+.passwordToggle svg {
+  width: 19px;
+  height: 19px;
+}

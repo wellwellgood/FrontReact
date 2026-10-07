@@ -10,7 +10,6 @@ const tabs = [
   ["issues", "이슈 · PR", "/issues", GitPullRequest],
   ["activity", "활동", "/activity", Activity],
 ];
-
 export default function DashboardHeader({ active }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);

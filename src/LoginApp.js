@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import styles from "./App.module.css";
 import api from "./util/api.js"; // API 호출을 위한 axios 인스턴스
 
@@ -8,6 +9,7 @@ function LoginPage() {
   const [ID, setId] = useState("");
   const [PW, setPw] = useState("");
   const [PWvalid, setPWvalid] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [notAllow, setNotAllow] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,15 +101,30 @@ function LoginPage() {
                 placeholder="ID"
                 value={ID}
                 onChange={HandleID}
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck="false"
               />
-              <input
-                className={styles.pw}
-                type="password"
-                placeholder="Password"
-                value={PW}
-                onChange={HandlePW}
-                onKeyDown={handleKeyDown}
-              />
+              <div className={styles.passwordField}>
+                <input
+                  className={styles.pw}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={PW}
+                  onChange={HandlePW}
+                  onKeyDown={handleKeyDown}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className={styles.passwordToggle}
+                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword((visible) => !visible)}
+                >
+                  {showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+                </button>
+              </div>
             </div>
             {errorMessage && (
               <p className={styles["error-message"]}>{errorMessage}</p>

@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
-dotenv.config({ path: new URL("./.env.github.local", import.meta.url).pathname });
+dotenv.config({
+  path: new URL("./.env.github.local", import.meta.url).pathname,
+});
 
 import http from "http";
 import express from "express";
@@ -14,7 +16,7 @@ import pool from "./DB.mjs";
 import { postgresStore } from "./github/store.js";
 import { githubClient } from "./github/client.js";
 import { createGithubRouter } from "./github/router.js";
-import chatUploadRouter from './routes/upload.js';
+import chatUploadRouter from "./routes/upload.js";
 
 try {
   await connectDB();
@@ -25,36 +27,52 @@ try {
 
 const app = express();
 
-const configuredOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "")
+const configuredOrigins = (
+  process.env.FRONTEND_URLS ||
+  process.env.FRONTEND_URL ||
+  ""
+)
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-app.use(cors({
-  origin: [...new Set([
-    "https://dashboardky.netlify.app",
-    "https://dashboardkky.netlify.app",
-    "https://front-react-amber.vercel.app",
-    ...[3000, 3001, 3002, 3003].flatMap(port => [`http://localhost:${port}`, `http://127.0.0.1:${port}`]),
-    ...configuredOrigins,
-  ])],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: [
-    "Origin",
-    "X-Requested-With",
-    "Content-Type",
-    "Accept",
-    "Authorization"
-  ]
-}));
+app.use(
+  cors({
+    origin: [
+      ...new Set([
+        "https://dashboardky.netlify.app",
+        "https://dashboardkky.netlify.app",
+        "https://front-react-amber.vercel.app",
+        ...[3000, 3001, 3002, 3003].flatMap((port) => [
+          `http://localhost:${port}`,
+          `http://127.0.0.1:${port}`,
+        ]),
+        ...configuredOrigins,
+      ]),
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+    ],
+  }),
+);
 
 app.use(express.json());
 app.use(cookieParser());
 const githubStore = postgresStore(pool);
 await initDB();
 await githubStore.init();
-app.use("/api/github", createGithubRouter({ store: githubStore, client: githubClient() }));
+app.use(
+  "/api/github",
+  createGithubRouter({ store: githubStore, client: githubClient() }),
+);
+const aiRoutes = await import("./routes/ai.js");
+app.use("/api/ai", aiRoutes.default);
 
 try {
   console.log("라우트 등록 시작");
@@ -80,15 +98,18 @@ try {
   const messageRoute = await import("./routes/message.js");
   app.use("/api/messages", messageRoute.default);
 
-  app.use('/api/upload-chat', chatUploadRouter);
-  app.use('/api/download', chatUploadRouter);
-  app.use("/api/users", userRoutes.default)
+  app.use("/api/upload-chat", chatUploadRouter);
+  app.use("/api/download", chatUploadRouter);
+  app.use("/api/users", userRoutes.default);
 
   // ✅ 여기 수정: .default 붙여서 라우터 등록
   const chatUploadRouterModule = await import("./routes/neonPostgre.js");
 
   if (chatUploadRouterModule.default) {
-    console.log("✅ chatUploadRouter 타입:", typeof chatUploadRouterModule.default);
+    console.log(
+      "✅ chatUploadRouter 타입:",
+      typeof chatUploadRouterModule.default,
+    );
     app.use("/api/chat-upload", chatUploadRouterModule.default);
   } else {
     console.error("❌ chatUploadRouter 불러오기 실패:", chatUploadRouterModule);
@@ -96,7 +117,6 @@ try {
 
   // ✅ 정적 파일 경로
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-
 } catch (error) {
   console.error("❌ 라우트 로드 실패:", error);
 }

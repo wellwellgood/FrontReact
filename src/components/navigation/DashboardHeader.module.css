@@ -337,7 +337,7 @@
     .header {
         width: 72px;
         padding: 24px 8px;
-        transition: width .24s ease;
+        transition: width .3s ease;
         overflow: visible;
     }
 
@@ -348,7 +348,7 @@
     .header::after {
         width: 36px;
         left: 18px;
-        transition: width .24s ease, left .24s ease;
+        transition: width .3s ease, left .3s ease;
     }
 
     .header:hover::after {
@@ -384,7 +384,7 @@
         overflow: hidden;
         opacity: 0;
         transform: translateX(-6px);
-        transition: max-width .24s ease, opacity .16s ease, transform .24s ease;
+        transition: max-width .3s ease, opacity .16s ease, transform .3s ease;
         white-space: nowrap;
     }
 
@@ -410,7 +410,7 @@
         padding: 0;
         border-left: 0;
         text-align: left;
-        transition: background .18s ease, color .18s ease, padding .24s ease;
+        transition: background .18s ease, color .18s ease, padding .3s ease;
     }
 
     .header:hover .tabs button {

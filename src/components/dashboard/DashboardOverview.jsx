@@ -148,7 +148,19 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
     }
   };
   const analyzeProject = async (project) => {
-    if (demo || analyzingId !== null) return;
+    if (analyzingId !== null) return;
+
+    if (demo) {
+      setAiResults((current) => ({
+        ...current,
+        [project.id]: {
+          text: "AI 분석은 로그인 후 실제 GitHub 프로젝트에서 사용할 수 있습니다.",
+          error: false,
+        },
+      }));
+      return;
+    }
+
     setAnalyzingId(project.id);
     setAiResults((current) => ({
       ...current,
@@ -445,7 +457,7 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
                           <button
                             type="button"
                             className={styles.aiButton}
-                            disabled={demo || analyzingId !== null}
+                            disabled={analyzingId !== null}
                             onClick={() => analyzeProject(r)}
                           >
                             <Sparkles />

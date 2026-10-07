@@ -34,6 +34,7 @@ app.use(cors({
   origin: [...new Set([
     "https://dashboardky.netlify.app",
     "https://dashboardkky.netlify.app",
+    "https://front-react-amber.vercel.app",
     ...[3000, 3001, 3002, 3003].flatMap(port => [`http://localhost:${port}`, `http://127.0.0.1:${port}`]),
     ...configuredOrigins,
   ])],

@@ -33,23 +33,33 @@ const configuredOrigins = (
   ""
 )
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
+
+const allowedOrigins = new Set([
+  "https://dashboardky.netlify.app",
+  "https://dashboardkky.netlify.app",
+  "https://front-react-amber.vercel.app",
+  ...[3000, 3001, 3002, 3003].flatMap((port) => [
+    `http://localhost:${port}`,
+    `http://127.0.0.1:${port}`,
+  ]),
+  ...configuredOrigins,
+]);
+
+const isAllowedVercelPreview = (origin) =>
+  /^https:\/\/front-react(?:-[a-z0-9-]+)?\.vercel\.app$/i.test(origin);
 
 app.use(
   cors({
-    origin: [
-      ...new Set([
-        "https://dashboardky.netlify.app",
-        "https://dashboardkky.netlify.app",
-        "https://front-react-amber.vercel.app",
-        ...[3000, 3001, 3002, 3003].flatMap((port) => [
-          `http://localhost:${port}`,
-          `http://127.0.0.1:${port}`,
-        ]),
-        ...configuredOrigins,
-      ]),
-    ],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.has(origin) || isAllowedVercelPreview(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`허용되지 않은 CORS origin: ${origin}`));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [

@@ -23,6 +23,12 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# 서버 비밀 환경변수
 .env
+.env.*
+!.env.example
+!.env.github.example
+!.env.kis.example
+
 firebaseServiceKey.json
 # src/serverF/firebase.js

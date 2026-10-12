@@ -1418,6 +1418,15 @@
     font-size: 13px;
     line-height: 1.7;
     white-space: pre-wrap;
+    cursor: text;
+    user-select: text;
+    -webkit-user-select: text;
+    -webkit-touch-callout: default;
+}
+
+.aiResult p::selection {
+    background: rgba(70, 132, 255, 0.55);
+    color: #ffffff;
 }
 
 .aiError {

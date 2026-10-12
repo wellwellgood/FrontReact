@@ -11,6 +11,7 @@ React · Express · PostgreSQL 기반의 **사용자별 GitHub 프로젝트 대�
 - **프로젝트**: 본인 소유 공개 저장소 검색, 언어 필터, 계정별 즐겨찾기 저장
 - **이슈·PR**: 본인이 작성한 공개 이슈·PR 조회 및 GitHub 원문 이동
 - **활동**: 최근 공개 GitHub 이벤트 조회
+- **AI 프로젝트 분석**: 저장소 메타데이터를 바탕으로 프로젝트 요약, 이력서 문장, 예상 면접 질문 생성
 - **계정 설정**: 기존 로그인·회원가입, 프로필·알림 선호 설정, GitHub 연결·해제
 - **데모**: 로그인과 백엔드 없이 예시 데이터로 화면 탐색
 
@@ -20,6 +21,7 @@ React · Express · PostgreSQL 기반의 **사용자별 GitHub 프로젝트 대�
 2. 대시보드에서 **GitHub 연결**을 선택합니다.
 3. GitHub에서 OAuth App 접근을 승인합니다.
 4. 연결된 계정의 공개 프로젝트와 활동을 확인합니다.
+5. 프로젝트 화면에서 **AI 분석**을 눌러 포트폴리오 문장과 예상 면접 질문을 확인합니다.
 
 사이트 로그인과 GitHub 연결은 별개입니다. 다른 사용자가 로그인하면 그 사용자가 연결한 GitHub 계정의 데이터를 조회합니다. 동일한 GitHub 계정은 하나의 사이트 계정에만 연결할 수 있습니다.
 
@@ -27,6 +29,7 @@ React · Express · PostgreSQL 기반의 **사용자별 GitHub 프로젝트 대�
 
 - **GitHub API**: 사용자 프로필, 본인 소유 공개 저장소, 작성한 열린 공개 이슈·PR, 최근 공개 이벤트
 - **PostgreSQL**: 사이트 회원, 암호화된 GitHub 접근 토큰, OAuth 연결 요청, 사용자별 즐겨찾기
+- **Gemini API**: 사용자가 선택한 공개 프로젝트의 취업 포트폴리오 분석
 - **브라우저 저장소**: 로그인 상태와 사용자별 프로필·알림 선호 설정. 다른 기기와 자동 동기화되지 않습니다.
 - **`/demo`**: `src/components/github/demo.js`의 고정 예시 데이터. 실제 계정 화면과 구분합니다.
 
@@ -36,9 +39,9 @@ React · Express · PostgreSQL 기반의 **사용자별 GitHub 프로젝트 대�
 
 - **Frontend**: React 18, React Router, Axios, CSS Modules, Lucide React
 - **Backend**: Node.js, Express 5, PostgreSQL 드라이버 `pg`
-- **인증·연동**: JWT, bcrypt, GitHub OAuth App, GitHub REST API
+- **인증·연동**: JWT, bcrypt, GitHub OAuth App, GitHub REST API, Gemini API
 - **토큰 보호**: AES-256-GCM, OAuth state, PKCE
-- **배포 구성**: Netlify(프론트엔드), Render(백엔드), Neon(PostgreSQL)
+- **배포 구성**: Vercel(프론트엔드), Render(백엔드), Neon(PostgreSQL)
 
 ## 프로젝트 구조
 
@@ -57,14 +60,15 @@ FrontReact/
 │   │   │   ├── client.js           # GitHub API 호출 및 결과 정리
 │   │   │   ├── router.js           # 인증·계정 연결·조회 API
 │   │   │   └── store.js            # DB 저장 및 토큰 암호화
-│   │   ├── routes/                 # 기존 인증·사용자 등 API
+│   │   ├── routes/                 # 인증·사용자·Gemini AI 등 API
 │   │   ├── tests/github.test.js    # GitHub 연동 테스트
 │   │   ├── DB.mjs                  # PostgreSQL 연결 풀
 │   │   ├── initDB.js               # 회원 테이블 초기화
 │   │   └── server.mjs              # 백엔드 진입점
 │   ├── util/api.js                 # API 서버 주소 설정
-│   └── App.jsx                    # 페이지 라우팅
+│   └── App.jsx                     # 페이지 라우팅
 ├── netlify.toml                    # 빌드 및 SPA 리다이렉트 설정
+├── vercel.json                     # Vercel SPA 리다이렉트 설정
 ├── GITHUB_DASHBOARD.md             # GitHub 연동 보충 문서
 └── package.json
 ```
@@ -102,6 +106,9 @@ GITHUB_CLIENT_ID=your_oauth_app_client_id
 GITHUB_CLIENT_SECRET=your_oauth_app_client_secret
 GITHUB_REDIRECT_URI=http://localhost:3000/github/callback
 GITHUB_TOKEN_ENCRYPTION_KEY=your_base64_encoded_32_byte_key
+
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-3-flash-preview
 ```
 
 비밀값 생성 예시입니다. JWT 비밀값은 각각 별도로 생성하고, 토큰 암호화 키는 아래 명령의 결과를 사용합니다.
@@ -112,6 +119,7 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"
 
 - 환경변수 파일은 Git에 커밋하지 않습니다.
 - GitHub Client Secret과 암호화 키는 서버에만 저장합니다. `REACT_APP_` 변수에 넣지 않습니다.
+- Gemini API 키도 백엔드 환경변수에만 저장하고 프론트엔드 코드나 Git 저장소에 넣지 않습니다.
 - 암호화 키를 변경하면 저장된 GitHub 토큰을 해독할 수 없으므로 재연결이 필요합니다.
 - GitHub 설정은 Git에서 제외된 `src/serverF/.env.github.local`로 분리할 수도 있습니다. 기본 환경변수와 중복되면 이미 설정된 값이 우선합니다.
 - DB 계정에는 테이블 생성·변경 권한이 필요합니다. 시작 시 `users`, `github_connections`, `github_oauth_states`를 초기화합니다.
@@ -174,6 +182,16 @@ PUT    /api/github/favorites/:id   즐겨찾기 변경 ({ "enabled": true | fals
 DELETE /api/github/connection      사이트 내 연결 정보 삭제
 ```
 
+### AI 분석 API
+
+사이트 로그인 JWT가 필요하며, 사용자별로 1분에 최대 5회 요청할 수 있습니다.
+
+```text
+POST   /api/ai/project-analysis    공개 프로젝트 메타데이터 분석
+```
+
+요청에는 프로젝트 이름, 설명, 주요 언어, 스타 수와 포크 수를 전달합니다. 서버가 Gemini를 호출하며 API 키는 브라우저로 전달하지 않습니다. 데모 화면에서는 실제 AI 요청을 보내지 않습니다.
+
 ## 사용자별 데이터 처리
 
 - 서버는 검증된 JWT의 사용자 ID를 기준으로 데이터를 조회합니다.
@@ -199,29 +217,32 @@ GitHub 테스트는 암호화·변조 검출, 두 테스트 사용자의 OAuth s
 
 ## 배포
 
-### Netlify
+### Vercel
 
 - 프로젝트 루트에서 빌드하고 `build` 폴더를 배포합니다.
-- 저장소의 `netlify.toml`에 빌드와 SPA 리다이렉트가 설정되어 있습니다.
 - `REACT_APP_API_URL`을 실제 백엔드 주소로 설정합니다.
+- React Router의 직접 접근이 `404`가 되지 않도록 모든 경로를 `/index.html`로 연결합니다.
+
+기존 Netlify 배포를 사용하는 경우 저장소의 `netlify.toml`에 빌드 및 SPA 리다이렉트 설정이 있습니다.
 
 ### Render
 
 - Root Directory: `src/serverF`
 - Build Command: `npm install`
 - Start Command: `npm start`
-- 서버 환경변수에 DB·JWT·GitHub 설정을 입력하고 `NODE_ENV=production`으로 설정합니다.
+- 서버 환경변수에 DB·JWT·GitHub·Gemini 설정을 입력하고 `NODE_ENV=production`으로 설정합니다.
 - `FRONTEND_URL`에는 실제 프론트엔드 Origin을 설정합니다. 여러 주소는 `FRONTEND_URLS`에 쉼표로 구분할 수 있습니다.
+- Vercel 미리보기 주소는 `front-react-*.vercel.app` 형식만 CORS에서 허용합니다. 다른 프로젝트 이름을 사용하면 해당 Origin을 `FRONTEND_URLS`에 추가합니다.
 - `GITHUB_REDIRECT_URI`와 OAuth App의 콜백을 실제 프론트엔드의 `/github/callback` 주소로 맞춥니다.
 
 환경변수를 바꾸는 것만으로 수정 코드가 배포되지는 않습니다. 저장소에 코드를 반영하고 프론트엔드와 백엔드를 각각 재배포해야 합니다.
 
 ### 배포 주소 및 상태
 
-- 프론트엔드: [dashboardkky.netlify.app](https://dashboardkky.netlify.app)
+- 프론트엔드: Vercel 프로젝트의 Production Domain
 - API 서버: [react-server-wmqa.onrender.com](https://react-server-wmqa.onrender.com)
 
-**2026-10-01 확인 기준:** Render 서버는 반복된 실행 오류로 자동 중지된 상태이며 HTTP 503을 반환했습니다. 새 DB 연결, 서버 재개, 최신 코드 배포 및 실제 GitHub OAuth 검증이 완료된 상태로 보장되지 않습니다. 배포 상태와 관계없이 로컬 `/demo`에서 화면을 확인할 수 있습니다.
+**2026-10-12 Render 배포 로그 기준:** 백엔드 빌드와 실행이 완료되어 서비스가 Live 상태가 되었습니다. 외부 API와 OAuth 동작 여부는 각 환경변수 및 공급자 사용 한도에 따라 달라질 수 있습니다. 배포 상태와 관계없이 로컬 `/demo`에서 화면을 확인할 수 있습니다.
 
 ## 현재 범위와 개선 과제
 
@@ -230,6 +251,7 @@ GitHub 테스트는 암호화·변조 검출, 두 테스트 사용자의 OAuth s
 - 언어 분포는 **주요 언어별 저장소 개수**이며, 코드 줄 수나 바이트 비율이 아닙니다.
 - 공개 이벤트 수는 전체 커밋 수나 GitHub 기여도 잔디와 다릅니다.
 - 토큰 자동 갱신과 알림 발송은 구현하지 않았습니다.
+- Gemini 무료 등급에는 분당·일일 사용 한도가 있으며 초과하면 AI 분석 요청이 일시적으로 제한됩니다.
 - 기존 휴대전화 인증은 예시 구현이며 실제 SMS 인증이 아닙니다. 정식 운영 전 인증·비밀번호 복구 흐름 점검이 필요합니다.
 - 계정 설정의 브라우저 설정 초기화는 서버 회원 탈퇴가 아닙니다.
 - 새 DB에는 기존 회원 데이터가 자동 이전되지 않습니다. 이전 DB를 보존하고 별도로 이관해야 합니다.
@@ -240,6 +262,8 @@ GitHub 테스트는 암호화·변조 검출, 두 테스트 사용자의 OAuth s
 - **DB 오류 `53000`과 quota 안내**: DB 제공 서비스의 사용량과 프로젝트 상태를 확인합니다.
 - **GitHub 연결 설정 필요 안내**: 서버의 GitHub 환경변수와 암호화 키 형식을 확인합니다.
 - **콜백 오류**: OAuth App 등록 주소, `GITHUB_REDIRECT_URI`, 실제 접속 호스트가 일치하는지 확인합니다.
+- **Gemini 키 오류**: Render의 `GEMINI_API_KEY`와 `GEMINI_MODEL`을 확인하고 환경변수 변경 후 백엔드를 다시 배포합니다.
+- **Gemini 429 오류**: 사이트의 사용자별 1분 5회 제한 또는 Gemini 무료 등급 사용 한도를 확인하고 잠시 후 다시 요청합니다.
 - **새 DB에서 기존 계정 로그인 실패**: 회원 데이터 이관 여부를 확인합니다.
 
 ## 개발자

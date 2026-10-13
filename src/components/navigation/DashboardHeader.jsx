@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Activity, Code2, FolderGit2, GitPullRequest, LayoutDashboard, Menu, X } from "lucide-react";
+import { Activity, FolderGit2, GitPullRequest, LayoutDashboard, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AccountMenu from "../account/AccountMenu.jsx";
+import logo from "../../image/LOGO/android-chrome-192.png";
 import styles from "./DashboardHeader.module.css";
 
 const tabs = [
@@ -38,7 +39,7 @@ export default function DashboardHeader({ active }) {
         {menuOpen ? <X /> : <Menu />}
       </button>
       <button type="button" className={styles.brand} onClick={() => go("/dashboard")} title="DEV DASHBOARD">
-        <Code2 aria-hidden="true" />
+        <img className={styles.brandLogo} src={logo} alt="" aria-hidden="true" />
         <span>DEV DASHBOARD</span>
       </button>
       <strong className={styles.mobileTitle}>{activeLabel}</strong>

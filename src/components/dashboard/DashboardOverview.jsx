@@ -238,7 +238,7 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
     <div className={styles.dashboard}>
       {demo ? (
         <header className={styles.header}>
-          <strong>DEV DASHBOARD · 데모</strong>
+          <strong>GITERVIEW · 데모</strong>
           <Link to="/login">로그인</Link>
         </header>
       ) : (

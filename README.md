@@ -1,4 +1,4 @@
-# DEV DASHBOARD
+# GITERVIEW
 
 React · Express · PostgreSQL 기반의 **사용자별 GitHub 프로젝트 대시보드**입니다.
 사이트에 로그인한 뒤 자신의 GitHub 계정을 연결하면 공개 저장소, 작성한 이슈와 PR, 최근 활동을 한곳에서 확인할 수 있습니다.
@@ -128,7 +128,7 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"
 
 [GitHub OAuth App 등록](https://github.com/settings/applications/new)에서 앱을 생성합니다. 현재 구현은 **OAuth App** 기준입니다.
 
-- **Application name**: Dev Dashboard Local
+- **Application name**: GITERVIEW
 - **Homepage URL**: `http://localhost:3000`
 - **Authorization callback URL**: `http://localhost:3000/github/callback`
 

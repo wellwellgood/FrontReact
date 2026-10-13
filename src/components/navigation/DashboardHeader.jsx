@@ -15,7 +15,7 @@ export default function DashboardHeader({ active }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const activeLabel = tabs.find(([id]) => id === active)?.[1] || "DEV DASHBOARD";
+  const activeLabel = tabs.find(([id]) => id === active)?.[1] || "GITERVIEW";
 
   const go = (path) => {
     setMenuOpen(false);
@@ -38,9 +38,9 @@ export default function DashboardHeader({ active }) {
       >
         {menuOpen ? <X /> : <Menu />}
       </button>
-      <button type="button" className={styles.brand} onClick={() => go("/dashboard")} title="DEV DASHBOARD">
+      <button type="button" className={styles.brand} onClick={() => go("/dashboard")} title="GITERVIEW">
         <img className={styles.brandLogo} src={logo} alt="" aria-hidden="true" />
-        <span>DEV DASHBOARD</span>
+        <span>GITERVIEW</span>
       </button>
       <strong className={styles.mobileTitle}>{activeLabel}</strong>
       <nav

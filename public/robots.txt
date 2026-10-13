@@ -9,4 +9,4 @@ Disallow: /settings
 Disallow: /account/
 Disallow: /github/callback
 
-Sitemap: https://dashboardkky.netlify.app/sitemap.xml
+Sitemap: https://gitterview.netlify.app/sitemap.xml

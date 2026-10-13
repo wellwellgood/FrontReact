@@ -57,6 +57,6 @@ Render의 기존 백엔드 서비스 Environment에 다음을 설정합니다.
 - 토큰 암호화·변조 검출, 인증 요청 재사용 거부, 만료 처리 검증
 - 실제 GitHub OAuth 계정 두 개로의 연동 검증은 Client Secret 및 서버 설정 완료 후 필요
 - 로컬 DB 연결 점검은 PostgreSQL 오류 53000으로 진행하지 못했습니다. 기존 DB 데이터를 변경하지 않았으며 운영 DB 상태/리소스 확인이 필요합니다.
-- KIS 연결은 메인 서버에서 해제되어 더 이상 호출하지 않습니다. 이전 소스와 저장 데이터는 삭제하지 않았습니다.
+- KIS 연결은 메인 서버에서 해제되어 더 이상 호출하지 않습니다.
 
 공식 문서: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps

@@ -37,8 +37,7 @@ const configuredOrigins = (
   .filter(Boolean);
 
 const allowedOrigins = new Set([
-  "https://dashboardky.netlify.app",
-  "https://dashboardkky.netlify.app",
+  "https://gitterview.netlify.app",
   "https://front-react-amber.vercel.app",
   ...[3000, 3001, 3002, 3003].flatMap((port) => [
     `http://localhost:${port}`,
@@ -144,7 +143,7 @@ try {
 
 server.listen(PORT, async () => {
   try {
-    console.log(`✅ 기본 서버 실행됨: http://localhost:${PORT}`);
+    console.log(`✅ GITERVIEW API 실행됨: http://localhost:${PORT}`);
   } catch (err) {
     console.error("❌ 서버 시작 실패:", err.message);
     process.exit(1);

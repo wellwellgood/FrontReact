@@ -35,3 +35,4 @@ src/serverF/firebase.js
 !.env.example
 !.env.kis.example
 !.env.github.example
+node_modules

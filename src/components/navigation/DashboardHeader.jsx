@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Activity, FolderGit2, GitPullRequest, LayoutDashboard, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AccountMenu from "../account/AccountMenu.jsx";
@@ -15,7 +15,18 @@ export default function DashboardHeader({ active }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarTimer = useRef(null);
   const activeLabel = tabs.find(([id]) => id === active)?.[1] || "GITERVIEW";
+
+  useEffect(() => () => clearTimeout(sidebarTimer.current), []);
+
+  const scheduleSidebar = (expanded) => {
+    clearTimeout(sidebarTimer.current);
+    sidebarTimer.current = setTimeout(
+      () => setSidebarOpen(expanded),
+      expanded ? 40 : 140,
+    );
+  };
 
   const go = (path) => {
     setMenuOpen(false);
@@ -25,8 +36,15 @@ export default function DashboardHeader({ active }) {
   return (
     <header
       className={styles.header}
-      onMouseEnter={() => setSidebarOpen(true)}
-      onMouseLeave={() => setSidebarOpen(false)}
+      data-expanded={sidebarOpen}
+      onPointerEnter={() => scheduleSidebar(true)}
+      onPointerLeave={() => scheduleSidebar(false)}
+      onFocusCapture={() => scheduleSidebar(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          scheduleSidebar(false);
+        }
+      }}
     >
       <button
         type="button"

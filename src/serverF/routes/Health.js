@@ -4,6 +4,7 @@ const router = express.Router();
 // 기본 헬스 체크
 router.get('/', (req, res) => {
   const healthCheck = {
+    service: 'GITERVIEW API',
     uptime: process.uptime(),
     message: 'OK',
     timestamp: new Date().toISOString(),
@@ -23,6 +24,7 @@ router.get('/', (req, res) => {
 // 상세 헬스 체크
 router.get('/detailed', async (req, res) => {
   const healthCheck = {
+    service: 'GITERVIEW API',
     uptime: process.uptime(),
     message: 'OK',
     timestamp: new Date().toISOString(),

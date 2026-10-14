@@ -16,17 +16,17 @@ GitHub 연결은 기존 사이트 로그인과 별개입니다. 로그인 → Gi
 ## GitHub OAuth App 등록
 등록: https://github.com/settings/applications/new
 GitHub App이 아니라 OAuth App을 사용합니다. 웹훅과 Device Flow는 필요하지 않습니다.
-- Application name: Dev Dashboard
-- Homepage URL: https://dashboardky.netlify.app
-- Authorization callback URL: https://dashboardky.netlify.app/github/callback
+- Application name: GITERVIEW
+- Homepage URL: https://gitterview.netlify.app
+- Authorization callback URL: https://gitterview.netlify.app/github/callback
 
-실제 사용하는 Netlify 도메인이 다르면 홈페이지, 콜백, 서버 GITHUB_REDIRECT_URI와 CORS 허용 주소를 모두 같은 호스트로 맞추세요. `dashboardky`와 `dashboardkky`는 서로 다른 주소입니다.
+실제 사용하는 프론트엔드 주소는 `https://gitterview.netlify.app`입니다. 홈페이지, 콜백, 서버 `GITHUB_REDIRECT_URI`와 CORS 허용 주소를 모두 이 호스트로 맞추세요.
 
 ## 서버 설정
 Render의 기존 백엔드 서비스 Environment에 다음을 설정합니다.
 - GITHUB_CLIENT_ID: OAuth App의 Client ID
 - GITHUB_CLIENT_SECRET: OAuth App의 Client Secret
-- GITHUB_REDIRECT_URI: https://dashboardky.netlify.app/github/callback
+- GITHUB_REDIRECT_URI: https://gitterview.netlify.app/github/callback
 - GITHUB_TOKEN_ENCRYPTION_KEY: 32바이트 난수를 Base64로 인코딩한 값
 - DATABASE_URL: 기존 PostgreSQL 주소 유지
 - JWT_SECRET: 기존 로그인에서 토큰 발급에 쓰는 값 유지

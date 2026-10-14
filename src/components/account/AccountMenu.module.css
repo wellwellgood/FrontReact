@@ -337,13 +337,16 @@
 
   .side .trigger > span:nth-child(2),
   .side .trigger > svg {
-    display: none;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-5px);
+    transition: max-width .24s cubic-bezier(.2, .8, .2, 1), opacity .14s ease, transform .24s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .24s;
   }
 
   .side.expanded {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
+    align-items: stretch;
   }
 
   .side.expanded .trigger {
@@ -354,7 +357,11 @@
 
   .side.expanded .trigger > span:nth-child(2),
   .side.expanded .trigger > svg {
-    display: block;
+    max-width: 130px;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition-delay: 0s;
   }
 
   .side.expanded .menu,

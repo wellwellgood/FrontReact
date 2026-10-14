@@ -1364,8 +1364,8 @@
 
 /* sidebar responsive gutter */
 @media(min-width:901px){
-  .dashboard{transition:padding-left .24s ease;}
-  .dashboard:has(> header:hover){padding-left:224px;}
+  .dashboard{transition:padding-left .24s cubic-bezier(.2, .8, .2, 1);}
+  .dashboard:has(> header[data-expanded="true"]){padding-left:224px;}
 }
 
 .repoActions {

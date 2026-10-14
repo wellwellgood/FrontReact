@@ -5,6 +5,6 @@
 
 /* sidebar responsive gutter */
 @media(min-width:901px){
-  .page{transition:padding-left .24s ease;}
-  .page:has(> header:hover){padding-left:224px;}
+  .page{transition:padding-left .24s cubic-bezier(.2, .8, .2, 1);}
+  .page:has(> header[data-expanded="true"]){padding-left:224px;}
 }

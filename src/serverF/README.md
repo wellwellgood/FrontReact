@@ -1,3 +1,3 @@
-# Backend Server
+# GITERVIEW Backend
 
-기본 Express + PostgreSQL 백엔드 서버입니다.
+GITERVIEW의 Express + PostgreSQL 백엔드 서버입니다.

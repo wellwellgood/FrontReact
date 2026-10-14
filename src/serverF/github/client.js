@@ -11,7 +11,7 @@ export function githubClient({ fetcher = fetch, env = process.env } = {}) {
     if (!response.ok) throw new GithubError('GitHub 데이터를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.');
     return response.json();
   }
-  const api = (token, path) => request(`https://api.github.com${path}`, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'FrontReact-Developer-Dashboard' } });
+  const api = (token, path) => request(`https://api.github.com${path}`, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'GITERVIEW' } });
   return {
     async exchange(code, verifier) {
       const result = await request('https://github.com/login/oauth/access_token', { method:'POST', headers:{ Accept:'application/json','Content-Type':'application/json' }, body:JSON.stringify({ client_id:env.GITHUB_CLIENT_ID,client_secret:env.GITHUB_CLIENT_SECRET,redirect_uri:env.GITHUB_REDIRECT_URI,code,code_verifier:verifier }) });

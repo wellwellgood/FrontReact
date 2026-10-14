@@ -129,8 +129,8 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"
 [GitHub OAuth App 등록](https://github.com/settings/applications/new)에서 앱을 생성합니다. 현재 구현은 **OAuth App** 기준입니다.
 
 - **Application name**: GITERVIEW
-- **Homepage URL**: `http://localhost:3000`
-- **Authorization callback URL**: `http://localhost:3000/github/callback`
+- **Homepage URL**: `https://gitterview.netlify.app`
+- **Authorization callback URL**: `https://gitterview.netlify.app/github/callback`
 
 발급된 Client ID와 Client Secret을 백엔드 환경변수에 입력합니다. 웹훅과 Device Flow는 필요하지 않습니다. 로컬과 배포 환경은 OAuth App을 분리해 관리하는 것을 권장합니다.
 

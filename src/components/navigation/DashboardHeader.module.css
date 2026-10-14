@@ -343,21 +343,23 @@
     .header {
         width: 72px;
         padding: 24px 8px;
-        transition: width .3s ease;
+        transition: width .24s cubic-bezier(.2, .8, .2, 1);
         overflow: visible;
+        contain: layout style;
+        will-change: width;
     }
 
-    .header:hover {
+    .header[data-expanded="true"] {
         width: 200px;
     }
 
     .header::after {
         width: 36px;
         left: 18px;
-        transition: width .3s ease, left .3s ease;
+        transition: width .24s cubic-bezier(.2, .8, .2, 1), left .24s cubic-bezier(.2, .8, .2, 1);
     }
 
-    .header:hover::after {
+    .header[data-expanded="true"]::after {
         width: 112px;
         left: 36px;
     }
@@ -395,17 +397,17 @@
         overflow: hidden;
         opacity: 0;
         transform: translateX(-6px);
-        transition: max-width .3s ease, opacity .16s ease, transform .3s ease;
+        transition: max-width .24s cubic-bezier(.2, .8, .2, 1), opacity .16s ease, transform .24s cubic-bezier(.2, .8, .2, 1);
         white-space: nowrap;
     }
 
-    .header:hover .brand {
+    .header[data-expanded="true"] .brand {
         justify-content: flex-start;
         padding: 0px;
     }
 
-    .header:hover .brand span,
-    .header:hover .tabLabel {
+    .header[data-expanded="true"] .brand span,
+    .header[data-expanded="true"] .tabLabel {
         max-width: 145px;
         opacity: 1;
         transform: translateX(0);
@@ -421,10 +423,10 @@
         padding: 0;
         border-left: 0;
         text-align: left;
-        transition: background .18s ease, color .18s ease, padding .3s ease;
+        transition: background .18s ease, color .18s ease, padding .24s cubic-bezier(.2, .8, .2, 1);
     }
 
-    .header:hover .tabs button {
+    .header[data-expanded="true"] .tabs button {
         justify-content: flex-start;
         padding: 0 13px;
     }

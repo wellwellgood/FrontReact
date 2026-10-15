@@ -108,7 +108,7 @@
 }
 
 .tabs .activeTab {
-    color: #0065f4;
+    color: #fff;
     border-bottom-color: #0065f4;
 }
 
@@ -147,7 +147,7 @@
     gap: 10px;
     background: none;
     border: 0;
-    color: #526078;
+    color: #fff;
     white-space: nowrap;
 }
 
@@ -597,12 +597,12 @@
 .bookmark {
     border: 0;
     background: none;
-    color: #0670ff;
+    color: #eeee22;
     padding: 3px;
 }
 
 .saved svg {
-    fill: #0670ff;
+    fill: #eeee22;
 }
 
 .guide {
@@ -923,7 +923,7 @@
         text-align: left;
     }
 
-    .stockRow > div,
+    .stockRow>div,
     .stockRow time {
         width: 100%;
         align-self: flex-start;
@@ -1352,7 +1352,7 @@
 }
 
 @media(max-width:520px) {
-    .buttonGroup {
+    s .buttonGroup {
         width: 100%;
     }
 
@@ -1363,9 +1363,14 @@
 }
 
 /* sidebar responsive gutter */
-@media(min-width:901px){
-  .dashboard{transition:padding-left .24s cubic-bezier(.2, .8, .2, 1);}
-  .dashboard:has(> header[data-expanded="true"]){padding-left:224px;}
+@media(min-width:901px) {
+    .dashboard {
+        transition: padding-left .24s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .dashboard:has(> header[data-expanded="true"]) {
+        padding-left: 224px;
+    }
 }
 
 .repoActions {

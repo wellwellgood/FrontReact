@@ -96,7 +96,7 @@
     border-radius: 10px;
     background: transparent;
     padding: 0 15px;
-    color: #526078;
+    color: #fff;
     font-size: 16px;
     font-weight: 700;
     white-space: nowrap;
@@ -105,12 +105,12 @@
 }
 
 .tabs button:hover {
-    color: #1260d5;
+    color: #fff;
     background: transparent;
 }
 
 .tabs .active {
-    color: #0065f4;
+    color: #fff;
     background:
         linear-gradient(135deg, rgba(255, 255, 255, .0), rgba(255, 255, 255, 0)),
         rgba(225, 239, 255, 0);
@@ -196,7 +196,7 @@
         border-left-color: transparent;
         border-bottom-color: #0065f4;
         background: transparent;
-        color: #75aaff;
+        color: #fff;
         border-radius: 10px;
     }
 }

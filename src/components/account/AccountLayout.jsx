@@ -18,7 +18,17 @@ export default function AccountLayout({ active, children }) {
         <aside className={styles.sidebar}>
           <h1>계정 관리</h1>
           <nav aria-label="계정 관리 메뉴">
-            {pages.map(([id, label, Icon, path]) => <button key={id} className={active === id ? styles.activeSide : ""} aria-current={active === id ? "page" : undefined} onClick={() => navigate(path)}><Icon size={21} />{label}</button>)}
+            {pages.map(([id, label, Icon, path]) => (
+              <button
+                key={id}
+                className={active === id ? styles.activeSide : ""}
+                aria-current={active === id ? "page" : undefined}
+                onClick={() => navigate(path)}
+              >
+                <Icon size={21} />
+                {label}
+              </button>
+            ))}
           </nav>
         </aside>
         <section className={styles.content}>{children}</section>

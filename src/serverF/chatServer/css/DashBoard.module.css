@@ -1,0 +1,17 @@
+.flexform{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    overflow: hidden;
+}
+.flex-1{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 10px;
+    width: 100%;
+    height: calc(100vh - 100px);
+    overflow: hidden;
+}

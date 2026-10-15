@@ -344,10 +344,10 @@
     visibility: hidden;
     transform: translateX(-5px);
     transition:
-      max-width var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+      max-width .24s cubic-bezier(.2, .8, .2, 1),
       opacity .24s ease,
-      transform var(--sidebar-motion-duration) var(--sidebar-motion-easing),
-      visibility 0s linear var(--sidebar-motion-duration);
+      transform .24s cubic-bezier(.2, .8, .2, 1),
+      visibility 0s linear .24s;
   }
 
   .side.expanded {

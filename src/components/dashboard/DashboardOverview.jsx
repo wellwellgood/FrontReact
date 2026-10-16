@@ -254,9 +254,11 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
                 : "GitHub를 연결하고 나만의 개발 현황을 확인하세요."}
             </p>
           </div>
-          <span className={styles.badge}>
-            {demo ? "예시 데이터" : data ? "GitHub 연동" : "GitHub 연결"}
-          </span>
+          {(demo || !data) && (
+            <span className={styles.badge}>
+              {demo ? "예시 데이터" : "GitHub 연결"}
+            </span>
+          )}
         </section>
         {demo && (
           <nav className={styles.demoNav} aria-label="데모 메뉴">
@@ -287,7 +289,11 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
           </p>
         )}
         {!demo && (
-          <section className={`${styles.card} ${styles.connection}`}>
+          <section
+            className={`${styles.card} ${styles.connection} ${
+              connection?.connected ? styles.connectionCompact : ""
+            }`}
+          >
             <div>
               <h2>
                 <Github />{" "}
@@ -295,24 +301,18 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
                   ? `@${connection.login} 연결됨`
                   : "GitHub 계정 연결"}
               </h2>
-              <p>본인 소유 공개 저장소와 작성한 공개 이슈·PR을 조회합니다.</p>
+              {!connection?.connected && (
+                <p>본인 소유 공개 저장소와 작성한 공개 이슈·PR을 조회합니다.</p>
+              )}
               {connection?.configured === false && (
                 <p>관리자의 GitHub 앱 설정이 아직 완료되지 않았습니다.</p>
               )}
             </div>
             <div className={styles.buttonGroup}>
-              <button
-                className={styles.primary}
-                disabled={busy || connection?.configured === false}
-                onClick={connect}
-              >
-                <Github />
-                {connection?.connected ? "다시 연결" : "GitHub 연결"}
-              </button>
-              {connection?.connected && (
+              {connection?.connected ? (
                 <>
                   <button
-                    className={styles.outline}
+                    className={styles.primary}
                     disabled={busy}
                     onClick={() => setRevision((n) => n + 1)}
                   >
@@ -321,6 +321,14 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
                   </button>
                   <button
                     className={styles.outline}
+                    disabled={busy || connection?.configured === false}
+                    onClick={connect}
+                  >
+                    <Github />
+                    다시 연결
+                  </button>
+                  <button
+                    className={styles.dangerButton}
                     disabled={busy}
                     onClick={disconnect}
                   >
@@ -328,6 +336,15 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
                     연결 해제
                   </button>
                 </>
+              ) : (
+                <button
+                  className={styles.primary}
+                  disabled={busy || connection?.configured === false}
+                  onClick={connect}
+                >
+                  <Github />
+                  GitHub 연결
+                </button>
               )}
             </div>
           </section>
@@ -350,7 +367,7 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
         )}
         {data && (
           <>
-            <p className={styles.sourceNote}>
+            <p className={styles.fetchMeta}>
               {demo
                 ? "데모 전용 가상 데이터입니다. 연결한 계정에는 예시 데이터를 섞지 않습니다."
                 : `조회 시각 ${new Date(data.fetchedAt).toLocaleString("ko-KR")} · 최대 60초 캐시 · 비공개·조직 소유 저장소 제외`}
@@ -380,11 +397,19 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
                   </span>
                   <div className={styles.statText}>
                     <span>{label}</span>
-                    <strong>
-                      {typeof value === "number"
-                        ? value.toLocaleString()
-                        : value}
-                    </strong>
+                    {value === 0 &&
+                    (label.includes("이슈") || label.includes("PR")) ? (
+                      <>
+                        <strong className={styles.statZero}>없음</strong>
+                        <small className={styles.statHint}>정리 완료 🎉</small>
+                      </>
+                    ) : (
+                      <strong>
+                        {typeof value === "number"
+                          ? value.toLocaleString()
+                          : value}
+                      </strong>
+                    )}
                   </div>
                 </article>
               ))}

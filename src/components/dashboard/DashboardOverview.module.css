@@ -248,14 +248,11 @@
         linear-gradient(135deg, rgba(255, 255, 255, .0), rgba(255, 255, 255, 0)),
         rgba(225, 239, 255, 0);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .9),
-        inset 1px 0 0 rgba(255, 255, 255, .45),
-        0 18px 42px rgba(42, 86, 145, .13),
-        0 3px 10px rgba(42, 86, 145, .08);
-    border: 1px solid rgba(255, 255, 255, .72);
+        inset 0 1px 0 rgba(255, 255, 255, .14),
+        0 14px 32px rgba(0, 0, 0, .12);
+    border: 1px solid rgba(255, 255, 255, .2);
     -webkit-backdrop-filter: blur(24px) saturate(175%);
     backdrop-filter: blur(24px) saturate(175%);
-    border: 1px solid #dfe7f2;
     border-radius: 12px;
     padding: 22px;
     gap: 25px;
@@ -328,11 +325,9 @@
         linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, 0.1)),
         rgba(225, 239, 255, 0);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .9),
-        inset 1px 0 0 rgba(255, 255, 255, .45),
-        0 18px 42px rgba(42, 86, 145, .13),
-        0 3px 10px rgba(42, 86, 145, .08);
-    border: 1px solid rgba(255, 255, 255, .72);
+        inset 0 1px 0 rgba(255, 255, 255, .16),
+        0 16px 38px rgba(0, 0, 0, .14);
+    border: 1px solid rgba(255, 255, 255, .2);
     -webkit-backdrop-filter: blur(24px) saturate(175%);
     backdrop-filter: blur(24px) saturate(175%);
     border-radius: 18px;
@@ -1040,12 +1035,8 @@
     background:
         linear-gradient(135deg, rgba(255, 255, 255, .0), rgba(255, 255, 255, 0)),
         rgba(225, 239, 255, 0);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .9),
-        inset 1px 0 0 rgba(255, 255, 255, .45),
-        0 18px 42px rgba(42, 86, 145, .13),
-        0 3px 10px rgba(42, 86, 145, .08);
-    border: 1px solid rgba(255, 255, 255, .72);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .18);
     -webkit-backdrop-filter: blur(24px) saturate(175%);
     backdrop-filter: blur(24px) saturate(175%);
     border-radius: 10px;
@@ -1179,6 +1170,24 @@
     margin-bottom: 20px;
 }
 
+.connectionCompact {
+    min-height: 58px;
+    padding: 11px 14px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+}
+
+.connectionCompact h2 {
+    font-size: 15px;
+    color: #dbe8fb;
+}
+
+.connectionCompact h2 svg {
+    width: 18px;
+    height: 18px;
+    color: #7facff;
+}
+
 .connection h2,
 .cardTitle h2 {
     display: flex;
@@ -1187,7 +1196,7 @@
 }
 
 .connection p {
-    color: #fff;
+    color: #bcc8da;
     font-size: 14px;
     margin-top: 8px;
 }
@@ -1196,6 +1205,62 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+.connectionCompact .buttonGroup {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 7px;
+}
+
+.connectionCompact .primary,
+.connectionCompact .outline,
+.dangerButton {
+    min-height: 34px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.connectionCompact .primary svg,
+.connectionCompact .outline svg,
+.dangerButton svg {
+    width: 16px;
+    height: 16px;
+}
+
+.dangerButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    background: transparent;
+    color: #9daabd;
+}
+
+.dangerButton:hover {
+    background: rgba(239, 68, 84, .1);
+    color: #ff9ba5;
+}
+
+.fetchMeta {
+    margin: -2px 0 14px !important;
+    padding: 0 2px;
+    color: #aebdd1;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.statZero {
+    color: #dbe5f4 !important;
+    font-size: 20px !important;
+}
+
+.statHint {
+    color: #92a4bb;
+    font-size: 11px;
+    font-weight: 600;
 }
 
 .empty {
@@ -1239,7 +1304,7 @@
 }
 
 .repoRow p {
-    color: #64748b;
+    color: #b8c5d8;
     font-size: 14px;
     margin-top: 6px;
     overflow-wrap: anywhere;
@@ -1247,7 +1312,7 @@
 
 .repoRow small {
     display: block;
-    color: #718096;
+    color: #98a8be;
     font-size: 12px;
     margin-top: 10px;
 }
@@ -1282,6 +1347,37 @@
 .repoList::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #79a7ff 0%, #3978ff 100%);
     background-clip: padding-box;
+}
+
+@media(max-width:520px) {
+    .connectionCompact {
+        align-items: stretch;
+        padding: 12px;
+    }
+
+    .connectionCompact .buttonGroup {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        width: 100%;
+    }
+
+    .connectionCompact .primary,
+    .connectionCompact .outline,
+    .dangerButton {
+        width: 100%;
+        min-width: 0;
+        gap: 4px;
+        padding: 7px 5px;
+        font-size: 11px !important;
+    }
+
+    .connectionCompact .primary svg,
+    .connectionCompact .outline svg,
+    .dangerButton svg {
+        width: 14px;
+        height: 14px;
+    }
 }
 
 .repoList::-webkit-scrollbar-corner {

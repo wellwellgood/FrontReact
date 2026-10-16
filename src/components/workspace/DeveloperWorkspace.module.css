@@ -1,0 +1,516 @@
+.workspacePage {
+  min-height: 100vh;
+  padding-left: 96px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0, 102, 255, 0.24), transparent 32%),
+    radial-gradient(circle at 85% 75%, rgba(116, 68, 255, 0.2), transparent 38%),
+    radial-gradient(circle at 60% 15%, rgba(0, 210, 255, 0.1), transparent 28%),
+    linear-gradient(135deg, #05070b 0%, #111827 55%, #080b12 100%);
+  background-attachment: fixed;
+  color: #ffffff;
+  font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+.workspacePage * {
+  box-sizing: border-box;
+}
+
+.workspacePage button,
+.workspacePage input,
+.workspacePage select,
+.workspacePage textarea {
+  font: inherit;
+}
+
+.content {
+  width: min(1700px, 100%);
+  margin: 0 auto;
+  padding: 38px 3.4% 28px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.heading h1 {
+  margin: 4px 0 2px;
+  font-size: clamp(30px, 3vw, 42px);
+  letter-spacing: -0.045em;
+}
+
+.heading p,
+.panelTitle p {
+  margin: 0;
+  color: #aebbd0;
+  line-height: 1.55;
+}
+
+.eyebrow {
+  color: #71aaff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.workspaceGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.75fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.panel {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.035));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 18px 45px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+.panelTitle,
+.panelTitle > div {
+  display: flex;
+  align-items: center;
+}
+
+.panelTitle {
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.panelTitle > div {
+  min-width: 0;
+  gap: 12px;
+}
+
+.panelTitle h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.panelTitle p {
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.titleIcon {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(32, 114, 244, 0.17);
+  color: #69a3ff;
+}
+
+.titleIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.memoIcon {
+  background: rgba(121, 77, 255, 0.17);
+  color: #a88cff;
+}
+
+.totalCount,
+.savedState {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #c8d4e6;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.savedState {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #88e6bd;
+}
+
+.savedState svg {
+  width: 14px;
+  height: 14px;
+}
+
+.todoForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.todoForm label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.todoForm input,
+.memoPanel textarea,
+.mobileStatus {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(7, 12, 21, 0.46);
+  color: #ffffff;
+}
+
+.todoForm input {
+  min-width: 0;
+  border-radius: 11px;
+  padding: 12px 14px;
+}
+
+.todoForm input::placeholder,
+.memoPanel textarea::placeholder {
+  color: #78869d;
+}
+
+.todoForm button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 11px;
+  padding: 0 16px;
+  background: #1268e8;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.todoForm button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.todoForm button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.todoColumn {
+  min-height: 330px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 13px;
+  background: rgba(5, 10, 18, 0.28);
+}
+
+.todoColumn > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 2px 11px;
+  color: #dbe6f5;
+}
+
+.todoColumn > header span {
+  display: grid;
+  min-width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+}
+
+.todoColumn[data-status="doing"] > header strong {
+  color: #75aaff;
+}
+
+.todoColumn[data-status="done"] > header strong {
+  color: #71d9a9;
+}
+
+.todoList {
+  display: flex;
+  min-height: 264px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.todoCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.075);
+  color: #ffffff;
+  cursor: grab;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.todoCard:hover {
+  border-color: rgba(111, 165, 255, 0.52);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.todoCard:active {
+  cursor: grabbing;
+}
+
+.dragHandle,
+.editButton,
+.deleteButton,
+.saveEditButton,
+.cancelEditButton {
+  display: grid;
+  width: 28px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #7f8da3;
+}
+
+.dragHandle {
+  cursor: grab;
+}
+
+.dragHandle svg,
+.editButton svg,
+.deleteButton svg,
+.saveEditButton svg,
+.cancelEditButton svg {
+  width: 17px;
+  height: 17px;
+}
+
+.todoActions {
+  display: flex;
+  align-items: center;
+}
+
+.editButton,
+.deleteButton {
+  cursor: pointer;
+}
+
+.editButton:hover {
+  color: #72aaff;
+}
+
+.deleteButton:hover {
+  color: #ff8585;
+}
+
+.saveEditButton {
+  color: #71d9a9;
+  cursor: pointer;
+}
+
+.saveEditButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cancelEditButton {
+  color: #a7b2c3;
+  cursor: pointer;
+}
+
+.todoBody {
+  min-width: 0;
+}
+
+.todoBody strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.todoEditInput {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(111, 165, 255, 0.6);
+  border-radius: 7px;
+  background: rgba(5, 10, 18, 0.72);
+  color: #ffffff;
+  padding: 7px 9px;
+  font-size: 13px;
+}
+
+.todoEditInput:focus {
+  outline: 2px solid #5598ff;
+  outline-offset: 1px;
+}
+
+.todoCardEditing {
+  border-color: rgba(111, 165, 255, 0.52);
+  cursor: default;
+}
+
+.mobileStatus {
+  display: none;
+}
+
+.emptyColumn {
+  margin: auto 0;
+  color: #68768b;
+  font-size: 12px;
+  text-align: center;
+}
+
+.memoPanel {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.memoLabel {
+  margin-bottom: 8px;
+  color: #cdd8e9;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.memoPanel textarea {
+  width: 100%;
+  min-height: 390px;
+  flex: 1;
+  resize: vertical;
+  border-radius: 13px;
+  padding: 16px;
+  line-height: 1.7;
+}
+
+.todoForm input:focus,
+.memoPanel textarea:focus,
+.mobileStatus:focus {
+  outline: 2px solid #5598ff;
+  outline-offset: 2px;
+}
+
+.memoMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 9px;
+  color: #8290a5;
+  font-size: 11px;
+}
+
+.storageNote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 14px 2px 0;
+  color: #8391a7;
+  font-size: 12px;
+}
+
+.storageNote svg {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 1180px) {
+  .workspaceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .memoPanel textarea {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspacePage {
+    padding-left: 0;
+  }
+
+  .content {
+    padding: 26px 18px 24px;
+  }
+}
+
+@media (max-width: 720px) {
+  .panel {
+    padding: 18px;
+  }
+
+  .board {
+    grid-template-columns: 1fr;
+  }
+
+  .todoColumn {
+    min-height: 120px;
+  }
+
+  .todoList {
+    min-height: 70px;
+  }
+
+  .todoCard {
+    cursor: default;
+  }
+
+  .dragHandle {
+    display: none;
+  }
+
+  .mobileStatus {
+    display: block;
+    width: 100%;
+    margin-top: 7px;
+    border-radius: 7px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding-right: 13px;
+    padding-left: 13px;
+  }
+
+  .heading h1 {
+    font-size: 29px;
+  }
+
+  .heading p {
+    font-size: 14px;
+  }
+
+  .panelTitle {
+    align-items: flex-start;
+  }
+
+  .panelTitle p {
+    display: none;
+  }
+
+  .todoForm {
+    grid-template-columns: 1fr;
+  }
+
+  .todoForm button {
+    min-height: 43px;
+    justify-content: center;
+  }
+}

@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Activity, FolderGit2, GitPullRequest, LayoutDashboard, Menu, X } from "lucide-react";
+import {
+  Activity,
+  FolderGit2,
+  GitPullRequest,
+  LayoutDashboard,
+  Menu,
+  NotebookPen,
+  X,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AccountMenu from "../account/AccountMenu.jsx";
 import logo from "../../image/LOGO/android-chrome-192.png";
@@ -10,6 +18,7 @@ const tabs = [
   ["projects", "프로젝트", "/projects", FolderGit2],
   ["issues", "이슈 · PR", "/issues", GitPullRequest],
   ["activity", "활동", "/activity", Activity],
+  ["workspace", "작업 공간", "/workspace", NotebookPen],
 ];
 export default function DashboardHeader({ active }) {
   const navigate = useNavigate();

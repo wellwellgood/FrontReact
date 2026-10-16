@@ -18,6 +18,8 @@ import { githubClient } from "./github/client.js";
 import { createGithubRouter } from "./github/router.js";
 import chatUploadRouter from "./routes/upload.js";
 
+console.log("🚀 GITERVIEW 서버 시작 중...");
+
 try {
   await connectDB();
 } catch (error) {
@@ -133,21 +135,23 @@ try {
 const PORT = process.env.PORT || 10000;
 const server = http.createServer(app);
 
-try {
-  const initializeSocket = await import("./socket.js");
-  initializeSocket.default(server);
-  console.log("✅ 소켓 초기화 완료");
-} catch (error) {
-  console.error("❌ 소켓 초기화 실패:", error);
-}
+server.on("error", (error) => {
+  console.error("❌ 서버 시작 실패:", error.message);
+  process.exit(1);
+});
 
-server.listen(PORT, async () => {
-  try {
-    console.log(`✅ GITERVIEW API 실행됨: http://localhost:${PORT}`);
-  } catch (err) {
-    console.error("❌ 서버 시작 실패:", err.message);
-    process.exit(1);
-  }
+server.listen(PORT, () => {
+  console.log(`✅ GITERVIEW API 실행됨: http://localhost:${PORT}`);
 });
 
 console.log("DB 설정 여부:", Boolean(process.env.DATABASE_URL));
+
+// HTTP API가 소켓 모듈 로딩을 기다리지 않도록 서버를 먼저 실행합니다.
+import("./socket.js")
+  .then(({ default: initializeSocket }) => {
+    initializeSocket(server);
+    console.log("✅ 소켓 초기화 완료");
+  })
+  .catch((error) => {
+    console.error("❌ 소켓 초기화 실패:", error);
+  });

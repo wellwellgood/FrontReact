@@ -102,11 +102,17 @@
     white-space: nowrap;
     text-align: left;
     cursor: pointer;
+    transition:
+        color .22s ease,
+        background-color .22s ease,
+        box-shadow .26s ease,
+        transform .22s cubic-bezier(.2, .8, .2, 1);
 }
 
 .tabs button:hover {
     color: #fff;
-    background: transparent;
+    background: rgba(255, 255, 255, .055);
+    transform: translateX(2px);
 }
 
 .tabs .active {
@@ -121,6 +127,19 @@
         0 3px 10px rgba(42, 86, 145, .08);
     -webkit-backdrop-filter: blur(24px) saturate(175%);
     backdrop-filter: blur(24px) saturate(175%);
+    animation: tabActivate .32s cubic-bezier(.2, .8, .2, 1);
+}
+
+@keyframes tabActivate {
+    0% {
+        opacity: .62;
+        transform: translateX(-5px) scale(.985);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
 }
 
 .brand:focus-visible,
@@ -423,7 +442,12 @@
         padding: 0;
         border-left: 0;
         text-align: left;
-        transition: background .18s ease, color .18s ease, padding .24s cubic-bezier(.2, .8, .2, 1);
+        transition:
+            background .18s ease,
+            color .18s ease,
+            padding .24s cubic-bezier(.2, .8, .2, 1),
+            transform .22s cubic-bezier(.2, .8, .2, 1),
+            box-shadow .24s ease;
     }
 
     .header[data-expanded="true"] .tabs button {

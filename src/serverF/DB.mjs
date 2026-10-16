@@ -14,12 +14,16 @@ if (!process.env.DATABASE_URL) {
 
 const dbPool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  connectionTimeoutMillis: 10000,
+  keepAlive: true,
 });
 
 const connectDB = async () => {
   try {
+    console.log("⏳ DB 연결 확인 중...");
     const client = await dbPool.connect();
     client.release();
+    console.log("✅ DB 연결 완료");
   } catch (err) {
     console.error("❌ DB 연결 실패:", err.message);
     throw err;

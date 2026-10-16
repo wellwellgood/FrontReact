@@ -6,6 +6,7 @@ import Id from './ID';
 import Password from './password';
 import CustomCalendar from './calender/calender';
 import DashboardOverview from './components/dashboard/DashboardOverview.jsx';
+import DeveloperWorkspace from './components/workspace/DeveloperWorkspace.jsx';
 import ProfileSettings from './components/account/ProfileSettings.jsx';
 import AccountSettings from './components/account/AccountSettings.jsx';
 import NotificationSettings from './components/account/NotificationSettings.jsx';
@@ -68,6 +69,14 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardOverview view="activity" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workspace"
+          element={
+            <ProtectedRoute>
+              <DeveloperWorkspace />
             </ProtectedRoute>
           }
         />

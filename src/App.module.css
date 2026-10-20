@@ -320,3 +320,41 @@ button h2 {
   width: 19px;
   height: 19px;
 }
+
+.socialLogin {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.naverLoginButton {
+  background: #03A94D;
+  border: 10px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  margin: 10px;
+  text-align: center;
+}
+
+.naverLoginButton:hover {
+  filter: brightness(0.94);
+}
+
+.naverLoginButton:active {
+  transform: translateY(1px);
+}
+
+.naverLoginButton:focus-visible {
+  outline: 3px solid rgba(3, 169, 77, 0.3);
+  outline-offset: 3px;
+}
+
+.naverLogo {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex: 0 0 24px;
+}

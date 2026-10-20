@@ -5,6 +5,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import  pool  from "../DB.mjs";
+import { randomBytes } from "crypto";
 
 const router = express.Router();
 const verificationStore = {};
@@ -49,6 +50,148 @@ const generateRefreshToken = (user) =>
 function generateRandomCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
+const naverConfig = () => ({
+  clientId: process.env.NAVER_CLIENT_ID,
+  clientSecret: process.env.NAVER_CLIENT_SECRET,
+  redirectUri: process.env.NAVER_REDIRECT_URI,
+});
+
+router.get("/naver/start", (req, res) => {
+  const { clientId, clientSecret, redirectUri } = naverConfig();
+  if (!clientId || !clientSecret || !redirectUri || !process.env.JWT_SECRET) {
+    return res.status(503).json({
+      message: "네이버 로그인 환경변수가 설정되지 않았습니다.",
+    });
+  }
+
+  const state = jwt.sign(
+    { provider: "naver", nonce: randomBytes(24).toString("hex") },
+    process.env.JWT_SECRET,
+    { expiresIn: "10m" },
+  );
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    state,
+  });
+
+  return res.json({
+    state,
+    authorizationUrl: `https://nid.naver.com/oauth2.0/authorize?${params.toString()}`,
+  });
+});
+
+router.post("/naver/callback", async (req, res) => {
+  const { code, state } = req.body || {};
+  const { clientId, clientSecret, redirectUri } = naverConfig();
+
+  if (!clientId || !clientSecret || !redirectUri || !process.env.JWT_SECRET) {
+    return res.status(503).json({
+      message: "네이버 로그인 환경변수가 설정되지 않았습니다.",
+    });
+  }
+  if (typeof code !== "string" || !code || typeof state !== "string" || !state) {
+    return res.status(400).json({ message: "잘못된 네이버 인증 요청입니다." });
+  }
+
+  try {
+    const decodedState = jwt.verify(state, process.env.JWT_SECRET);
+    if (decodedState.provider !== "naver") {
+      return res.status(400).json({ message: "잘못된 네이버 인증 상태입니다." });
+    }
+
+    const tokenParams = new URLSearchParams({
+      grant_type: "authorization_code",
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      code,
+      state,
+    });
+    const tokenResponse = await fetch(
+      `https://nid.naver.com/oauth2.0/token?${tokenParams.toString()}`,
+      { method: "POST" },
+    );
+    const tokenData = await tokenResponse.json();
+    if (!tokenResponse.ok || !tokenData.access_token) {
+      console.error("❌ 네이버 토큰 교환 실패:", tokenData.error || tokenResponse.status);
+      return res.status(502).json({ message: "네이버 인증 토큰을 받지 못했습니다." });
+    }
+
+    const profileResponse = await fetch("https://openapi.naver.com/v1/nid/me", {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+    const profileData = await profileResponse.json();
+    const profile = profileData.response;
+    if (!profileResponse.ok || profileData.resultcode !== "00" || !profile?.id) {
+      console.error("❌ 네이버 프로필 조회 실패:", profileData.message || profileResponse.status);
+      return res.status(502).json({ message: "네이버 사용자 정보를 받지 못했습니다." });
+    }
+
+    const client = await pool.connect();
+    let user;
+    try {
+      await client.query("BEGIN");
+      const linked = await client.query(
+        `SELECT u.* FROM oauth_accounts o
+         JOIN users u ON u.id = o.user_id
+         WHERE o.provider = $1 AND o.provider_user_id = $2`,
+        ["naver", profile.id],
+      );
+
+      if (linked.rows[0]) {
+        user = linked.rows[0];
+      } else {
+        const username = `naver_${profile.id}`;
+        const name = profile.name || profile.nickname || "네이버 사용자";
+        const password = await bcrypt.hash(randomBytes(32).toString("hex"), 10);
+        const created = await client.query(
+          `INSERT INTO users (username, password, name)
+           VALUES ($1, $2, $3)
+           ON CONFLICT (username) DO UPDATE SET name = EXCLUDED.name
+           RETURNING *`,
+          [username, password, name],
+        );
+        user = created.rows[0];
+        await client.query(
+          `INSERT INTO oauth_accounts (provider, provider_user_id, user_id)
+           VALUES ($1, $2, $3)
+           ON CONFLICT (provider, provider_user_id) DO UPDATE SET user_id = EXCLUDED.user_id`,
+          ["naver", profile.id, user.id],
+        );
+      }
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({
+      accessToken,
+      username: user.username,
+      name: user.name,
+    });
+  } catch (error) {
+    if (error?.name === "JsonWebTokenError" || error?.name === "TokenExpiredError") {
+      return res.status(400).json({ message: "네이버 로그인 요청이 만료되었습니다." });
+    }
+    console.error("❌ 네이버 로그인 오류:", error);
+    return authErrorResponse(res, error);
+  }
+});
 
 // ✅ 회원가입
 router.post("/register", async (req, res) => {

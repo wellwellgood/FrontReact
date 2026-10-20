@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import styles from "./App.module.css";
 import api from "./util/api.js"; // API 호출을 위한 axios 인스턴스
+import NAVER from "./image/NAVER.png";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -13,7 +14,9 @@ function LoginPage() {
   const [notAllow, setNotAllow] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light",
+  );
 
   const goToid = () => navigate("/id");
   const goToPassword = () => navigate("/password");
@@ -23,17 +26,6 @@ function LoginPage() {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      sessionStorage.clear();
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
 
   const HandleID = (e) => {
     const value = e.target.value;
@@ -56,6 +48,21 @@ function LoginPage() {
     }
   };
 
+  const loginWithNaver = async () => {
+    try {
+      setErrorMessage("");
+      const response = await api.get("/auth/naver/start");
+
+      sessionStorage.setItem("naver-oauth-state", response.data.state);
+      window.location.assign(response.data.authorizationUrl);
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message ||
+          "네이버 로그인을 시작하지 못했습니다.",
+      );
+    }
+  };
+
   const loginButton = async () => {
     if (isSubmitting) return;
     setErrorMessage("");
@@ -67,21 +74,21 @@ function LoginPage() {
           username: ID,
           password: PW,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
-  
+
       const { accessToken, username, name } = response.data;
-  
+
       sessionStorage.setItem("username", username);
       localStorage.setItem("username", username);
       sessionStorage.setItem("name", name);
       sessionStorage.setItem("userToken", accessToken);
-  
+
       navigate("/dashboard");
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message ||
-          "로그인 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요."
+          "로그인 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.",
       );
     } finally {
       setIsSubmitting(false);
@@ -91,7 +98,10 @@ function LoginPage() {
     <div className={styles.App}>
       <header className={styles["App-header"]}>
         <div className={styles.login}>
-          <div className={styles.logintext}><h1>Hello,</h1><h2>Every one</h2></div>
+          <div className={styles.logintext}>
+            <h1>Hello,</h1>
+            <h2>Every one</h2>
+          </div>
           <div className={styles.loginform}>
             <h1 className={styles.text}>LOGIN</h1>
             <div className={styles.loginbox}>
@@ -118,11 +128,17 @@ function LoginPage() {
                 <button
                   type="button"
                   className={styles.passwordToggle}
-                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+                  aria-label={
+                    showPassword ? "비밀번호 숨기기" : "비밀번호 표시"
+                  }
                   aria-pressed={showPassword}
                   onClick={() => setShowPassword((visible) => !visible)}
                 >
-                  {showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+                  {showPassword ? (
+                    <EyeOff aria-hidden="true" />
+                  ) : (
+                    <Eye aria-hidden="true" />
+                  )}
                 </button>
               </div>
             </div>
@@ -146,6 +162,26 @@ function LoginPage() {
               <button className={styles.findbtn} onClick={goToMembership}>
                 회원가입
               </button>
+            </div>
+            <div className={styles.socialLogin}>
+              <button
+                type="button"
+                className={styles.naverLoginButton}
+                onClick={loginWithNaver}
+              >
+                <img
+                  className={styles.naverLogo}
+                  src={NAVER}
+                  alt=""
+                  aria-hidden="true"
+                />
+              </button>
+              {/* <button className={styles.socialBtn} onClick={loginWithGoogle}>
+                Google로 로그인
+              </button>
+              <button className={styles.socialBtn} onClick={loginWithKakao}>
+                Kakao로 로그인
+              </button> */}
             </div>
           </div>
         </div>

@@ -17,6 +17,14 @@ const initDB = async () => {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS phone1 VARCHAR(8);
     ALTER TABLE users ADD COLUMN IF NOT EXISTS phone2 VARCHAR(8);
     ALTER TABLE users ADD COLUMN IF NOT EXISTS phone3 VARCHAR(8);
+    CREATE TABLE IF NOT EXISTS oauth_accounts (
+      id SERIAL PRIMARY KEY,
+      provider VARCHAR(32) NOT NULL,
+      provider_user_id VARCHAR(255) NOT NULL,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (provider, provider_user_id)
+    );
   `);
 };
 

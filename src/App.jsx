@@ -12,12 +12,14 @@ import AccountSettings from './components/account/AccountSettings.jsx';
 import NotificationSettings from './components/account/NotificationSettings.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import GitHubCallback from './components/github/GitHubCallback';
+import NaverCallback from './components/auth/NaverCallback';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/github/callback" element={<GitHubCallback />} />
+        <Route path="/naver/callback" element={<NaverCallback />} />
         <Route path="/demo/projects" element={<DashboardOverview demo view="projects" />} />
         <Route path="/demo/issues" element={<DashboardOverview demo view="issues" />} />
         <Route path="/demo/activity" element={<DashboardOverview demo view="activity" />} />

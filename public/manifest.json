@@ -1,6 +1,7 @@
 {
   "short_name": "GITERVIEW",
-  "name": "GITERVIEW · 깃터뷰 | GitHub AI 분석 및 면접 준비",
+  "name": "깃터뷰",
+  "alternateName": ["GITERVIEW", "Gitterview"],
   "icons": [
     {
       "src": "icons/android-chrome-192.png",

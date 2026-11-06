@@ -235,7 +235,7 @@ export default function DashboardOverview({ view = "overview", demo = false }) {
     : [];
   const show = (name) => view === "overview" || view === name;
   return (
-    <div className={styles.dashboard}>
+    <div key={location.pathname} className={styles.dashboard}>
       {demo ? (
         <header className={styles.header}>
           <strong>GITERVIEW · 데모</strong>

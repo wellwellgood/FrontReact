@@ -103,9 +103,6 @@ try {
   const healthCheck = await import("./routes/Health.js");
   app.use("/api/health", healthCheck.default);
 
-  const careerjetRoutes = await import("./routes/careerjet.js");
-  app.use("/api/careerjet", careerjetRoutes.default);
-
   const messageRoute = await import("./routes/message.js");
   app.use("/api/messages", messageRoute.default);
 

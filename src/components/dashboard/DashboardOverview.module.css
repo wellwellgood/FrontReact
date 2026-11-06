@@ -19,6 +19,110 @@
     text-align: left;
 }
 
+/* 왼쪽 위에서 오른쪽 아래로 이어지는 대시보드 요소 등장 모션 */
+.dashboard > :first-child,
+.content > * {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translate3d(-18px, -12px, 0) scale(0.985);
+  transform-origin: top left;
+  animation: diagonalElementReveal 720ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, filter, transform;
+}
+
+.dashboard > :first-child {
+  animation-delay: 40ms;
+}
+
+.content > :nth-child(1) {
+  animation-delay: 120ms;
+}
+
+.content > :nth-child(2) {
+  animation-delay: 190ms;
+}
+
+.content > :nth-child(3) {
+  animation-delay: 260ms;
+}
+
+.content > :nth-child(4) {
+  animation-delay: 330ms;
+}
+
+.content > :nth-child(5) {
+  animation-delay: 400ms;
+}
+
+.content > :nth-child(n + 6) {
+  animation-delay: 470ms;
+}
+
+.stats .stat,
+.grid > .card {
+  opacity: 0;
+  filter: blur(8px);
+  transform: translate3d(-14px, -10px, 0) scale(0.98);
+  transform-origin: top left;
+  animation: diagonalElementReveal 680ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, filter, transform;
+}
+
+.stats .stat:nth-child(1),
+.grid > .card:nth-child(1) {
+  animation-delay: 480ms;
+}
+
+.stats .stat:nth-child(2),
+.grid > .card:nth-child(2) {
+  animation-delay: 570ms;
+}
+
+.stats .stat:nth-child(3),
+.grid > .card:nth-child(3) {
+  animation-delay: 660ms;
+}
+
+.stats .stat:nth-child(4),
+.grid > .card:nth-child(4) {
+  animation-delay: 750ms;
+}
+
+.grid > .card:nth-child(n + 5) {
+  animation-delay: 840ms;
+}
+
+@keyframes diagonalElementReveal {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translate3d(-18px, -12px, 0) scale(0.985);
+  }
+
+  55% {
+    opacity: 0.82;
+    filter: blur(2px);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard > :first-child,
+  .content > *,
+  .stats .stat,
+  .grid > .card {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none;
+  }
+}
+
 .dashboard * {
     box-sizing: border-box;
 }

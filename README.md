@@ -279,3 +279,18 @@ GitHub 테스트는 암호화·변조 검출, 두 테스트 사용자의 OAuth s
 ## 개발자
 
 김기윤 · [GitHub @wellwellgood](https://github.com/wellwellgood)
+
+
+## 프론트엔드 화면 테스트
+
+2026-10-27 기준 `npm run test:frontend`로 DashboardOverview 화면 테스트 8개를 실행합니다. Jest와 React DOM/jsdom을 사용하고 GitHub/API 경계는 모의 처리합니다.
+
+- 요청 중 상태와 버튼 비활성화
+- 조회 실패 안내 및 데모 데이터로 대체되지 않음
+- 미연결 계정 안내와 빈 목록 구분
+- 이름·설명 검색 및 초기화
+- 언어·즐겨찾기·검색의 복합 필터
+- 즐겨찾기 저장 실패 시 기존 상태 유지와 재시도
+- 화면 이탈 후 늦은 응답 방지
+
+실제 계정·외부 서버·배포 브라우저의 종단간 테스트, TypeScript 적용, 성능 측정, 사용자 피드백은 별도 과제입니다.

@@ -1,5 +1,4 @@
 import express from "express";
-import axios from "axios";
 
 const router = express.Router();
 const CAREERJET_URL = "https://search.api.careerjet.net/v4/query";
@@ -36,6 +35,7 @@ router.get("/jobs", async (req, res) => {
   };
 
   try {
+    const { default: axios } = await import("axios");
     const response = await axios.get(CAREERJET_URL, {
       params,
       timeout: 10000,

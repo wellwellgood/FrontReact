@@ -1,14 +1,27 @@
 import express from 'express';
 import multer from 'multer';
-import R2 from '../uploads/chat/R2.js';
 import dbPool from '../DB.mjs';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
+// R2(AWS SDK)는 파일 업로드 요청이 들어올 때만 불러옵니다.
+// 서버 시작 시 무거운 SDK 로딩 때문에 전체 API가 멈추는 것을 방지합니다.
+let r2ClientPromise;
+const getR2Client = async () => {
+  if (!r2ClientPromise) {
+    r2ClientPromise = import('../uploads/chat/R2.js').then(
+      ({ default: client }) => client,
+    );
+  }
+
+  return r2ClientPromise;
+};
+
 // ✅ 업로드 라우트
 router.post('/', upload.single('file'), async (req, res) => {
   try {
+    const R2 = await getR2Client();
     const file = req.file;
     const roomId = req.body.roomId || 'defaultRoom';
     const sender = req.body.sender || 'unknown';
@@ -51,6 +64,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 // ✅ 다운로드 라우트 (중첩 제거)
 router.get('/download', async (req, res) => {
   try {
+    const R2 = await getR2Client();
     const key = req.query.key;
     // console.log("📥 다운로드 요청 Key:", key);
 

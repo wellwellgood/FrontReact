@@ -7,7 +7,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "test:frontend": "jest --config jest.frontend.config.cjs --runInBand"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

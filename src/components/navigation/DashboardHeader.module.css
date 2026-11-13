@@ -106,7 +106,7 @@
         color .22s ease,
         background-color .22s ease,
         box-shadow .26s ease,
-        transform .22s cubic-bezier(.2, .8, .2, 1);
+        transform .3s cubic-bezier(.2, .8, .2, 1);
 }
 
 .tabs button:hover {
@@ -127,7 +127,7 @@
         0 3px 10px rgba(42, 86, 145, .08);
     -webkit-backdrop-filter: blur(24px) saturate(175%);
     backdrop-filter: blur(24px) saturate(175%);
-    animation: tabActivate .32s cubic-bezier(.2, .8, .2, 1);
+    animation: tabActivate .3s cubic-bezier(.2, .8, .2, 1);
 }
 
 @keyframes tabActivate {

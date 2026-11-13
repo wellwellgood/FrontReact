@@ -2,7 +2,7 @@
   min-height: 100vh;
   padding-left: 96px;
   background:
-    linear-gradient(135deg, rgba(5, 7, 11, 0.76), rgba(9, 15, 29, 0.7)),
+    linear-gradient(135deg, rgba(5, 7, 11, 0.5), rgba(9, 15, 29, 0.5)),
     url("../../image/main.jpg") center center / cover no-repeat;
   background-attachment: fixed;
   color: #ffffff;

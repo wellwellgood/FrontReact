@@ -1,7 +1,10 @@
 .page {
   min-height: 100vh;
   padding-left: 96px;
-  background: #f5f9ff;
+  background:
+    linear-gradient(rgba(245, 249, 255, 0.86), rgba(235, 243, 255, 0.82)),
+    url("../../image/main.jpg") center center / cover no-repeat;
+  background-attachment: fixed;
   color: #14213d;
   font-family: Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   text-align: left;

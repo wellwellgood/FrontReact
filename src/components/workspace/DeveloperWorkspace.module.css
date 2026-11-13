@@ -2,10 +2,8 @@
   min-height: 100vh;
   padding-left: 96px;
   background:
-    radial-gradient(circle at 15% 20%, rgba(0, 102, 255, 0.24), transparent 32%),
-    radial-gradient(circle at 85% 75%, rgba(116, 68, 255, 0.2), transparent 38%),
-    radial-gradient(circle at 60% 15%, rgba(0, 210, 255, 0.1), transparent 28%),
-    linear-gradient(135deg, #05070b 0%, #111827 55%, #080b12 100%);
+    linear-gradient(135deg, rgba(5, 7, 11, 0.76), rgba(9, 15, 29, 0.7)),
+    url("../../image/main.jpg") center center / cover no-repeat;
   background-attachment: fixed;
   color: #ffffff;
   font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
